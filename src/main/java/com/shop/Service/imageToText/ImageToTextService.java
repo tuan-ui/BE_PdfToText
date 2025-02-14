@@ -22,6 +22,8 @@ public class ImageToTextService {
     private static final String LANGUAGE = "eng+vie"; // Hỗ trợ cả tiếng Anh và Việt
 
     public List<String> pdfToText(List<MultipartFile> files, String search) {
+
+        // kiểm tra search rỗng
         List<String> results = new ArrayList<>();
         Tesseract tesseract = new Tesseract();
         tesseract.setDatapath(TESSDATA_PATH);
@@ -41,7 +43,8 @@ public class ImageToTextService {
                     continue;
                 }
                 String docxFileName = saveTextToDocx(fileName, extractedText);
-                results.add("Đã lưu văn bản vào: " + docxFileName);
+                if(extractedText.contains(search))
+                    results.add(docxFileName);
             } catch (Exception e) {
                 results.add("Lỗi khi xử lý file: " + file.getOriginalFilename() + " - " + e.getMessage());
             }

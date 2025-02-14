@@ -19,12 +19,11 @@ public class ImageToTextController {
     private ImageToTextService imageToTextService;
 
     @PostMapping("/PdfToText")
-    public ResponseEntity<Map<String, String>> processFiles(@RequestParam("files") List<MultipartFile> files,
+    public ResponseEntity<Map<String, List<String>>> processFiles(@RequestParam("files") List<MultipartFile> files,
                                                             @RequestParam("search") String search) {
-        Map<String, String> response = new HashMap<>();
+        Map<String, List<String>> response = new HashMap<>();
         List<String> result = imageToTextService.pdfToText(files,search);
-        response.put("status", "success");
-        response.put("message", "Thanh cong");
+        response.put("data", result);
 
         return ResponseEntity.ok(response);
     }
