@@ -18,8 +18,9 @@ import java.util.List;
 @Service
 public class ImageToTextService {
 
-    private static final String TESSDATA_PATH = "C:/Program Files/tesseract/tessdata";
-    private static final String LANGUAGE = "eng+vie"; // Hỗ trợ cả tiếng Anh và Việt
+    private static final String TESSDATA_PATH = "D:/PdfToText/BE/tesseract/tessdata";
+    //private static final String TESSDATA_PATH = System.getProperty("user.dir") + "/tesseract/tessdata";
+    private static final String LANGUAGE = "eng+vie";
 
     public List<String> pdfToText(List<MultipartFile> files, String search) {
 
@@ -43,7 +44,7 @@ public class ImageToTextService {
                     continue;
                 }
                 String docxFileName = saveTextToDocx(fileName, extractedText);
-                if(extractedText.contains(search))
+                if(extractedText.toLowerCase().contains(search.toLowerCase()))
                     results.add(docxFileName);
             } catch (Exception e) {
                 results.add("Lỗi khi xử lý file: " + file.getOriginalFilename() + " - " + e.getMessage());
