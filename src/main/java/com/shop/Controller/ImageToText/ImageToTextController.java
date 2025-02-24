@@ -4,6 +4,7 @@ import com.shop.Utils.PageableEnum;
 import com.shop.Dto.DocxTextResponseDTO;
 import com.shop.Dto.ImportResponseDTO;
 import com.shop.Service.imageToText.ImageToTextService;
+import net.sourceforge.tess4j.TesseractException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -46,5 +48,12 @@ public class ImageToTextController {
         DocxTextResponseDTO response = imageToTextService.getAllDocxText(pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+    @PostMapping("ExtractIdCardInfo")
+    public ResponseEntity<List<String>> extractIdCardInfo(@RequestParam("files") MultipartFile files) throws TesseractException, IOException {
+        new ImportResponseDTO();
+        List<String> response = imageToTextService.extractIdCardInfo(files);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }
 
