@@ -168,15 +168,6 @@ public class UpdateDocService {
         this.ocrEngine.setLanguage("eng+vie");
     }
 
-    public List<String> extractTextFromImage(MultipartFile file) throws IOException, TesseractException {
-        BufferedImage image = preprocessImage(ImageIO.read(file.getInputStream()));
-        String text = ocrEngine.doOCR(image);
-        return Stream.of(text.split("\\r?\\n"))
-                .map(String::trim)
-                .filter(line -> !line.isEmpty())
-                .collect(Collectors.toList());
-    }
-
     private BufferedImage preprocessImage(BufferedImage image) {
         return removeNoise(adjustBrightnessContrast(applySharpen(convertToGrayscale(image)), 1.3f, 15));
     }
@@ -233,7 +224,7 @@ public class UpdateDocService {
         info.put("nationality", extractWithRegex(text, "(?i)(?:Quốc tịch|Nationality)[\\s.:/-]*([A-Za-zÀ-ỹ\\s]+)"));
         info.put("idNumber", extractWithRegex(text, "(?i)(?:Số|No)[\\s.:/-]*(\\d{9,12})"));
         info.put("address", extractWithRegex(text, "(?i)(Địa chỉ|Place of ongin):\\s*(.+)"));
-
+        info.put("fullText",text);
         return info;
     }
     private String extractWithRegex(String text, String regex) {
