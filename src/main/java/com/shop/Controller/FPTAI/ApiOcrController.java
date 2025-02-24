@@ -1,4 +1,4 @@
-package com.shop.Controller.ImageToText;
+package com.shop.Controller.FPTAI;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
