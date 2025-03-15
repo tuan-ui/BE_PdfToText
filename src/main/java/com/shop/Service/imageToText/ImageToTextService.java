@@ -46,7 +46,7 @@ public class ImageToTextService {
     private DocxRepository docxRepository;
 
     private static final String TESSDATA_PATH = "D:/PdfToText/BE/tesseract/tessdata";
-    private static final String LANGUAGE = "eng+vie";
+    private static final String LANGUAGE = "Vietnamese";
     private static final String FOLDER_PATH = "D:/pdf";
     private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
 
