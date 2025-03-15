@@ -16,6 +16,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
@@ -157,6 +158,185 @@ public class UpdateDocService {
         } catch (IOException ex) {
             throw new RuntimeException(" Lỗi khi xử lý file Word: " + ex.getMessage(), ex);
         }
+
+        return "Thành công";
+    }
+
+    public String updateText() throws IOException {
+        String inputFilePath = "D:/pdf/input.docx";
+        String outputFilePath = "D:/pdf/output1.docx";
+
+        FileInputStream fis = new FileInputStream(inputFilePath);
+        XWPFDocument document = new XWPFDocument(fis);
+
+        Map<String, String> replacements = new HashMap<>();
+        replacements.put("«hoten_full»", "Nguyễn Văn A");
+        replacements.put("«ngaythang»", "01/01/2023");
+        replacements.put("«thanhphancbqtd»", "Nguyễn Văn B, Trần Thị C");
+        replacements.put("«chucvucbqtd»", "Cán bộ tín dụng");
+        replacements.put("«hoten1»", "Nguyễn Văn A");
+        replacements.put("«hoten2»", "Trần Thị B");
+        replacements.put("«ngaysinh1»", "01/01/1990");
+        replacements.put("«ngaysinh2»", "02/02/1991");
+        replacements.put("«cmnd1»", "123456789");
+        replacements.put("«cmnd2»", "987654321");
+        replacements.put("«cccd1»", "112233445566");
+        replacements.put("«cccd2»", "665544332211");
+        replacements.put("«gioitinh1»", "Nam");
+        replacements.put("«gioitinh2»", "Nữ");
+        replacements.put("«quanhe1»", "Vợ");
+        replacements.put("«quanhe2»", "Chồng");
+        replacements.put("«tthonnhan1»", "Đã kết hôn");
+        replacements.put("«tthonnhan2»", "Đã kết hôn");
+        replacements.put("«diachi1»", "123 Đường ABC, TP. Bảo Lộc");
+        replacements.put("«phone1»", "0123456789");
+        replacements.put("«phone2»", "0987654321");
+        replacements.put("«hocvan1»", "Đại học");
+        replacements.put("«hocvan2»", "Cao đẳng");
+        replacements.put("«nghenghiep1»", "Kỹ sư");
+        replacements.put("«nghenghiep2»", "Giáo viên");
+        replacements.put("«songuoinuoi»", "2");
+        replacements.put("«nlplds»", "Có");
+        replacements.put("«nhanthan»", "Tốt");
+        replacements.put("«lsvay»", "Không có nợ xấu");
+        replacements.put("«cohaykhong_doituonghc»", "Không");
+        replacements.put("«vtc_quy»", "1.000.000.000");
+        replacements.put("«nxthongtinCIC_moiqh»", "Không có thông tin");
+        replacements.put("«Mucdichvv»", "Mua nhà");
+        replacements.put("«Doituongvv»", "Nhà ở");
+        replacements.put("«sxkd_diadiem»", "123 Đường XYZ, TP. Bảo Lộc");
+        replacements.put("«sxkd_tinhhinh»", "Ổn định");
+        replacements.put("«NguoncungcapNL»", "Nhà cung cấp địa phương");
+        replacements.put("«ThitruongTTSP»", "Địa phương");
+        replacements.put("«KhanangSXKD»", "Tốt");
+        replacements.put("«sxkd_tongsold»", "10");
+        replacements.put("«sxkd_ldtx»", "8");
+        replacements.put("«sxkd_ldktx»", "2");
+        replacements.put("«sxkd_dtcm»", "Có");
+        replacements.put("«sxkd_khkt»", "Có");
+        replacements.put("«Hieuquaxahoi»", "Tích cực");
+        replacements.put("«Mota_dgts»", "Nhà ở mặt tiền");
+        replacements.put("«tonggtts»", "2.000.000.000");
+        replacements.put("«tylecvsogtts»", "50");
+        replacements.put("«vonvay»", "1.000.000.000");
+        replacements.put("«stvaybangchu»", "Một tỷ đồng");
+        replacements.put("«tlcv_thsonvnh»", "30");
+        replacements.put("«thoihan»", "12 tháng");
+        replacements.put("«laisuat»", "10");
+        replacements.put("«ptvay»", "Trả góp");
+        replacements.put("«Khtrano»", "Hàng tháng");
+        replacements.put("«phanquyet»", "Đồng ý cho vay");
+
+        // Thay thế trong các đoạn văn bản
+        for (XWPFParagraph paragraph : document.getParagraphs()) {
+            for (XWPFRun run : paragraph.getRuns()) {
+                String text = run.getText(0);
+                if (text != null) {
+                    for (Map.Entry<String, String> entry : replacements.entrySet()) {
+                        if (text.contains(entry.getKey())) {
+                            text = text.replace(entry.getKey(), entry.getValue());
+                            run.setText(text, 0);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Thay thế trong các bảng
+        for (XWPFTable table : document.getTables()) {
+            for (XWPFTableRow row : table.getRows()) {
+                for (XWPFTableCell cell : row.getTableCells()) {
+                    for (XWPFParagraph paragraph : cell.getParagraphs()) {
+                        for (XWPFRun run : paragraph.getRuns()) {
+                            String text = run.getText(0);
+                            if (text != null) {
+                                for (Map.Entry<String, String> entry : replacements.entrySet()) {
+                                    if (text.contains(entry.getKey())) {
+                                        text = text.replace(entry.getKey(), entry.getValue());
+                                        run.setText(text, 0);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Lưu tài liệu
+        FileOutputStream fos = new FileOutputStream(outputFilePath);
+        document.write(fos);
+        fos.close();
+        document.close();
+        fis.close();
+
+        return "Thành công";
+    }
+    public String updateTable() throws IOException {
+        String inputFilePath = "D:/pdf/input.docx";
+        String outputFilePath = "D:/pdf/output2.docx";
+
+        FileInputStream fis = new FileInputStream(inputFilePath);
+        XWPFDocument document = new XWPFDocument(fis);
+
+        String searchString = "«nxthongtinCIC_quy»";
+
+        // Duyệt qua các đoạn văn bản trong tài liệu
+        List<XWPFParagraph> paragraphs = document.getParagraphs();
+        for (int i = 0; i < paragraphs.size(); i++) {
+            XWPFParagraph paragraph = paragraphs.get(i);
+            String paragraphText = paragraph.getText();
+
+            // Kiểm tra nếu đoạn chứa chuỗi cần thay thế
+            if (paragraphText != null && paragraphText.contains(searchString)) {
+                // Xóa đoạn văn bản chứa chuỗi
+                document.removeBodyElement(document.getPosOfParagraph(paragraph));
+
+                // Chèn bảng vào vị trí của đoạn văn bản đã xóa
+                XWPFTable table = document.insertNewTbl(document.getParagraphs().get(i).getCTP().newCursor());
+
+                // Tạo hàng và ô trong bảng
+                XWPFTableRow row1 = table.getRow(0);
+                if (row1 == null) {
+                    row1 = table.createRow();
+                }
+                row1.getCell(0).setText("STT");
+                row1.addNewTableCell().setText("TCTD");
+                row1.addNewTableCell().setText("Dư nợ");
+                row1.addNewTableCell().setText("Mục đích vay vốn");
+                row1.addNewTableCell().setText("Lãi suất");
+                row1.addNewTableCell().setText("Nhóm nợ");
+                row1.addNewTableCell().setText("Ngày đến hạn");
+
+                // Thêm dữ liệu vào bảng (ví dụ)
+                XWPFTableRow row2 = table.createRow();
+                row2.getCell(0).setText("1");
+                row2.getCell(1).setText("Ngân hàng A");
+                row2.getCell(2).setText("500.000.000");
+                row2.getCell(3).setText("Mua nhà");
+                row2.getCell(4).setText("10%");
+                row2.getCell(5).setText("Nhóm 1");
+                row2.getCell(6).setText("01/01/2024");
+
+                XWPFTableRow row3 = table.createRow();
+                row3.getCell(0).setText("2");
+                row3.getCell(1).setText("Ngân hàng B");
+                row3.getCell(2).setText("300.000.000");
+                row3.getCell(3).setText("Kinh doanh");
+                row3.getCell(4).setText("12%");
+                row3.getCell(5).setText("Nhóm 2");
+                row3.getCell(6).setText("01/06/2024");
+
+                break; // Thoát khỏi vòng lặp sau khi thay thế
+            }
+        }
+
+        // Lưu tài liệu
+        FileOutputStream fos = new FileOutputStream(outputFilePath);
+        document.write(fos);
+        fos.close();
+        document.close();
+        fis.close();
 
         return "Thành công";
     }
