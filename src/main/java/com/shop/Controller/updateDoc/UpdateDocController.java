@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 @RestController
@@ -39,6 +40,19 @@ public class UpdateDocController {
     public ResponseEntity<String> addColumn(){
         new ImportResponseDTO();
         String response = updateDocService.addColumnToTable();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("updateText")
+    public ResponseEntity<String> updateText() throws IOException {
+        new ImportResponseDTO();
+        String response = updateDocService.updateText();
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @PostMapping("updateTable")
+    public ResponseEntity<String> updateTable() throws IOException {
+        new ImportResponseDTO();
+        String response = updateDocService.updateTable();
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
