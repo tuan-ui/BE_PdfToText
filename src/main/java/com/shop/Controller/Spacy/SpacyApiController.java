@@ -18,7 +18,7 @@ import java.io.IOException;
 @RequestMapping("/api")
 public class SpacyApiController {
 
-    private static final String PYTHON_API_URL = "http://127.0.0.1:5001/process";
+    private static final String PYTHON_API_URL = "http://127.0.0.1:8000/process";
 
     @PostMapping(value = "/process", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> processText(@RequestParam("file") MultipartFile file, @RequestParam("request") String request) {
