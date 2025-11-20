@@ -121,7 +121,13 @@ public class FileUtils {
 
 	public static List<Object> getAllElementFromObject(Object obj, Class<?> toSearch) {
 		List<Object> result = new ArrayList<>();
+		if (obj == null || toSearch == null) {
+			return result;
+		}
 		obj = unwrap(obj);
+		if (obj == null) {
+			return result;
+		}
 
 		if (toSearch.isAssignableFrom(obj.getClass())) {
 			result.add(obj);

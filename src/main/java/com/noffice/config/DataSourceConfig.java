@@ -63,11 +63,9 @@ public class DataSourceConfig {
         }
 
         try {
-            // Tách IV (12 byte đầu)
             byte[] iv = new byte[GCM_IV_LENGTH];
             System.arraycopy(data, 0, iv, 0, GCM_IV_LENGTH);
 
-            // Phần còn lại là ciphertext + tag
             byte[] cipherText = new byte[data.length - GCM_IV_LENGTH];
             System.arraycopy(data, GCM_IV_LENGTH, cipherText, 0, cipherText.length);
 

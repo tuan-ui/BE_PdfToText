@@ -1,6 +1,7 @@
 package com.noffice.service;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 
@@ -29,7 +30,7 @@ public class JwtService {
 	private final ConfigRepository configRepository;
 	private static ConfigRepository configRepositoryInstance;
     private final RolePermissionsRepository rolePermissionsRepository;
-	private final long IDLE_TIMEOUT_MS = 30 * 60 * 1000;
+	private final long IDLE_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(30);
 	@PostConstruct
 	public void init() {
 		configRepositoryInstance = configRepository;

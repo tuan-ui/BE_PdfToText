@@ -164,27 +164,9 @@ public class AuthenticationController {
 				String token = jwtService.generateToken(userOpt,null,null);
 				return ResponseEntity.ok(new ResponseAPI(new TokenResponse(token), "success", 200));
 			} catch (Exception e) {
-				return ResponseEntity.ok(new ResponseAPI(null, "token is expired", 400));
-			}
-		} else {
-			return ResponseEntity.ok(new ResponseAPI(null, "token not found", 401));
-		}
-	}
-	
-	@PostMapping("/refreshTokenRoleUserDept")
-	public ResponseEntity<ResponseAPI> refreshTokenRoleUserDept(@RequestBody RefreshTokenRoleUserDeptReqDTO refreshTokenRoleUserDeptReqDTO) {
-		String refreshToken = refreshTokenRoleUserDeptReqDTO.getRefreshToken();
-		Optional<RefreshToken> optionalRefreshToken = refreshTokenService.findByRefreshToken(refreshToken);
-		if (optionalRefreshToken.isPresent()) {
-			try {
-				RefreshToken verifiedToken = refreshTokenService.verifyExpiration(optionalRefreshToken.get());
-				String username = verifiedToken.getUsername();
-				User userOpt = userRepository.findByUsername(username)
-				            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-				String token = jwtService.generateToken(userOpt,refreshTokenRoleUserDeptReqDTO.getRoleUserDeptId().toString(), refreshTokenRoleUserDeptReqDTO.getRoleUserDeptIds());
-				return ResponseEntity.ok(new ResponseAPI(new TokenResponse(token), "success", 200));
-			} catch (Exception e) {
-				return ResponseEntity.ok(new ResponseAPI(null, "token is expired", 400));
+				return ResponseEntity
+						.status(HttpStatus.UNAUTHORIZED)
+						.body(new ResponseAPI(null, "Refresh token is expired", 401));
 			}
 		} else {
 			return ResponseEntity.ok(new ResponseAPI(null, "token not found", 401));
