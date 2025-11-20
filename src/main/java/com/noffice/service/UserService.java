@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.*;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.*;
 import com.noffice.ultils.Constants;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.noffice.dto.UserCreateDTO;
 import com.noffice.dto.UserDetailDTO;
-import com.noffice.ultils.Constants.UPLOAD;
+import com.noffice.ultils.Constants.upload;
 
 import jakarta.transaction.Transactional;
 
@@ -104,7 +104,7 @@ public class UserService {
             if (userGroupsRepository.existsByUserId(deletedUser.getId())) {
                 return "error.UserGroupUsed";
             }
-            deletedUser.setIsDeleted(Constants.IS_DELETED.DELETED);
+            deletedUser.setIsDeleted(Constants.isDeleted.DELETED);
             deletedUser.setDeletedAt(LocalDateTime.now());
             deletedUser.setDeletedBy(deletedUser.getId());
             User updatedUser = userRepository.save(deletedUser);
@@ -128,7 +128,7 @@ public class UserService {
                 if (userGroupsRepository.existsByUserId(user.getId())) {
                     return "error.UserGroupUsed";
                 }
-                user.setIsDeleted(Constants.IS_DELETED.DELETED);
+                user.setIsDeleted(Constants.isDeleted.DELETED);
                 user.setDeletedAt(LocalDateTime.now());
                 user.setDeletedBy(userDetails.getId());
                 User updatedUser = userRepository.save(user);
@@ -187,7 +187,7 @@ public class UserService {
         user.setCreateAt(LocalDateTime.now());
         user.setCreateBy(userDetails.getId());
         user.setIsActive(true);
-        user.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+        user.setIsDeleted(Constants.isDeleted.ACTIVE);
         user.setIsChangePassword(0);
         String newPasswordEncode = passwordEncoder.encode(userCreateDTO.getPassword());
         user.setPassword(newPasswordEncode);
@@ -249,7 +249,7 @@ public class UserService {
     }
 
     public Resource downFile(String fileName) throws IOException {
-        String uploadDir = UPLOAD.IMAGE_DIRECTORY;
+        String uploadDir = upload.IMAGE_DIRECTORY;
 
         String cleanedFileName = fileName.replaceFirst("^/+", "");
 
@@ -333,7 +333,7 @@ public class UserService {
         return userRepository.findUser(partnerId);
     }
 
-    public void LogDetailUser(UUID id, User user) {
+    public void getLogDetailUser(UUID id, User user) {
         User userDetail = userRepository.getUserByUserId(id);
         logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_USER.getFunction(), "object", userDetail.getFullName()),
                 user.getId(), userDetail.getId(), user.getPartnerId());

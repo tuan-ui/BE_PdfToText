@@ -9,11 +9,11 @@ import com.noffice.entity.ConfigProperties;
 
 public interface ConfigRepository extends JpaRepository<ConfigProperties, Long>,JpaSpecificationExecutor<ConfigProperties> {
 	
-	ConfigProperties findByKey(String KEY);
+	ConfigProperties findByKey(String key);
 	
 	//update by label
 	@Query(value = "update config_properties set VALUE = ?2 where KEY = ?1", nativeQuery = true)
 	@Modifying
-	void updateByLabel(String KEY, String VALUE);
+	void updateByLabel(String key, String value);
 
 }

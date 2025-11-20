@@ -137,7 +137,7 @@ public class PartnerController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
 
-            Partners partnerSave = partnerService.UpdatePartnerImage(partner, userDetails);
+            Partners partnerSave = partnerService.updatePartnerImage(partner, userDetails);
             return new Response(partnerSave, "success", 200);
         } catch (Exception e) {
             return new Response("error", "Thêm mới đối tác thất bại", 201);
@@ -145,12 +145,12 @@ public class PartnerController {
     }
 
     @GetMapping("/LogDetailPartner")
-    public ResponseAPI LogDetailPartner(@RequestParam UUID id) {
+    public ResponseAPI getLogDetailPartner(@RequestParam UUID id) {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            partnerService.LogDetailPartner(id, userDetails);
+            partnerService.getLogDetailPartner(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
             return new ResponseAPI(null, "fail", 400);

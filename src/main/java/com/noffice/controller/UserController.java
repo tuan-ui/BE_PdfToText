@@ -6,7 +6,7 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.repository.UserRepository;
 import com.noffice.service.*;
-import com.noffice.ultils.Constants.UPLOAD;
+import com.noffice.ultils.Constants.upload;
 import com.noffice.ultils.DateUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -164,7 +164,7 @@ public class UserController {
 	
 	private void deleteFile(String relativePath) throws IOException {
         if (relativePath != null && !relativePath.isEmpty()) {
-            Path filePath = Paths.get(UPLOAD.IMAGE_DIRECTORY + relativePath);
+            Path filePath = Paths.get(upload.IMAGE_DIRECTORY + relativePath);
             if (Files.exists(filePath)) {
                 Files.delete(filePath);
             }
@@ -616,7 +616,7 @@ public class UserController {
 
     private String saveFile(MultipartFile file, UUID partnerId, String type) throws IOException {
         // Thư mục gốc
-        Path baseDir = Paths.get(UPLOAD.IMAGE_DIRECTORY,
+        Path baseDir = Paths.get(upload.IMAGE_DIRECTORY,
                 String.valueOf(partnerId),
                 type).normalize();
 
@@ -794,12 +794,12 @@ public class UserController {
         }
     }
     @GetMapping("/LogDetailUser")
-    public ResponseAPI LogDetailUser(@RequestParam UUID id) {
+    public ResponseAPI getLogDetailUser(@RequestParam UUID id) {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            userService.LogDetailUser(id, userDetails);
+            userService.getLogDetailUser(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
             return new ResponseAPI(null, "fail", 400);

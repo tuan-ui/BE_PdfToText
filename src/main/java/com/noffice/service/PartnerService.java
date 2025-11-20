@@ -5,8 +5,8 @@ import java.util.*;
 
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.*;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.UserRepository;
 
@@ -49,7 +49,7 @@ public class PartnerService {
 		save.setCreateAt(LocalDateTime.now());
 		save.setCreateBy(token.getId());
 		save.setIsActive(true);
-		save.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+		save.setIsDeleted(Constants.isDeleted.ACTIVE);
 		 partnerRepository.save(save);
          logService.createLog(ActionType.CREATE.getAction(),
 				 Map.of("actor", token.getFullName(), "action",FunctionType.CREATE_PARTNER.getFunction(),
@@ -70,7 +70,7 @@ public class PartnerService {
 			if (userRepository.existsUserByPartnerId(partnerId) != 0) {
 				return "error.PartnerAlreadyUseOnUser";
 			}
-			partner.setIsDeleted(Constants.IS_DELETED.DELETED);
+			partner.setIsDeleted(Constants.isDeleted.DELETED);
 			partner.setDeletedAt(LocalDateTime.now());
 			partner.setDeletedBy(userDetails.getId());
 			partnerRepository.save(partner);
@@ -122,7 +122,7 @@ public class PartnerService {
 				token.getId(), save.getId(), token.getPartnerId());
 		return save;
 	}
-	public Partners UpdatePartnerImage(PartnerRequest partner,  User userDetails) {
+	public Partners updatePartnerImage(PartnerRequest partner,  User userDetails) {
 		if(partner.getBase64Image() != null) {
 			Partners save = partnerRepository.getPartnerById(userDetails.getId());
 			save.setImgLogo(partner.getBase64Image());
@@ -131,7 +131,7 @@ public class PartnerService {
 		return null;
 	}
 
-	public void LogDetailPartner(UUID id, User user) {
+	public void getLogDetailPartner(UUID id, User user) {
 		Partners domain = partnerRepository.getPartnerById(id);
 		logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(),"action", FunctionType.VIEW_DETAIL_PARTNER.getFunction(), "object", domain.getPartnerName()),
 				user.getId(), domain.getId(),user.getPartnerId());
@@ -183,7 +183,7 @@ public class PartnerService {
 				if (userRepository.existsUserByPartnerId(id.getId()) != 0) {
 					return "error.PartnerAlreadyUseOnUser";
 				}
-				partner.setIsDeleted(Constants.IS_DELETED.DELETED);
+				partner.setIsDeleted(Constants.isDeleted.DELETED);
 				partner.setDeletedAt(LocalDateTime.now());
 				partner.setDeletedBy(userDetails.getId());
 				partnerRepository.save(partner);

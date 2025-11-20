@@ -3,15 +3,14 @@ package com.noffice.service;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.Domain;
 import com.noffice.entity.User;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.DomainRepository;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -40,7 +39,7 @@ public class DomainService {
 //			if (countChild > 0) {
 //				return "error.UnableToDeleteExistingUnitOfSubordinateDomain";
 //			}
-			domain.setIsDeleted(Constants.IS_DELETED.DELETED);
+			domain.setIsDeleted(Constants.isDeleted.DELETED);
 			domain.setDeletedBy(user.getId());
 			domain.setDeletedAt(LocalDateTime.now());
 			Domain savedDomain = domainRepository.save(domain);
@@ -65,7 +64,7 @@ public class DomainService {
 //					return "error.UnableToDeleteExistingUnitOfSubordinateDomain";
 //				}
 
-				domain.setIsDeleted(Constants.IS_DELETED.DELETED);
+				domain.setIsDeleted(Constants.isDeleted.DELETED);
 				domain.setDeletedBy(user.getId());
 				domain.setDeletedAt(LocalDateTime.now());
 				Domain savedDomain = domainRepository.save(domain);
@@ -109,7 +108,7 @@ public class DomainService {
 			domain.setCreateAt(LocalDateTime.now());
 			domain.setCreateBy(token.getId());
 			domain.setIsActive(domainDTO.getIsActive());
-			domain.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+			domain.setIsDeleted(Constants.isDeleted.ACTIVE);
 			domain.setPartnerId(token.getPartnerId());
 			Domain savedDomain = domainRepository.save(domain);
 			logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(),"action", FunctionType.CREATE_DOMAIN.getFunction(), "object", savedDomain.getDomainName()),
@@ -154,7 +153,7 @@ public class DomainService {
 		return domainRepository.getAllDomain(partnerId);
 	}
 
-	public void LogDetailDomain(String id, User user) {
+	public void getLogDetailDomain(String id, User user) {
 		Domain domain = domainRepository.findByDomainCode(id);
 		logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(),"action", FunctionType.VIEW_DETAIL_DOMAIN.getFunction(), "object", domain.getDomainName()),
 				user.getId(), domain.getId(),user.getPartnerId());

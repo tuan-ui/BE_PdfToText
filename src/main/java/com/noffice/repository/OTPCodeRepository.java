@@ -12,6 +12,6 @@ public interface OTPCodeRepository extends JpaRepository<OTPCode, String> {
 	        + "AND created_at >= NOW() - INTERVAL '120 seconds' "
 	        + "ORDER BY created_at DESC "
 	        + "LIMIT 1", nativeQuery = true)
-	String getOTPCodebyTypeSend(int type_send, String userId);
+	String getOTPCodebyTypeSend(int typeSend, String userId);
 
 }

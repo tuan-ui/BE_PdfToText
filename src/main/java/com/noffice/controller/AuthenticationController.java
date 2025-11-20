@@ -303,9 +303,9 @@ public class AuthenticationController {
 	
 	private final Cage cage = new GCage();
 	@Value("${captcha.rate-limit.max-requests}")
-	private Integer CAPTCHA_LIMIT_REQUEST;
+	private Integer captchaLimitRequest;
 	@Value("${captcha.rate-limit.cooldown-ms}")
-	private Long CAPTCHA_LIMIT_COOLDOWN;
+	private Long captchaLimitCooldown;
 	@GetMapping("/generate-captcha")
 	public void generateCaptcha(HttpServletRequest request, HttpSession session, OutputStream outputStream) throws IOException {
 	    String clientIp = getClientIp(request);
@@ -319,7 +319,7 @@ public class AuthenticationController {
 	    long lastRequestTime = (Long) captchaInfo.getOrDefault("lastRequestTime", 0L);
 	    int requestCount = (Integer) captchaInfo.getOrDefault("requestCount", 0);
 
-	    if (currentTime - lastRequestTime < CAPTCHA_LIMIT_COOLDOWN && requestCount >= CAPTCHA_LIMIT_REQUEST) {
+	    if (currentTime - lastRequestTime < captchaLimitCooldown && requestCount >= captchaLimitRequest) {
 	        // Nếu quá 5 lần trong 1 phút, không cho phép yêu cầu CAPTCHA mới
 	        throw new RateLimitException("Too many requests. Please try again later.");
 	    }

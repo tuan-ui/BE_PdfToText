@@ -25,39 +25,39 @@ public interface DocTypeRepository extends JpaRepository<DocType, Long> {
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.docTypeDescription AS string)))
 			LIKE CONCAT('%', LOWER(:searchString), '%')
 					)
-			AND (COALESCE(:DocTypeCode, '') = ''
+			AND (COALESCE(:docTypeCode, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.docTypeCode AS string)))
-			LIKE CONCAT('%', LOWER(:DocTypeCode), '%')
+			LIKE CONCAT('%', LOWER(:docTypeCode), '%')
 					)
-			AND (COALESCE(:DocTypeName, '') = ''
+			AND (COALESCE(:docTypeName, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.docTypeName AS string)))
-			LIKE CONCAT('%', LOWER(:DocTypeName), '%')
+			LIKE CONCAT('%', LOWER(:docTypeName), '%')
 					)
-			AND (COALESCE(:DocTypeDescription, '') = ''
+			AND (COALESCE(:docTypeDescription, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.docTypeDescription AS string)))
-			LIKE CONCAT('%', LOWER(:DocTypeDescription), '%')
+			LIKE CONCAT('%', LOWER(:docTypeDescription), '%')
 					)
 			AND d.partnerId = :partnerId
 			ORDER BY d.createAt DESC
 			""")
 	Page<DocType> getDocTypeWithPagination(
 			@Param("searchString") String searchString,
-			@Param("DocTypeCode") String DocTypeCode,
-			@Param("DocTypeName") String DocTypeName,
-			@Param("DocTypeDescription") String DocTypeDescription,
+			@Param("docTypeCode") String docTypeCode,
+			@Param("docTypeName") String docTypeName,
+			@Param("docTypeDescription") String docTypeDescription,
 			@Param("partnerId") UUID partnerId,
 			Pageable pageable
 	);
 
 	@Query(value = "FROM DocType d " +
-			"WHERE(:DocTypeCode IS NULL OR LOWER(d.docTypeCode) = LOWER(:DocTypeCode)) " +
+			"WHERE(:DocTypeCode IS NULL OR LOWER(d.docTypeCode) = LOWER(:docTypeCode)) " +
 			"AND d.isDeleted = false AND d.partnerId = :partnerId ")
-	DocType findByCode(@Param("DocTypeCode") String DocTypeCode, @Param("partnerId") UUID partnerId);
+	DocType findByCode(@Param("docTypeCode") String docTypeCode, @Param("partnerId") UUID partnerId);
 
 	@Query(value = "FROM DocType d " +
-			"WHERE d.docTypeCode = :DocTypeCode " +
+			"WHERE d.docTypeCode = :docTypeCode " +
 			"AND d.isDeleted = false ")
-	DocType findByDocTypeCode(@Param("DocTypeCode") String DocTypeCode);
+	DocType findByDocTypeCode(@Param("docTypeCode") String docTypeCode);
 
 	@Query("FROM DocType d WHERE d.partnerId = :partnerId  AND d.isDeleted = false AND d.isActive = true")
 	List<DocType> getAllDocType(UUID partnerId);

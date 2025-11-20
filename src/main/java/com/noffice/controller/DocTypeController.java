@@ -154,12 +154,12 @@ public class DocTypeController {
 	}
 
 	@GetMapping("/LogDetailDocType")
-	public ResponseAPI LogDetailDocType(@RequestParam String id) {
+	public ResponseAPI getLogDetailDocType(@RequestParam String id) {
 
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
-			docTypeService.LogDetailDocType(id, userDetails);
+			docTypeService.getLogDetailDocType(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 400);

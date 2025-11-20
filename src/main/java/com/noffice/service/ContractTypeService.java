@@ -3,8 +3,8 @@ package com.noffice.service;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.ContractType;
 import com.noffice.entity.User;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.ContractTypeRepository;
 import com.noffice.ultils.Constants;
@@ -39,7 +39,7 @@ public class ContractTypeService {
 //				return "error.UnableToDeleteExistingUnitOfSubordinateContractType";
 //			}
 
-            contractType.setIsDeleted(Constants.IS_DELETED.DELETED);
+            contractType.setIsDeleted(Constants.isDeleted.DELETED);
             contractType.setDeletedBy(user.getId());
             contractType.setDeletedAt(LocalDateTime.now());
             ContractType savedContractType = contractTypeRepository.save(contractType);
@@ -60,7 +60,7 @@ public class ContractTypeService {
             if (contractType.getIsDeleted()) {
                 return "error.ContractTypeNotExists";
             } else {
-                contractType.setIsDeleted(Constants.IS_DELETED.DELETED);
+                contractType.setIsDeleted(Constants.isDeleted.DELETED);
                 contractType.setDeletedBy(user.getId());
                 contractType.setDeletedAt(LocalDateTime.now());
                 ContractType savedContractType = contractTypeRepository.save(contractType);
@@ -94,17 +94,17 @@ public class ContractTypeService {
     }
 
     @Transactional
-    public String saveContractType(ContractType ContractTypeDTO, Authentication authentication) {
+    public String saveContractType(ContractType contractTypeDTO, Authentication authentication) {
         User token = (User) authentication.getPrincipal();
-        if (contractTypeRepository.findByCode(ContractTypeDTO.getContractTypeCode(), token.getPartnerId()) == null) {
+        if (contractTypeRepository.findByCode(contractTypeDTO.getContractTypeCode(), token.getPartnerId()) == null) {
             ContractType ContractType = new ContractType();
-            ContractType.setContractTypeName(ContractTypeDTO.getContractTypeName());
-            ContractType.setContractTypeCode(ContractTypeDTO.getContractTypeCode());
-            ContractType.setContractTypeDescription(ContractTypeDTO.getContractTypeDescription());
+            ContractType.setContractTypeName(contractTypeDTO.getContractTypeName());
+            ContractType.setContractTypeCode(contractTypeDTO.getContractTypeCode());
+            ContractType.setContractTypeDescription(contractTypeDTO.getContractTypeDescription());
             ContractType.setCreateAt(LocalDateTime.now());
             ContractType.setCreateBy(token.getId());
-            ContractType.setIsActive(ContractTypeDTO.getIsActive());
-            ContractType.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+            ContractType.setIsActive(contractTypeDTO.getIsActive());
+            ContractType.setIsDeleted(Constants.isDeleted.ACTIVE);
             ContractType.setPartnerId(token.getPartnerId());
             ContractType savedContractType = contractTypeRepository.save(ContractType);
             logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_CONTRACTTYPE.getFunction(), "object", savedContractType.getContractTypeName()),
@@ -140,16 +140,16 @@ public class ContractTypeService {
         return "";
     }
 
-    public Page<ContractType> getListContractType(String searchString, String ContractTypeCode, String ContractTypeName, String ContractTypeDescription,
+    public Page<ContractType> getListContractType(String searchString, String contractTypeCode, String contractTypeName, String contractTypeDescription,
                                         Pageable pageable, UUID partnerId) {
-        return contractTypeRepository.getContractTypeWithPagination(searchString, ContractTypeCode, ContractTypeName, ContractTypeDescription, partnerId, pageable);
+        return contractTypeRepository.getContractTypeWithPagination(searchString, contractTypeCode, contractTypeName, contractTypeDescription, partnerId, pageable);
     }
 
     public List<ContractType> getAllContractType(UUID partnerId) {
         return contractTypeRepository.getAllContractType(partnerId);
     }
 
-    public void LogDetailContractType(String id, User user) {
+    public void getLogDetailContractType(String id, User user) {
         ContractType contractType = contractTypeRepository.findByContractTypeCode(id);
         logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_CONTRACTTYPE.getFunction(), "object", contractType.getContractTypeName()),
                 user.getId(), contractType.getId(), user.getPartnerId());

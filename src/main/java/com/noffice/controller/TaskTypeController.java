@@ -153,12 +153,12 @@ public class TaskTypeController {
     }
 
     @GetMapping("/LogDetailTaskType")
-    public ResponseAPI LogDetailTaskType(@RequestParam String id) {
+    public ResponseAPI getLogDetailTaskType(@RequestParam String id) {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            taskTypeService.LogDetailTaskType(id, userDetails);
+            taskTypeService.getLogDetailTaskType(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
             return new ResponseAPI(null, "fail", 400);

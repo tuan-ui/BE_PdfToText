@@ -5,8 +5,8 @@ import com.noffice.dto.DocumentTemplateCreateDTO;
 import com.noffice.dto.DocumentTemplateDTO;
 import com.noffice.dto.DocumentTemplateDetailDTO;
 import com.noffice.entity.*;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.*;
 import com.noffice.ultils.Constants;
@@ -66,7 +66,7 @@ public class DocumentTemplateService {
             return "error.DocumentTemplateNotExists";
         else {
 
-            documentTemplate.setIsDeleted(Constants.IS_DELETED.DELETED);
+            documentTemplate.setIsDeleted(Constants.isDeleted.DELETED);
             documentTemplate.setDeletedBy(user.getId());
             documentTemplate.setDeletedAt(LocalDateTime.now());
             DocumentTemplate savedDocumentTemplate = documentTemplateRepository.save(documentTemplate);
@@ -88,7 +88,7 @@ public class DocumentTemplateService {
             if (documentTemplate.getIsDeleted()) {
                 return "error.DocumentTemplateNotExists";
             } else {
-                documentTemplate.setIsDeleted(Constants.IS_DELETED.DELETED);
+                documentTemplate.setIsDeleted(Constants.isDeleted.DELETED);
                 documentTemplate.setDeletedBy(user.getId());
                 documentTemplate.setDeletedAt(LocalDateTime.now());
                 DocumentTemplate savedDocumentTemplate = documentTemplateRepository.save(documentTemplate);
@@ -134,7 +134,7 @@ public class DocumentTemplateService {
             documentTemplate.setCreateAt(LocalDateTime.now());
             documentTemplate.setCreateBy(token.getId());
             documentTemplate.setIsActive(documentTemplateDTO.getIsActive());
-            documentTemplate.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+            documentTemplate.setIsDeleted(Constants.isDeleted.ACTIVE);
             documentTemplate.setPartnerId(token.getPartnerId());
             DocumentTemplate savedDocumentTemplate = documentTemplateRepository.save(documentTemplate);
             List<DocTemplateDocTypes> documentTemplateDocumentTypes = documentTemplateDTO.getDocumentTypeIds().stream()
@@ -222,9 +222,9 @@ public class DocumentTemplateService {
         return "";
     }
 
-    public Page<DocumentTemplateDTO> getListDocumentTemplate(String searchString, String DocumentTemplateCode, String DocumentTemplateName, String DocumentTemplateDescription,
+    public Page<DocumentTemplateDTO> getListDocumentTemplate(String searchString, String documentTemplateCode, String documentTemplateName, String documentTemplateDescription,
                                                              Pageable pageable, UUID partnerId) {
-        Page<DocumentTemplate> response = documentTemplateRepository.getDocumentTemplateWithPagination(searchString, DocumentTemplateCode, DocumentTemplateName, DocumentTemplateDescription, partnerId, pageable);
+        Page<DocumentTemplate> response = documentTemplateRepository.getDocumentTemplateWithPagination(searchString, documentTemplateCode, documentTemplateName, documentTemplateDescription, partnerId, pageable);
         return response.map(template -> {
             DocumentTemplateDTO dto = mapper.map(template, DocumentTemplateDTO.class);
 

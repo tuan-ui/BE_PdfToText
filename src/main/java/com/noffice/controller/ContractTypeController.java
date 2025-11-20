@@ -152,12 +152,12 @@ public class ContractTypeController {
 	}
 
 	@GetMapping("/LogDetailContractType")
-	public ResponseAPI LogDetailContractType(@RequestParam String id) {
+	public ResponseAPI getLogDetailContractType(@RequestParam String id) {
 
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
-			contractTypeService.LogDetailContractType(id, userDetails);
+			contractTypeService.getLogDetailContractType(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 400);

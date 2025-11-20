@@ -320,7 +320,7 @@ public class AuthenticationService {
 
 	        // Cập nhật mật khẩu mới
 	        userOpt.setPassword(passwordEncoder.encode(userDTO.getNewPassword()));
-			userOpt.setIsChangePassword(Constants.IS_ACTIVE.ACTIVE);
+			userOpt.setIsChangePassword(Constants.isActive.ACTIVE);
 	        usersRepository.save(userOpt);
 	    }
 	@Transactional

@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
 public class DnDService {
     private final FormSchemaRepository formSchemaRepository;
     private final FormDataRepository formDataRepository;
-    public String publishSchema(DnDDTO DnDDTO, User userDetails){
+    public String publishSchema(DnDDTO dnDDTO, User userDetails){
         try {
             FormSchema formSchema;
-            String id = DnDDTO.getId();
+            String id = dnDDTO.getId();
 
             if(UUIDUtil.isUUID(id))
                 formSchema = formSchemaRepository.getFormSchemaByTemplateID(UUID.fromString(id));
@@ -47,10 +47,10 @@ public class DnDService {
                 formSchema.setFormCode(id);
                 formSchema.setDocTemplateId(null);
             }
-            if (DnDDTO.getContent().has("title")) {
-                formSchema.setFormName(DnDDTO.getContent().get("title").asText());
+            if (dnDDTO.getContent().has("title")) {
+                formSchema.setFormName(dnDDTO.getContent().get("title").asText());
             }
-            formSchema.setFormContent(DnDDTO.getContent().toString());
+            formSchema.setFormContent(dnDDTO.getContent().toString());
 
             formSchema.setPartnerId(userDetails.getPartnerId());
             formSchema.setIsActive(true);
@@ -61,7 +61,7 @@ public class DnDService {
             formSchema.setUpdateBy(userDetails.getId());
 
             formSchemaRepository.save(formSchema);
-            return DnDDTO.getId();
+            return dnDDTO.getId();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -78,11 +78,11 @@ public class DnDService {
         }
     }
 
-    public String saveContent(DnDDTO DnDDTO, User userDetails){
+    public String saveContent(DnDDTO dnDDTO, User userDetails){
         try {
             FormData formData = new FormData();
-            formData.setFormCode(DnDDTO.getId());
-            formData.setFormContent(String.valueOf(DnDDTO.getContent()));
+            formData.setFormCode(dnDDTO.getId());
+            formData.setFormContent(String.valueOf(dnDDTO.getContent()));
             formData.setPartnerId(userDetails.getPartnerId());
             formData.setIsActive(true);
             formData.setIsDeleted(false);
@@ -91,7 +91,7 @@ public class DnDService {
             formData.setUpdateAt(LocalDateTime.now());
             formData.setUpdateBy(userDetails.getId());
             formDataRepository.save(formData);
-            return DnDDTO.getId();
+            return dnDDTO.getId();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -109,7 +109,7 @@ public class DnDService {
         String message = "";
         FormSchema role = formSchemaRepository.findByFormSchemaId(id);
         if (role != null) {
-            role.setIsDeleted(Constants.IS_DELETED.DELETED);
+            role.setIsDeleted(Constants.isDeleted.DELETED);
             role.setDeletedAt(LocalDateTime.now());
             role.setDeletedBy(userDetails.getId());
             formSchemaRepository.save(role);
@@ -138,7 +138,7 @@ public class DnDService {
             FormSchema role = formSchemaRepository.findByFormSchemaId(id);
             ;
             if (role != null) {
-                role.setIsDeleted(Constants.IS_DELETED.DELETED);
+                role.setIsDeleted(Constants.isDeleted.DELETED);
                 role.setDeletedAt(LocalDateTime.now());
                 role.setDeletedBy(userDetails.getId());
                 formSchemaRepository.save(role);

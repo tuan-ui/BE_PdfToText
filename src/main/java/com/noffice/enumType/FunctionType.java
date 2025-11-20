@@ -1,4 +1,4 @@
-package com.noffice.enumType;
+package com.noffice.enumtype;
 
 import java.util.Arrays;
 import java.util.List;
@@ -139,7 +139,7 @@ public enum FunctionType {
 //    UPDATE_SURVEY_CONTENT("Sửa nội dung khảo sát gợi ý"),
 //    DELETE_SURVEY_CONTENT("Xóa nội dung khảo sát gợi ý"),
 //
-//    UPLOAD_VALUATION_FILE("Upload file định giá"),
+//    upload_VALUATION_FILE("Upload file định giá"),
 //    VALUATION_FILE_HISTORY("Danh sách lịch sử file định giá"),
 //    DOWNLOAD_VALUATION_FILE("Tải file định giá"),
 //    DOWNLOAD_SAMPLE_FILE("Tải file mẫu"),

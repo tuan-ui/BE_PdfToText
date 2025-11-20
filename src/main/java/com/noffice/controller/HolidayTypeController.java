@@ -140,12 +140,12 @@ public class HolidayTypeController {
     }
 
     @GetMapping("/LogDetailHolidayType")
-    public ResponseAPI LogDetailHolidayType(@RequestParam String id) {
+    public ResponseAPI getLogDetailHolidayType(@RequestParam String id) {
 
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            holidayTypeService.LogDetailHolidayType(id, userDetails);
+            holidayTypeService.getLogDetailHolidayType(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
             return new ResponseAPI(null, "fail", 400);

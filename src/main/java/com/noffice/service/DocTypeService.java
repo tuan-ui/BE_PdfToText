@@ -3,8 +3,8 @@ package com.noffice.service;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.DocType;
 import com.noffice.entity.User;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.DocTypeRepository;
 import com.noffice.repository.DocumentTemplateDocumentTypesRepository;
@@ -40,7 +40,7 @@ public class DocTypeService {
 				return "error.UnableToDeleteExistingDocTemplate";
 			}
 
-            docType.setIsDeleted(Constants.IS_DELETED.DELETED);
+            docType.setIsDeleted(Constants.isDeleted.DELETED);
             docType.setDeletedBy(user.getId());
             docType.setDeletedAt(LocalDateTime.now());
             DocType savedDocType = docTypeRepository.save(docType);
@@ -64,7 +64,7 @@ public class DocTypeService {
                 if (documentTemplateDocumentTypesRepository.existsDocumentTemplateByDocumentTypeId(id.getId())) {
                     return "error.UnableToDeleteExistingDocTemplate";
                 }
-                docType.setIsDeleted(Constants.IS_DELETED.DELETED);
+                docType.setIsDeleted(Constants.isDeleted.DELETED);
                 docType.setDeletedBy(user.getId());
                 docType.setDeletedAt(LocalDateTime.now());
                 DocType savedDocType = docTypeRepository.save(docType);
@@ -97,17 +97,17 @@ public class DocTypeService {
     }
 
     @Transactional
-    public String saveDocType(DocType DocTypeDTO, Authentication authentication) {
+    public String saveDocType(DocType docTypeDTO, Authentication authentication) {
         User token = (User) authentication.getPrincipal();
-        if (docTypeRepository.findByCode(DocTypeDTO.getDocTypeCode(), token.getPartnerId()) == null) {
+        if (docTypeRepository.findByCode(docTypeDTO.getDocTypeCode(), token.getPartnerId()) == null) {
             DocType DocType = new DocType();
-            DocType.setDocTypeName(DocTypeDTO.getDocTypeName());
-            DocType.setDocTypeCode(DocTypeDTO.getDocTypeCode());
-            DocType.setDocTypeDescription(DocTypeDTO.getDocTypeDescription());
+            DocType.setDocTypeName(docTypeDTO.getDocTypeName());
+            DocType.setDocTypeCode(docTypeDTO.getDocTypeCode());
+            DocType.setDocTypeDescription(docTypeDTO.getDocTypeDescription());
             DocType.setCreateAt(LocalDateTime.now());
             DocType.setCreateBy(token.getId());
-            DocType.setIsActive(DocTypeDTO.getIsActive());
-            DocType.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+            DocType.setIsActive(docTypeDTO.getIsActive());
+            DocType.setIsDeleted(Constants.isDeleted.ACTIVE);
             DocType.setPartnerId(token.getPartnerId());
             DocType savedDocType = docTypeRepository.save(DocType);
             logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_DOCTYPE.getFunction(), "object", savedDocType.getDocTypeName()),
@@ -143,16 +143,16 @@ public class DocTypeService {
         return "";
     }
 
-    public Page<DocType> getListDocType(String searchString, String DocTypeCode, String DocTypeName, String DocTypeDescription,
+    public Page<DocType> getListDocType(String searchString, String docTypeCode, String docTypeName, String docTypeDescription,
                                         Pageable pageable, UUID partnerId) {
-        return docTypeRepository.getDocTypeWithPagination(searchString, DocTypeCode, DocTypeName, DocTypeDescription, partnerId, pageable);
+        return docTypeRepository.getDocTypeWithPagination(searchString, docTypeCode, docTypeName, docTypeDescription, partnerId, pageable);
     }
 
     public List<DocType> getAllDocType(UUID partnerId) {
         return docTypeRepository.getAllDocType(partnerId);
     }
 
-    public void LogDetailDocType(String id, User user) {
+    public void getLogDetailDocType(String id, User user) {
         DocType docType = docTypeRepository.findByDocTypeCode(id);
         logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_DOCTYPE.getFunction(), "object", docType.getDocTypeName()),
                 user.getId(), docType.getId(), user.getPartnerId());

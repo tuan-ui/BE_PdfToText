@@ -6,11 +6,10 @@ import java.util.*;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.Permission;
 import com.noffice.entity.User;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.repository.PermissionsRepository;
 import com.noffice.reponse.ErrorListResponse;
-import com.noffice.repository.RolePermissionsRepository;
 import com.noffice.repository.UserRolesRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -112,7 +111,7 @@ public class RoleService {
 			if (userRolesRepository.existsUserByRoleId(role.getId())) {
 				return "error.RoleAlreadyUseOnUser";
 			}
-			role.setIsDeleted(Constants.IS_DELETED.DELETED);
+			role.setIsDeleted(Constants.isDeleted.DELETED);
 			role.setDeletedAt(LocalDateTime.now());
 			role.setDeletedBy(user.getId());
 			Role savedRole = roleRepository.save(role);
@@ -163,7 +162,7 @@ public class RoleService {
 				if (userRolesRepository.existsUserByRoleId(role.getId())) {
 					return "error.RoleAlreadyUseOnUser";
 				}
-				role.setIsDeleted(Constants.IS_DELETED.DELETED);
+				role.setIsDeleted(Constants.isDeleted.DELETED);
 				role.setDeletedAt(LocalDateTime.now());
 				role.setDeletedBy(user.getId());
 				Role savedRole = roleRepository.save(role);
@@ -178,7 +177,7 @@ public class RoleService {
 	}
 
 
-	public void LogDetailRole(UUID id, User user) {
+	public void getLogDetailRole(UUID id, User user) {
 		Role role = roleRepository.findByRoleId(id)
 				.orElseThrow(() -> new EntityNotFoundException("error.RoleCodeNotExists"));
 		logService.createLog(

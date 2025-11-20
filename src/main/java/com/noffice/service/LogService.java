@@ -7,8 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.noffice.entity.*;
-import com.noffice.enumType.FunctionType;
-import com.noffice.enumType.ActionType;
+import com.noffice.enumtype.FunctionType;
+import com.noffice.enumtype.ActionType;
 import com.noffice.repository.*;
 
 import lombok.RequiredArgsConstructor;

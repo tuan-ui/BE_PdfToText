@@ -159,12 +159,12 @@ public class DomainController {
 	}
 
 	@GetMapping("/LogDetailDomain")
-	public ResponseAPI LogDetailDomain(@RequestParam String id) {
+	public ResponseAPI getLogDetailDomain(@RequestParam String id) {
 
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
-			domainService.LogDetailDomain(id, userDetails);
+			domainService.getLogDetailDomain(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 400);

@@ -1,4 +1,4 @@
-package com.noffice.enumType;
+package com.noffice.enumtype;
 
 
 public enum SigningType {

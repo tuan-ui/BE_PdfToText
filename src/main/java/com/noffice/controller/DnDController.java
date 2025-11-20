@@ -28,12 +28,12 @@ public class DnDController {
     private final DnDService dndService;
 
     @PostMapping("/saveContent")
-    public ResponseEntity<ResponseAPI> saveContent(@RequestBody DnDDTO DnDDTO) {
+    public ResponseEntity<ResponseAPI> saveContent(@RequestBody DnDDTO dnDDTO) {
         try {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            String response = dndService.saveContent(DnDDTO, userDetails);
+            String response = dndService.saveContent(dnDDTO, userDetails);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, "Thành công", 200));
         } catch (Exception e) {
             System.out.println("Error : " + e.getMessage());
@@ -41,12 +41,12 @@ public class DnDController {
         }
     }
     @PostMapping("/publishSchema")
-    public ResponseEntity<ResponseAPI> publishSchema(@RequestBody DnDDTO DnDDTO) {
+    public ResponseEntity<ResponseAPI> publishSchema(@RequestBody DnDDTO dnDDTO) {
         try {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            String response = dndService.publishSchema(DnDDTO, userDetails);
+            String response = dndService.publishSchema(dnDDTO, userDetails);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, "Thành công", 200));
         } catch (Exception e) {
             System.out.println("Error : " + e.getMessage());

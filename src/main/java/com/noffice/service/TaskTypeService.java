@@ -3,8 +3,8 @@ package com.noffice.service;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.TaskType;
 import com.noffice.entity.User;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.TaskTypeRepository;
 import com.noffice.ultils.Constants;
@@ -34,7 +34,7 @@ public class TaskTypeService {
         if (taskType.getIsDeleted())
             return "error.TaskTypeNotExists";
         else {
-            taskType.setIsDeleted(Constants.IS_DELETED.DELETED);
+            taskType.setIsDeleted(Constants.isDeleted.DELETED);
             taskType.setDeletedBy(user.getId());
             taskType.setDeletedAt(LocalDateTime.now());
             TaskType savedTaskType = taskTypeRepository.save(taskType);
@@ -55,7 +55,7 @@ public class TaskTypeService {
             if (taskType.getIsDeleted()) {
                 return "error.TaskTypeNotExists";
             } else {
-                taskType.setIsDeleted(Constants.IS_DELETED.DELETED);
+                taskType.setIsDeleted(Constants.isDeleted.DELETED);
                 taskType.setDeletedBy(user.getId());
                 taskType.setDeletedAt(LocalDateTime.now());
                 TaskType savedTaskType = taskTypeRepository.save(taskType);
@@ -100,7 +100,7 @@ public class TaskTypeService {
             taskType.setCreateAt(LocalDateTime.now());
             taskType.setCreateBy(token.getId());
             taskType.setIsActive(taskTypeDTO.getIsActive());
-            taskType.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+            taskType.setIsDeleted(Constants.isDeleted.ACTIVE);
             taskType.setPartnerId(token.getPartnerId());
             TaskType savedTaskType = taskTypeRepository.save(taskType);
             logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_TASKTYPE.getFunction(), "object", savedTaskType.getTaskTypeName()),
@@ -137,16 +137,16 @@ public class TaskTypeService {
         return "";
     }
 
-    public Page<TaskType> getListTaskType(String searchString, String TaskTypeCode, String TaskTypeName, String TaskTypeDescription,
+    public Page<TaskType> getListTaskType(String searchString, String taskTypeCode, String taskTypeName, String taskTypeDescription,
                                         Pageable pageable, UUID partnerId) {
-        return taskTypeRepository.getTaskTypeWithPagination(searchString, TaskTypeCode, TaskTypeName, TaskTypeDescription, partnerId, pageable);
+        return taskTypeRepository.getTaskTypeWithPagination(searchString, taskTypeCode, taskTypeName, taskTypeDescription, partnerId, pageable);
     }
 
     public List<TaskType> getAllTaskType(UUID partnerId) {
         return taskTypeRepository.getAllTaskType(partnerId);
     }
 
-    public void LogDetailTaskType(String id, User user) {
+    public void getLogDetailTaskType(String id, User user) {
         TaskType taskType = taskTypeRepository.findByTaskTypeCode(id);
         logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_TASKTYPE.getFunction(), "object", taskType.getTaskTypeName()),
                 user.getId(), taskType.getId(), user.getPartnerId());

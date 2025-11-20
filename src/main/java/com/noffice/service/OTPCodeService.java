@@ -15,7 +15,7 @@ public class OTPCodeService {
 		otpCodeRepository.save(log);
 	}
 
-	public String getOTP(String userId, int type_send) {
-		return otpCodeRepository.getOTPCodebyTypeSend(type_send, userId);
+	public String getOTP(String userId, int typeSend) {
+		return otpCodeRepository.getOTPCodebyTypeSend(typeSend, userId);
 	}
 }

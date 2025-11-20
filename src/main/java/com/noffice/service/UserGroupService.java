@@ -2,8 +2,8 @@ package com.noffice.service;
 
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.*;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.UserGroupResponse;
 import com.noffice.repository.UserGroupRepository;
@@ -43,7 +43,7 @@ public class UserGroupService {
             userGroup = new UserGroup();
             userGroup.setCreateBy(userCreate.getId());
             userGroup.setPartnerId(userCreate.getPartnerId());
-            userGroup.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+            userGroup.setIsDeleted(Constants.isDeleted.ACTIVE);
         }
         userGroup.setGroupName(groupName);
         userGroup.setGroupCode(groupCode);
@@ -142,7 +142,7 @@ public class UserGroupService {
         if(userGroup.getIsDeleted())
             return	"error.UserGroupDoesNotExist";
         else {
-            userGroup.setIsDeleted(Constants.IS_DELETED.DELETED);
+            userGroup.setIsDeleted(Constants.isDeleted.DELETED);
             userGroup.setDeletedBy(userDetails.getId());
             userGroupRepository.save(userGroup);
             userGroupsRepository.deleteByGroupId(id);

@@ -26,11 +26,11 @@ import jakarta.annotation.PostConstruct;
 @RequiredArgsConstructor
 public class JwtService {
 	@Value("${jwt.secret}")
-	private String SECRET_KEY;
+	private String secretKey;
 	private final ConfigRepository configRepository;
 	private static ConfigRepository configRepositoryInstance;
     private final RolePermissionsRepository rolePermissionsRepository;
-	private final long IDLE_TIMEOUT_MS = TimeUnit.MINUTES.toMillis(30);
+	private final long timeOutMS = TimeUnit.MINUTES.toMillis(30);
 	@PostConstruct
 	public void init() {
 		configRepositoryInstance = configRepository;
@@ -40,7 +40,7 @@ public class JwtService {
 	    String expired = configRepositoryInstance.findByKey("expired").getValue();
 	    String role = user.getIsAdmin() == 1 ? "admin" : "user";
 		long now = System.currentTimeMillis();
-		long idleExp = now + IDLE_TIMEOUT_MS;
+		long idleExp = now + timeOutMS;
 		long absoluteExp = now + 12 * 60 * 60 * 1000; // 12 giờ
 
 	    JwtBuilder builder = Jwts.builder()
@@ -64,7 +64,7 @@ public class JwtService {
 	}
 
 	private SecretKey getSignKey() {
-		byte[] secretBytes = Decoders.BASE64URL.decode(SECRET_KEY);
+		byte[] secretBytes = Decoders.BASE64URL.decode(secretKey);
 		return Keys.hmacShaKeyFor(secretBytes);
 	}
 
@@ -128,7 +128,7 @@ public class JwtService {
 	public Map<String, Object> updateClaim(String token, String key, Object value) {
 		Claims oldClaims = extractAllClaims(token);
 		long now = System.currentTimeMillis();
-		long newIdleExp = now + IDLE_TIMEOUT_MS;
+		long newIdleExp = now + timeOutMS;
 
 		String newToken = Jwts.builder()
 				.claims(oldClaims)

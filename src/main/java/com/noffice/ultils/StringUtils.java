@@ -199,7 +199,8 @@ public final class StringUtils {
 		if(expression.contains(" or ")) {
 			String[] parts = expression.split(" or ");
 			if(parts.length == 2) {
-				String expressionLeft = parts[0], expressionRight = parts[1];
+				String expressionLeft = parts[0];
+				String expressionRight = parts[1];
 				Boolean leftResult = executeExpression(expressionLeft, number);
 				Boolean rightResult = executeExpression(expressionRight, number);
 				return leftResult || rightResult;
@@ -208,7 +209,8 @@ public final class StringUtils {
 		else if(expression.contains(" and ")) {
 			String[] parts = expression.split(" and ");
 			if(parts.length == 2) {
-				String expressionLeft = parts[0], expressionRight = parts[1];
+				String expressionLeft = parts[0];
+				String expressionRight = parts[1];
 				Boolean leftResult = executeExpression(expressionLeft, number);
 				Boolean rightResult = executeExpression(expressionRight, number);
 				return leftResult && rightResult;
@@ -222,7 +224,8 @@ public final class StringUtils {
 		if(expression.contains(" or ")) {
 			String[] parts = expression.split(" or ");
 			if(parts.length == 2) {
-				String expressionLeft = parts[0], expressionRight = parts[1];
+				String expressionLeft = parts[0];
+				String expressionRight = parts[1];
 				Boolean leftResult = executeExpression(expressionLeft, value);
 				Boolean rightResult = executeExpression(expressionRight, value);
 				return leftResult || rightResult;
@@ -231,7 +234,8 @@ public final class StringUtils {
 		else if(expression.contains(" and ")) {
 			String[] parts = expression.split(" and ");
 			if(parts.length == 2) {
-				String expressionLeft = parts[0], expressionRight = parts[1];
+				String expressionLeft = parts[0];
+				String expressionRight = parts[1];
 				Boolean leftResult = executeExpression(expressionLeft, value);
 				Boolean rightResult = executeExpression(expressionRight, value);
 				return leftResult && rightResult;
@@ -257,7 +261,7 @@ public final class StringUtils {
 
 		if (left != null && right != null) return left && right;
 		if (left != null) return left;
-		return right != null ? right : false;
+		return Boolean.TRUE.equals(right);
 	}
 
 	public static boolean executeExpression(String expression, String str) {
@@ -277,7 +281,7 @@ public final class StringUtils {
 
 		if (left != null && right != null) return left && right;
 		if (left != null) return left;
-		return right != null ? right : false;
+		return Boolean.TRUE.equals(right);
 	}
 
 	private static Boolean evaluateComparison(String expr, int x, boolean isLeft) {

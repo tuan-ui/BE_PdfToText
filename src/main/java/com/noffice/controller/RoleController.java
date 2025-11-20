@@ -245,12 +245,12 @@ public class RoleController {
 		}
 	}
 	@GetMapping("/LogDetailRole")
-	public ResponseAPI LogDetailRole(@RequestParam UUID id) {
+	public ResponseAPI getLogDetailRole(@RequestParam UUID id) {
 
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
-			roleService.LogDetailRole(id, userDetails);
+			roleService.getLogDetailRole(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 400);

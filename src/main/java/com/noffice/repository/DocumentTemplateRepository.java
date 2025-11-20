@@ -24,39 +24,39 @@ public interface DocumentTemplateRepository extends JpaRepository<DocumentTempla
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.documentTemplateDescription AS string)))
 			LIKE CONCAT('%', LOWER(:searchString), '%')
 					)
-			AND (COALESCE(:DocumentTemplateCode, '') = ''
+			AND (COALESCE(:documentTemplateCode, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.documentTemplateCode AS string)))
-			LIKE CONCAT('%', LOWER(:DocumentTemplateCode), '%')
+			LIKE CONCAT('%', LOWER(:documentTemplateCode), '%')
 					)
-			AND (COALESCE(:DocumentTemplateName, '') = ''
+			AND (COALESCE(:documentTemplateName, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.documentTemplateName AS string)))
-			LIKE CONCAT('%', LOWER(:DocumentTemplateName), '%')
+			LIKE CONCAT('%', LOWER(:documentTemplateName), '%')
 					)
-			AND (COALESCE(:DocumentTemplateDescription, '') = ''
+			AND (COALESCE(:documentTemplateDescription, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.documentTemplateDescription AS string)))
-			LIKE CONCAT('%', LOWER(:DocumentTemplateDescription), '%')
+			LIKE CONCAT('%', LOWER(:documentTemplateDescription), '%')
 					)
 			AND d.partnerId = :partnerId
 			ORDER BY d.createAt DESC
 			""")
 	Page<DocumentTemplate> getDocumentTemplateWithPagination(
 			@Param("searchString") String searchString,
-			@Param("DocumentTemplateCode") String DocumentTemplateCode,
-			@Param("DocumentTemplateName") String DocumentTemplateName,
-			@Param("DocumentTemplateDescription") String DocumentTemplateDescription,
+			@Param("documentTemplateCode") String documentTemplateCode,
+			@Param("documentTemplateName") String documentTemplateName,
+			@Param("documentTemplateDescription") String documentTemplateDescription,
 			@Param("partnerId") UUID partnerId,
 			Pageable pageable
 	);
 
 	@Query(value = "FROM DocumentTemplate d " +
-			"WHERE(:DocumentTemplateCode IS NULL OR LOWER(d.documentTemplateCode) = LOWER(:DocumentTemplateCode)) " +
+			"WHERE(:documentTemplateCode IS NULL OR LOWER(d.documentTemplateCode) = LOWER(:documentTemplateCode)) " +
 			"AND d.isDeleted = false AND d.partnerId = :partnerId ")
-	DocumentTemplate findByCode(@Param("DocumentTemplateCode") String DocumentTemplateCode, @Param("partnerId") UUID partnerId);
+	DocumentTemplate findByCode(@Param("documentTemplateCode") String documentTemplateCode, @Param("partnerId") UUID partnerId);
 
 	@Query(value = "FROM DocumentTemplate d " +
-			"WHERE d.documentTemplateCode = :DocumentTemplateCode " +
+			"WHERE d.documentTemplateCode = :documentTemplateCode " +
 			"AND d.isDeleted = false ")
-	DocumentTemplate findByDocumentTemplateCode(@Param("DocumentTemplateCode") String DocumentTemplateCode);
+	DocumentTemplate findByDocumentTemplateCode(@Param("documentTemplateCode") String documentTemplateCode);
 
 	@Query("FROM DocumentTemplate d WHERE d.partnerId = :partnerId  AND d.isDeleted = false AND d.isActive = true")
 	List<DocumentTemplate> getAllDocumentTemplate(UUID partnerId);

@@ -3,15 +3,14 @@ package com.noffice.service;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.entity.HolidayType;
 import com.noffice.entity.User;
-import com.noffice.enumType.ActionType;
-import com.noffice.enumType.FunctionType;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.HolidayTypeRepository;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,7 @@ public class HolidayTypeService {
             if (holidayType.getIsDeleted())
                 return "error.HolidayTypeNotExists";
             else {
-                holidayType.setIsDeleted(Constants.IS_DELETED.DELETED);
+                holidayType.setIsDeleted(Constants.isDeleted.DELETED);
                 holidayType.setDeletedAt(LocalDateTime.now());
                 holidayType.setDeletedBy(user.getId());
                 holidayTypeRepository.save(holidayType);
@@ -57,7 +56,7 @@ public class HolidayTypeService {
             if (holidayType.getIsDeleted()) {
                 return "error.HolidayTypeNotExists";
             } else {
-                holidayType.setIsDeleted(Constants.IS_DELETED.DELETED);
+                holidayType.setIsDeleted(Constants.isDeleted.DELETED);
                 holidayType.setDeletedAt(LocalDateTime.now());
                 holidayType.setDeletedBy(user.getId());
                 holidayTypeRepository.save(holidayType);
@@ -102,7 +101,7 @@ public class HolidayTypeService {
             holidayType.setCreateAt(LocalDateTime.now());
             holidayType.setCreateBy(token.getId());
             holidayType.setIsActive(true);
-            holidayType.setIsDeleted(Constants.IS_DELETED.ACTIVE);
+            holidayType.setIsDeleted(Constants.isDeleted.ACTIVE);
             holidayType.setPartnerId(token.getPartnerId());
             holidayTypeRepository.save(holidayType);
             logService.createLog(ActionType.CREATE.getAction(),
@@ -151,7 +150,7 @@ public class HolidayTypeService {
         return holidayTypeRepository.getAllHolidayType(partnerId);
     }
 
-    public void LogDetailHolidayType(String holidayTypeCode, User user) {
+    public void getLogDetailHolidayType(String holidayTypeCode, User user) {
         HolidayType domain = holidayTypeRepository.getHolidayTypeByCode(holidayTypeCode);
         logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(),"action",
                         FunctionType.VIEW_DETAIL_HOLIDAYTYPE.getFunction(), "object", domain.getHolidayTypeName()),

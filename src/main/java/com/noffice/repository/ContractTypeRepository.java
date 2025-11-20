@@ -24,39 +24,39 @@ public interface ContractTypeRepository extends JpaRepository<ContractType, UUID
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.contractTypeDescription AS string)))
 			LIKE CONCAT('%', LOWER(:searchString), '%')
 					)
-			AND (COALESCE(:ContractTypeCode, '') = ''
+			AND (COALESCE(:contractTypeCode, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.contractTypeCode AS string)))
-			LIKE CONCAT('%', LOWER(:ContractTypeCode), '%')
+			LIKE CONCAT('%', LOWER(:contractTypeCode), '%')
 					)
-			AND (COALESCE(:ContractTypeName, '') = ''
+			AND (COALESCE(:contractTypeName, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.contractTypeName AS string)))
-			LIKE CONCAT('%', LOWER(:ContractTypeName), '%')
+			LIKE CONCAT('%', LOWER(:contractTypeName), '%')
 					)
-			AND (COALESCE(:ContractTypeDescription, '') = ''
+			AND (COALESCE(:contractTypeDescription, '') = ''
 			OR LOWER(FUNCTION('convert_to_unsign', CAST(d.contractTypeDescription AS string)))
-			LIKE CONCAT('%', LOWER(:ContractTypeDescription), '%')
+			LIKE CONCAT('%', LOWER(:contractTypeDescription), '%')
 					)
 			AND d.partnerId = :partnerId
 			ORDER BY d.createAt DESC
 			""")
 	Page<ContractType> getContractTypeWithPagination(
 			@Param("searchString") String searchString,
-			@Param("ContractTypeCode") String ContractTypeCode,
-			@Param("ContractTypeName") String ContractTypeName,
-			@Param("ContractTypeDescription") String ContractTypeDescription,
+			@Param("contractTypeCode") String contractTypeCode,
+			@Param("contractTypeName") String contractTypeName,
+			@Param("contractTypeDescription") String contractTypeDescription,
 			@Param("partnerId") UUID partnerId,
 			Pageable pageable
 	);
 
 	@Query(value = "FROM ContractType d " +
-			"WHERE(:ContractTypeCode IS NULL OR LOWER(d.contractTypeCode) = LOWER(:ContractTypeCode)) " +
+			"WHERE(:contractTypeCode IS NULL OR LOWER(d.contractTypeCode) = LOWER(:contractTypeCode)) " +
 			"AND d.isDeleted = false AND d.partnerId = :partnerId ")
-	ContractType findByCode(@Param("ContractTypeCode") String ContractTypeCode, @Param("partnerId") UUID partnerId);
+	ContractType findByCode(@Param("contractTypeCode") String contractTypeCode, @Param("partnerId") UUID partnerId);
 
 	@Query(value = "FROM ContractType d " +
-			"WHERE d.contractTypeCode = :ContractTypeCode " +
+			"WHERE d.contractTypeCode = :contractTypeCode " +
 			"AND d.isDeleted = false ")
-	ContractType findByContractTypeCode(@Param("ContractTypeCode") String ContractTypeCode);
+	ContractType findByContractTypeCode(@Param("contractTypeCode") String contractTypeCode);
 
 	@Query("FROM ContractType d WHERE d.partnerId = :partnerId  AND d.isDeleted = false AND d.isActive = true")
 	List<ContractType> getAllContractType(UUID partnerId);
