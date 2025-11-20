@@ -1,33 +1,25 @@
-name: SonarQube Local Analysis
-
-# Khi nào chạy
+name: SonarCloud Scan
 on:
   push:
-    branches:
-      - build-SONAR          # push lên nhánh này là tự chạy
-      - main                  # tùy bạn thêm nhánh khác nếu muốn
+    branches: [ main, develop, feature/*, build-SONAR ]
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
-  sonar:
-    name: Analyze with Local SonarQube
+  sonarcloud:
+    name: SonarCloud
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Checkout code đầy đủ lịch sử (bắt buộc với Sonar)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # 2. Setup Java 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
-          distribution: zulu
+          distribution: 'zulu'
 
-      # 3. Cache Maven để build nhanh hơn
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -35,27 +27,11 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # 4. Build + Gửi kết quả lên SonarQube local của bạn
-      - name: Build and Analyze with SonarQube
+      - name: Build and analyze
         env:
-          # Token bạn tạo trong SonarQube local (admin → My Account → Security)
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-          # URL SonarQube local của bạn
-          # - Nếu chạy trên máy cá nhân + dùng ngrok → thay bằng link ngrok
-          # - Nếu để trên VPS/server công ty → thay bằng IP hoặc domain thật
-          SONAR_HOST_URL:  https://stellar-uncordial-erline.ngrok-free.dev
         run: |
-
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=nsoftBE \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.qualitygate.wait=true \
-            -Dsonar.scm.revision=${{ github.sha }}
-
-      # 5. (Tùy chọn) Hiển thị link kết quả đẹp hơn trong GitHub
-      - name: Show SonarQube Result Link
-        if: always()
-        run: |
-          echo "Xem kết quả phân tích tại: $SONAR_HOST_URL/dashboard?id=nsoftBE"
+            -Dsonar.organization=tuan-ui \
+            -Dsonar.host.url=https://sonarcloud.io
