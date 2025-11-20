@@ -12,27 +12,32 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.sql.DataSource;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Base64;
 
 @Configuration
 public class DataSourceConfig {
+
     @Value("${spring.datasource.url}")
-    private String url;
+    private String encryptedUrl;
+
     @Value("${spring.datasource.username}")
-    private String username;
+    private String encryptedUsername;
+
     @Value("${spring.datasource.password}")
-    private String password;
-    private static String AES_KEY= AppConfig.get("AES_KEY");
+    private String encryptedPassword;
+
+    private static final String AES_KEY = AppConfig.get("AES_KEY");
     private static final byte[] KEY_BYTES = AES_KEY.getBytes(StandardCharsets.UTF_8);
+
+    private static final int GCM_IV_LENGTH = 12;
+    private static final int GCM_TAG_LENGTH = 128;
+
     @Bean
-    public DataSource dataSource() {
-        try {
-            url=decrypt(url);
-            username=decrypt(username);
-            password=decrypt(password);
-        } catch (Exception e) {
-            System.out.println("Lỗi connect database");
-        }
+    public DataSource dataSource() throws EncryptionException {
+        String url = decrypt(encryptedUrl);
+        String username = decrypt(encryptedUsername);
+        String password = decrypt(encryptedPassword);
 
         return DataSourceBuilder.create()
                 .driverClassName("org.postgresql.Driver")
@@ -41,65 +46,70 @@ public class DataSourceConfig {
                 .password(password)
                 .build();
     }
+
+    /**
+     * Giải mã bằng AES/GCM/NoPadding – chuẩn bảo mật 2025
+     * Chỉ dùng cho dữ liệu được mã hóa bằng hàm encrypt() dưới đây
+     */
     public static String decrypt(String encryptedData) throws EncryptionException {
         if (encryptedData == null || encryptedData.isEmpty()) {
-            return encryptedData;
+            throw new EncryptionException("Dữ liệu mã hóa không được để trống");
         }
 
-        byte[] data = Base64.getDecoder().decode(encryptedData);
+        byte[] data = Base64.getDecoder().decode(encryptedData.trim());
 
-        // Ưu tiên thử AES/GCM (dữ liệu mới)
-        if (data.length > 12) {
-            try {
-                byte[] iv = new byte[12];
-                System.arraycopy(data, 0, iv, 0, 12);
-
-                byte[] cipherText = new byte[data.length - 12];
-                System.arraycopy(data, 12, cipherText, 0, cipherText.length);
-
-                Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-                GCMParameterSpec spec = new GCMParameterSpec(128, iv);
-                SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
-
-                cipher.init(Cipher.DECRYPT_MODE, keySpec, spec);
-                byte[] decrypted = cipher.doFinal(cipherText);
-                return new String(decrypted, StandardCharsets.UTF_8);
-
-            } catch (Exception e) {
-                System.out.println("GCM failed, trying legacy ECB mode...");
-            }
+        if (data.length <= GCM_IV_LENGTH) {
+            throw new EncryptionException("Dữ liệu mã hóa không hợp lệ (quá ngắn)");
         }
 
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
-            cipher.init(Cipher.DECRYPT_MODE, keySpec);
+            // Tách IV (12 byte đầu)
+            byte[] iv = new byte[GCM_IV_LENGTH];
+            System.arraycopy(data, 0, iv, 0, GCM_IV_LENGTH);
 
-            byte[] decrypted = cipher.doFinal(data);
-            return new String(decrypted, StandardCharsets.UTF_8).trim();
+            // Phần còn lại là ciphertext + tag
+            byte[] cipherText = new byte[data.length - GCM_IV_LENGTH];
+            System.arraycopy(data, GCM_IV_LENGTH, cipherText, 0, cipherText.length);
+
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+            SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+
+            cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
+            byte[] decrypted = cipher.doFinal(cipherText);
+
+            return new String(decrypted, StandardCharsets.UTF_8);
 
         } catch (Exception e) {
-            // Bắt hết lỗi và ném ra exception riêng của mình
-            throw new EncryptionException("Không thể giải mã dữ liệu. Dữ liệu có thể bị hỏng hoặc key sai.", e);
+            throw new EncryptionException("Giải mã thất bại! Kiểm tra AES_KEY hoặc dữ liệu đã bị hỏng.", e);
         }
     }
 
-    public static String encrypt(String plainText) throws Exception {
-        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+    public static String encrypt(String plainText) throws EncryptionException {
+        if (plainText == null || plainText.isEmpty()) {
+            throw new EncryptionException("Dữ liệu cần mã hóa không được để trống");
+        }
 
-        byte[] iv = new byte[12];
-        new java.security.SecureRandom().nextBytes(iv);
+        try {
+            Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 
-        GCMParameterSpec spec = new GCMParameterSpec(128, iv);
-        SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
-        cipher.init(Cipher.ENCRYPT_MODE, keySpec, spec);
+            byte[] iv = new byte[GCM_IV_LENGTH];
+            new SecureRandom().nextBytes(iv);
 
-        byte[] cipherText = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
+            GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
+            SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
 
-        byte[] result = new byte[iv.length + cipherText.length];
-        System.arraycopy(iv, 0, result, 0, iv.length);
-        System.arraycopy(cipherText, 0, result, iv.length, cipherText.length);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
+            byte[] cipherText = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));
 
-        return Base64.getEncoder().encodeToString(result);
+            byte[] result = new byte[iv.length + cipherText.length];
+            System.arraycopy(iv, 0, result, 0, iv.length);
+            System.arraycopy(cipherText, 0, result, iv.length, cipherText.length);
+
+            return Base64.getEncoder().encodeToString(result);
+
+        } catch (Exception e) {
+            throw new EncryptionException("Mã hóa thất bại!", e);
+        }
     }
 }
