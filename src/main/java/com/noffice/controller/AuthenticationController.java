@@ -565,18 +565,17 @@ public class AuthenticationController {
 			return false;
 		}
 	}
-//
-//	@PostMapping("/logLogin")
-//	public ResponseEntity<ResponseAPI> logLogin(@RequestBody Long roleUserDept, HttpServletRequest request) {
-//		try {
-//			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//			User userDetails = (User) authentication.getPrincipal();
-//			logService.save(roleUserDept, FunctionType.LOGIN.toString(), ActionType.LOGIN.toString(),userDetails.getFullName(), ActionType.LOGIN.getAction() +" "+ userDetails.getFullName() );
-//			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thành công", 200));
-//		} catch (Exception e) {
-//			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
-//		}
-//	}
+	@PostMapping("/forgetPassword")
+	public ResponseEntity<ResponseAPI> forgetPassword(@RequestBody ForgotPasswordRequest request) {
+		try {
+			String response = authenticationService.processForgotPassword(request.getUsername(), request.getPhone());
+			return ResponseEntity.status(HttpStatus.OK)
+					.body(new ResponseAPI(response, "Thành công", 200));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
+		}
+	}
 
 
 }

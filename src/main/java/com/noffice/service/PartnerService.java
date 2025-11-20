@@ -90,16 +90,13 @@ public class PartnerService {
 		if(partner.getIsDeleted())
 			return	"error.PartnerDoesNotExist";
 		else {
-			if (userRepository.existsUserByPartnerId(partnerId) != 0) {
-				return "error.PartnerAlreadyUseOnUser";
-			}
-				partner.setIsActive(!partner.getIsActive());
-				partner.setUpdateAt(LocalDateTime.now());
-				partner.setUpdateBy(userDetails.getId());
-				partnerRepository.save(partner);
-				logService.createLog(partner.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-						Map.of("actor", userDetails.getFullName(), "action", partner.getIsActive() ? FunctionType.UNLOCK_PARTNER.getFunction() : FunctionType.LOCK_PARTNER.getFunction(), "object", partner.getPartnerName()),
-						userDetails.getId(), partner.getId(), userDetails.getPartnerId());
+			partner.setIsActive(!partner.getIsActive());
+			partner.setUpdateAt(LocalDateTime.now());
+			partner.setUpdateBy(userDetails.getId());
+			partnerRepository.save(partner);
+			logService.createLog(partner.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+					Map.of("actor", userDetails.getFullName(), "action", partner.getIsActive() ? FunctionType.UNLOCK_PARTNER.getFunction() : FunctionType.LOCK_PARTNER.getFunction(), "object", partner.getPartnerName()),
+					userDetails.getId(), partner.getId(), userDetails.getPartnerId());
 		}
 			return "";
 	}

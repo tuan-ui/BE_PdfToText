@@ -1,9 +1,6 @@
 package com.noffice.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 
@@ -70,7 +67,7 @@ public class JwtService {
 		return Keys.hmacShaKeyFor(secretBytes);
 	}
 
-	private Claims extractAllClaims(String token) {
+	public Claims extractAllClaims(String token) {
 		return Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token).getPayload();
 
 	}
@@ -148,6 +145,19 @@ public class JwtService {
 		result.put("token", newToken);
 		result.put("idleExpire", newIdleExp);
 		return result;
+	}
+
+	public String generateWopiToken(UUID userId, UUID fileId, String mode, String fullName) {
+		long now = System.currentTimeMillis();
+		return Jwts.builder()
+				.claim("user_id", userId.toString())
+				.claim("fileId", fileId.toString())
+				.claim("mode", mode)
+				.claim("fullName", fullName)
+				.issuedAt(new Date(now))
+				.expiration(new Date(now + 30*60*1000))
+				.signWith(getSignKey())
+				.compact();
 	}
 
 

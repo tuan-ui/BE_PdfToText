@@ -7,6 +7,7 @@ import com.noffice.enumType.ActionType;
 import com.noffice.enumType.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.DocTypeRepository;
+import com.noffice.repository.DocumentTemplateDocumentTypesRepository;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,8 @@ public class DocTypeService {
 
     @Autowired
     private LogService logService;
+    @Autowired
+    private DocumentTemplateDocumentTypesRepository documentTemplateDocumentTypesRepository;
 
     @Transactional
     public String deleteDocType(UUID id, User user, Long version) {
@@ -36,10 +39,9 @@ public class DocTypeService {
         if (docType.getIsDeleted())
             return "error.DocTypeNotExists";
         else {
-//			Long countChild = docTypeRepository.countChildDocTypes(DocType.getDocTypeId(), DocType.getPartnerId());
-//			if (countChild > 0) {
-//				return "error.UnableToDeleteExistingUnitOfSubordinateDocType";
-//			}
+			if (documentTemplateDocumentTypesRepository.existsDocumentTemplateByDocumentTypeId(id)) {
+				return "error.UnableToDeleteExistingDocTemplate";
+			}
 
             docType.setIsDeleted(Constants.IS_DELETED.DELETED);
             docType.setDeletedBy(user.getId());
@@ -62,6 +64,9 @@ public class DocTypeService {
             if (docType.getIsDeleted()) {
                 return "error.DocTypeNotExists";
             } else {
+                if (documentTemplateDocumentTypesRepository.existsDocumentTemplateByDocumentTypeId(id.getId())) {
+                    return "error.UnableToDeleteExistingDocTemplate";
+                }
                 docType.setIsDeleted(Constants.IS_DELETED.DELETED);
                 docType.setDeletedBy(user.getId());
                 docType.setDeletedAt(LocalDateTime.now());
@@ -84,7 +89,6 @@ public class DocTypeService {
         else {
             Boolean newStatus = !docType.getIsActive();
             docType.setIsActive(newStatus);
-
             docType.setUpdateBy(user.getId());
             docType.setUpdateAt(LocalDateTime.now());
             DocType savedDocType = docTypeRepository.save(docType);

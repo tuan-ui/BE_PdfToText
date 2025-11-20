@@ -117,7 +117,7 @@ public class PartnerController {
     }
 
     @GetMapping("/lock")
-    public Response lockPartner(@RequestParam(value = "id") UUID partner,
+    public Response lockPartner(@RequestParam(value = "partner") UUID partner,
                                 @RequestParam(value = "version") Long version) {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

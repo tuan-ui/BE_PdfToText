@@ -175,7 +175,7 @@ public class UserController {
     public ResponseAPI updateUser(
             @RequestParam("userName") String username,
             @RequestParam("fullName") String fullName,
-            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+            @RequestParam(value = "phone", required = false) String phone,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam("identifyCode") String identifyCode,
             @RequestParam("userCode") String userCode,
@@ -195,7 +195,7 @@ public class UserController {
         UserCreateDTO user = new UserCreateDTO();
         user.setUsername(username);
         user.setFullname(fullName);
-        user.setPhoneNumber(phoneNumber);
+        user.setPhone(phone);
         user.setEmail(email);
         user.setIdentifyCode(identifyCode);
         user.setPartnerId(userDetails.getPartnerId());
@@ -231,7 +231,7 @@ public class UserController {
             if (!isEmpty(user.getEmail()) && !isValidEmail(user.getEmail())) {
                 return new ResponseAPI(null, "error.InvalidEmail", 400);
             }
-            if (!isEmpty(user.getPhoneNumber()) && !isValidPhoneNumber(user.getPhoneNumber())) {
+            if (!isEmpty(user.getPhone()) && !isValidPhoneNumber(user.getPhone())) {
                 return new ResponseAPI(null, "error.InvalidPhoneNumber", 400);
             }
             if (!isEmpty(birthDayStr) && !isValidBirthday(user.getBirthDay())) {
@@ -358,7 +358,7 @@ public class UserController {
     public ResponseAPI createUser(
             @RequestParam("userName") String username,
             @RequestParam("fullName") String fullname,
-            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+            @RequestParam(value = "phone", required = false) String phone,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam("identifyCode") String identifyCode,
             @RequestParam("password") String password,
@@ -376,7 +376,7 @@ public class UserController {
     	UserCreateDTO user = new UserCreateDTO();
         user.setUsername(username);
         user.setFullname(fullname);
-        user.setPhoneNumber(phoneNumber);
+        user.setPhone(phone);
         user.setEmail(email);
         user.setIdentifyCode(identifyCode);
         user.setPassword(password);
@@ -413,7 +413,7 @@ public class UserController {
             if (!isEmpty(user.getEmail()) && !isValidEmail(user.getEmail())) {
                 return new ResponseAPI(null, "error.InvalidEmail", 400);
             }
-            if (!isEmpty(user.getPhoneNumber()) && !isValidPhoneNumber(user.getPhoneNumber())) {
+            if (!isEmpty(user.getPhone()) && !isValidPhoneNumber(user.getPhone())) {
                 return new ResponseAPI(null, "error.InvalidPhoneNumber", 400);
             }
             if (!isEmpty(birthDayStr) && !isValidBirthday(user.getBirthDay())) {

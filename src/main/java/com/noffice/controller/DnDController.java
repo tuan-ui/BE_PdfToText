@@ -59,7 +59,7 @@ public class DnDController {
 //            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //            User userDetails = (User) authentication.getPrincipal();
             FormSchema response = dndService.getContent(id);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response.getFormContent(), "Thành công", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response != null ?response.getFormContent() : null, "Thành công", 200));
         } catch (Exception e) {
             System.out.println("Error : " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));

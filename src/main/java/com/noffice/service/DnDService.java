@@ -10,6 +10,7 @@ import com.noffice.repository.FormDataRepository;
 import com.noffice.repository.FormSchemaRepository;
 import com.noffice.ultils.Constants;
 import com.noffice.ultils.FormParser;
+import com.noffice.ultils.UUIDUtil;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,23 @@ public class DnDService {
     private FormDataRepository formDataRepository;
     public String publishSchema(DnDDTO DnDDTO, User userDetails){
         try {
-            FormSchema formSchema = new FormSchema();
-            formSchema.setFormCode(DnDDTO.getId());
+            FormSchema formSchema;
+            String id = DnDDTO.getId();
+
+            if(UUIDUtil.isUUID(id))
+                formSchema = formSchemaRepository.getFormSchemaByTemplateID(UUID.fromString(id));
+            else
+                formSchema =  formSchemaRepository.getFormSchema(id);
+            if(formSchema == null)
+                formSchema = new FormSchema();
+
+            if (UUIDUtil.isUUID(id)) {
+                formSchema.setDocTemplateId(UUID.fromString(id));
+                formSchema.setFormCode(null);
+            } else {
+                formSchema.setFormCode(id);
+                formSchema.setDocTemplateId(null);
+            }
             if (DnDDTO.getContent().has("title")) {
                 formSchema.setFormName(DnDDTO.getContent().get("title").asText());
             }
@@ -53,7 +69,10 @@ public class DnDService {
 
     public FormSchema getContent(String id){
         try {
-            return formSchemaRepository.getFormSchema(id);
+            if(UUIDUtil.isUUID(id))
+                return formSchemaRepository.getFormSchemaByTemplateID(UUID.fromString(id));
+            else
+                return formSchemaRepository.getFormSchema(id);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

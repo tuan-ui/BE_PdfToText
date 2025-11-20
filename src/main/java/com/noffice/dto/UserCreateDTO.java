@@ -20,7 +20,7 @@ import lombok.Setter;
 public class UserCreateDTO {
     private String username;
     private String fullname;
-    private String phoneNumber;
+    private String phone;
     private String email;
     private String identifyCode;
     private String password;

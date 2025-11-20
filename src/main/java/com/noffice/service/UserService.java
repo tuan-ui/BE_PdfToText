@@ -217,7 +217,7 @@ public class UserService {
     private User mapToUserTest(UserCreateDTO userCreateDTO, String profileImagePath, String signatureImagePath) {
         User user = new User();
         user.setFullName(userCreateDTO.getFullname());
-        user.setPhone(userCreateDTO.getPhoneNumber() != null && !userCreateDTO.getPhoneNumber().isEmpty() ? userCreateDTO.getPhoneNumber() : null);
+        user.setPhone(userCreateDTO.getPhone() != null && !userCreateDTO.getPhone().isEmpty() ? userCreateDTO.getPhone() : null);
         user.setEmail(userCreateDTO.getEmail() != null && !userCreateDTO.getEmail().isEmpty() ? userCreateDTO.getEmail() : null);
         user.setIdentifyCode(userCreateDTO.getIdentifyCode());
         user.setUsername(userCreateDTO.getUsername());
@@ -235,8 +235,8 @@ public class UserService {
 
     private User mapToUserTest(UserCreateDTO userCreateDTO, User existingUser, String profileImagePath, String signatureImagePath) {
         existingUser.setFullName(userCreateDTO.getFullname());
-        existingUser.setPhone(userCreateDTO.getPhoneNumber() != null && !userCreateDTO.getPhoneNumber().isEmpty()
-                ? userCreateDTO.getPhoneNumber() : null);
+        existingUser.setPhone(userCreateDTO.getPhone() != null && !userCreateDTO.getPhone().isEmpty()
+                ? userCreateDTO.getPhone() : null);
         existingUser.setEmail(userCreateDTO.getEmail() != null && !userCreateDTO.getEmail().isEmpty()
                 ? userCreateDTO.getEmail() : null);
         existingUser.setIdentifyCode(userCreateDTO.getIdentifyCode());

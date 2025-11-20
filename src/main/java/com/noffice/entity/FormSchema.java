@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Table(name = "form_schemas")
@@ -21,5 +22,8 @@ public class FormSchema extends BaseEntity {
 
     @Column(name = "form_content")
     private String formContent;
+
+    @Column(name = "doc_template_id")
+    private UUID docTemplateId;
     
 }

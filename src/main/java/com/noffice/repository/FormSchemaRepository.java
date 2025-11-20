@@ -13,6 +13,9 @@ public interface FormSchemaRepository extends JpaRepository<FormSchema, Long> {
 	@Query("SELECT m FROM FormSchema m WHERE m.formCode = :id")
 	FormSchema getFormSchema(String id);
 
+	@Query("SELECT m FROM FormSchema m WHERE m.docTemplateId = :id")
+	FormSchema getFormSchemaByTemplateID(UUID id);
+
 	@Query(value = """
     SELECT f
     FROM FormSchema f

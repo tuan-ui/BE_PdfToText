@@ -1,10 +1,7 @@
 package com.noffice.service;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
+import java.security.SecureRandom;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.noffice.dto.*;
@@ -12,11 +9,16 @@ import com.noffice.entity.Partners;
 import com.noffice.repository.PartnerRepository;
 import com.noffice.ultils.Constants;
 
+import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.noffice.entity.User;
@@ -60,6 +62,13 @@ public class AuthenticationService {
 	private LogService logService;
     @Autowired
     private PartnerRepository partnerRepository;
+
+	@Autowired
+	private JavaMailSender mailSender;
+	private final Random random = new SecureRandom();
+
+	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+	private static final int NEW_PASSWORD_LENGTH = 10;
 
     public AuthenticationResponse authenticate(UserLoginDTO user) {
         if (!checkUsernameAndPassword(user)) {
@@ -354,5 +363,102 @@ public class AuthenticationService {
         userOpt.setIsChangePassword(0); // Đặt lại về 0 sau khi đổi mật khẩu
         usersRepository.save(userOpt);
     }
+
+
+	public String processForgotPassword(String username, String phone) throws Exception {
+		User user = usersRepository.findByUsernameandPhone(username, phone);
+		if (user == null)
+			return "authentication.NoUserFound";
+
+		if (user.getEmail() == null || user.getEmail().isBlank()) {
+			return "authentication.NoEmailLink";
+		}
+
+		String newPassword = generateRandomPassword();
+		String encodedPassword = passwordEncoder.encode(newPassword);
+
+		user.setPassword(encodedPassword);
+		usersRepository.save(user);
+
+		// Gửi email
+        return sendNewPasswordEmail(user.getEmail(), username, newPassword);
+	}
+
+	private String generateRandomPassword() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < NEW_PASSWORD_LENGTH; i++) {
+			sb.append(CHARACTERS.charAt(random.nextInt(CHARACTERS.length())));
+		}
+		return sb.toString();
+	}
+
+	private String sendNewPasswordEmail(String toEmail, String username, String newPassword) throws Exception {
+		MimeMessage message = mailSender.createMimeMessage();
+
+		try {
+			MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+			helper.setTo(toEmail);
+			helper.setSubject("[Natcom] Mật khẩu mới của bạn");
+			helper.setFrom("no-reply@natcom.vn");
+
+			String htmlContent = """
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                    .header { background: #1677ff; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+                    .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+                    .password { 
+                        background: #fffbe6; 
+                        border: 2px dashed #ffe58f; 
+                        padding: 20px; 
+                        text-align: center; 
+                        font-size: 24px; 
+                        font-weight: bold; 
+                        letter-spacing: 2px;
+                        margin: 20px 0;
+                        border-radius: 8px;
+                        color: #d4380d;
+                    }
+                    .warning { color: #d4380d; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h2>Đặt lại mật khẩu tài khoản Natcom</h2>
+                    </div>
+                    <div class="content">
+                        <p>Chào <strong>%s</strong>,</p>
+                        
+                        <p>Chúng tôi đã nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn.</p>
+                        
+                        <div class="password">
+                            %s
+                        </div>
+                        
+                        <p class="warning">Đây là mật khẩu mới của bạn. Vui lòng đăng nhập và đổi mật khẩu ngay lập tức!</p>
+                        
+                        <hr>
+                        <p>Nếu bạn <strong>không yêu cầu</strong> đặt lại mật khẩu, vui lòng liên hệ ngay với quản trị viên hệ thống.</p>
+                        
+                        <p>Trân trọng,<br><strong>Natcom Corporation</strong></p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(username, newPassword);
+
+			helper.setText(htmlContent, true); // true = isHtml
+
+			mailSender.send(message);
+			return null;
+		} catch (Exception e) {
+			return "authentication.SendEmailError";
+		}
+	}
 
 }

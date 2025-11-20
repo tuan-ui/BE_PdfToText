@@ -119,13 +119,13 @@ public enum FunctionType {
     UNLOCK_USER_GROUP("log.action.userGroup.unlock"),
     DELETE_USER_GROUP("log.action.userGroup.delete"),
 
-//    FILE_GENERATION_LIST("Danh sách file cần sinh"),
-//    SEARCH_FILE_GENERATION("Tìm kiếm, lọc danh sách các file"),
-//    CREATE_FILE_CONFIG("Thêm mới cấu hình file"),
-//    UPDATE_FILE_CONFIG("Cập nhật thông tin cấu hình file"),
-//    VIEW_FILE_CONFIG("Xem thông tin chi tiết"),
-//    LOCK_UNLOCK_FILE_CONFIG("Khóa, mở khóa cấu hình file"),
-//
+    VIEW_DETAIL_DOC_TEMPLATE("log.action.docTemplate.view"),
+    CREATE_DOC_TEMPLATE("log.action.docTemplate.create"),
+    EDIT_DOC_TEMPLATE("log.action.docTemplate.edit"),
+    DELETE_DOC_TEMPLATE("log.action.docTemplate.delete"),
+    LOCK_DOC_TEMPLATE("log.action.docTemplate.lock"),
+    UNLOCK_DOC_TEMPLATE("log.action.docTemplate.unlock"),
+
 //    BUSINESS_CONFIG_LIST("Danh sách cấu hình nghiệp vụ"),
 //    CREATE_BUSINESS_GOAL("Thêm mục đích kinh doanh"),
 //    UPDATE_BUSINESS_GOAL("Sửa mục đích kinh doanh"),

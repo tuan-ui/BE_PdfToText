@@ -136,4 +136,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query("FROM User u WHERE u.id IN :userIds AND u.isDeleted = false")
 	List<User> findAllById(List<UUID> userIds);
+
+	@Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username) And LOWER(u.phone) = LOWER(:phone)  AND u.isDeleted = false")
+	User findByUsernameandPhone(String username, String phone);
 }

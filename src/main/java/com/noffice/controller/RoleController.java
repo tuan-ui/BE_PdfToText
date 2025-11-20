@@ -11,7 +11,6 @@ import com.noffice.entity.Permission;
 import com.noffice.entity.Role;
 import com.noffice.service.RolePermissionsService;
 import com.noffice.reponse.ErrorListResponse;
-import jakarta.persistence.OptimisticLockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
