@@ -44,7 +44,7 @@ jobs:
           # URL SonarQube local của bạn
           # - Nếu chạy trên máy cá nhân + dùng ngrok → thay bằng link ngrok
           # - Nếu để trên VPS/server công ty → thay bằng IP hoặc domain thật
-          SONAR_HOST_URL: http://localhost:9000          # ← sửa thành link thật của bạn ở đây
+          SONAR_HOST_URL:  https://stellar-uncordial-erline.ngrok-free.dev
         run: |
 
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
