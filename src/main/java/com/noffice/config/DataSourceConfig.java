@@ -1,5 +1,6 @@
 package com.noffice.config;
 
+import com.noffice.exception.EncryptionException;
 import com.noffice.ultils.AppConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -40,37 +41,47 @@ public class DataSourceConfig {
                 .password(password)
                 .build();
     }
-    public static String decrypt(String encryptedData) throws Exception {
+    public static String decrypt(String encryptedData) throws EncryptionException {
         if (encryptedData == null || encryptedData.isEmpty()) {
             return encryptedData;
         }
 
         byte[] data = Base64.getDecoder().decode(encryptedData);
 
-        if (data.length > 12) { // GCM có IV 12 bytes
+        // Ưu tiên thử AES/GCM (dữ liệu mới)
+        if (data.length > 12) {
             try {
                 byte[] iv = new byte[12];
                 System.arraycopy(data, 0, iv, 0, 12);
+
                 byte[] cipherText = new byte[data.length - 12];
                 System.arraycopy(data, 12, cipherText, 0, cipherText.length);
 
                 Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
                 GCMParameterSpec spec = new GCMParameterSpec(128, iv);
                 SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
+
                 cipher.init(Cipher.DECRYPT_MODE, keySpec, spec);
                 byte[] decrypted = cipher.doFinal(cipherText);
                 return new String(decrypted, StandardCharsets.UTF_8);
-            } catch (Exception ignored) {
-                // Không phải GCM → thử cách cũ
+
+            } catch (Exception e) {
+                System.out.println("GCM failed, trying legacy ECB mode...");
             }
         }
 
-        // Fallback: giải mã bằng AES/ECB/PKCS5Padding (dữ liệu cũ)
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
-        cipher.init(Cipher.DECRYPT_MODE, keySpec);
-        byte[] decrypted = cipher.doFinal(data);
-        return new String(decrypted, StandardCharsets.UTF_8).trim();
+        try {
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
+            cipher.init(Cipher.DECRYPT_MODE, keySpec);
+
+            byte[] decrypted = cipher.doFinal(data);
+            return new String(decrypted, StandardCharsets.UTF_8).trim();
+
+        } catch (Exception e) {
+            // Bắt hết lỗi và ném ra exception riêng của mình
+            throw new EncryptionException("Không thể giải mã dữ liệu. Dữ liệu có thể bị hỏng hoặc key sai.", e);
+        }
     }
 
     public static String encrypt(String plainText) throws Exception {
