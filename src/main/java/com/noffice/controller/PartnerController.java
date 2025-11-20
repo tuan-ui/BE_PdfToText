@@ -4,7 +4,8 @@ import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.Response;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,10 +30,10 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/partner")
 public class PartnerController {
-    @Autowired
-    private PartnerService partnerService;
+    private final PartnerService partnerService;
 
     @PostMapping("/search")
     public Response getUsersWithPagination(@RequestBody PartnerRequest request) {

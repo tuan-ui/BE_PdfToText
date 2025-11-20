@@ -12,7 +12,8 @@ import com.noffice.ultils.Constants;
 import com.noffice.ultils.FormParser;
 import com.noffice.ultils.UUIDUtil;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +24,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DnDService {
-    @Autowired
-    private FormSchemaRepository formSchemaRepository;
-    @Autowired
-    private FormDataRepository formDataRepository;
+    private final FormSchemaRepository formSchemaRepository;
+    private final FormDataRepository formDataRepository;
     public String publishSchema(DnDDTO DnDDTO, User userDetails){
         try {
             FormSchema formSchema;

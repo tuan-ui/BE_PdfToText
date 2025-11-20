@@ -14,7 +14,8 @@ import com.noffice.repository.RolePermissionsRepository;
 import com.noffice.repository.UserRolesRepository;
 
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,15 +29,12 @@ import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class RoleService {
-	@Autowired
-	private RoleRepository roleRepository;
-	@Autowired
-	private LogService logService;
-    @Autowired
-    private UserRolesRepository userRolesRepository;
-    @Autowired
-    private PermissionsRepository permissionsRepository;
+	private final RoleRepository roleRepository;
+	private final LogService logService;
+    private final UserRolesRepository userRolesRepository;
+    private final PermissionsRepository permissionsRepository;
 
 	public Page<RoleDTO> searchRoles(String searchString, String roleName, String roleCode, String roleDescription,
 									   UUID partnerId, Boolean status, int page, int size) {

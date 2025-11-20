@@ -6,7 +6,7 @@ import com.noffice.repository.DocumentAllowedEditorsRepository;
 import com.noffice.repository.DocumentAllowedViewersRepository;
 import com.noffice.repository.DocumentFileRepository;
 import com.noffice.service.JwtService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/fileViewer")
 public class FileViewerController {
 
@@ -40,17 +41,9 @@ public class FileViewerController {
     @Value("${save_path}")
     private String savePath;
 
-    @Autowired
-    private DocumentAllowedEditorsRepository editorsRepo;
-
-    @Autowired
-    private DocumentAllowedViewersRepository viewersRepo;
-    @Autowired
-    private JwtService jwtService;
-
-    public FileViewerController(DocumentFileRepository documentFileRepository) {
-        this.documentFileRepository = documentFileRepository;
-    }
+    private final DocumentAllowedEditorsRepository editorsRepo;
+    private final DocumentAllowedViewersRepository viewersRepo;
+    private final JwtService jwtService;
 
     @GetMapping("/wopiUrl/{filename}")
     public ResponseEntity<?> getWopiUrl(@PathVariable String filename) {

@@ -12,7 +12,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,10 +28,10 @@ import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.LogService;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/log")
 public class LogController {
-	@Autowired
-	private LogService logService;
+	private final LogService logService;
 
 	@Operation(summary = "Lấy danh sách log người dùng theo tìm kiếm nâng cao", description = "Trả về danh sách log dựa trên tiêu chí tìm kiếm")
 	@ApiResponses({

@@ -7,7 +7,8 @@ import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.DnDService;
 import com.noffice.ultils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +21,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/DnD")
 public class DnDController {
 
-    @Autowired
-    private DnDService dndService;
+    private final DnDService dndService;
 
     @PostMapping("/saveContent")
     public ResponseEntity<ResponseAPI> saveContent(@RequestBody DnDDTO DnDDTO) {
@@ -154,8 +155,8 @@ public class DnDController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            dndService.lockUser(id,userDetails);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+            String response = dndService.lockUser(id,userDetails);
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, "success", 200));
         } catch (Exception e) {
             System.out.println("Error : " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -1,32 +1,10 @@
 package com.noffice.service;
 
-import java.security.SecureRandom;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
-
-import com.noffice.entity.EmailConfig;
-import com.noffice.repository.EmailConfigRepository;
-import com.noffice.repository.UserRepository;
-import com.noffice.ultils.Constants.NOTIFICATION_TYPE;
 
 @Component
 public class EmailService {
-    @Lazy
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private OTPCodeService otpCodeService;
-    @Autowired
-    private EmailConfigRepository emailConfigRepository;
-    @Autowired
-    private UserRepository userRepository;
-    private Map<String, String> otpStorage = new HashMap<>();
-    private SecureRandom random = new SecureRandom();
 
 //    public void sendEmail(String type, String email, Map<String, String> params) {
 //        if (email == null || email.trim().isEmpty()) {

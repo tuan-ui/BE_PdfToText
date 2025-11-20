@@ -9,7 +9,8 @@ import com.noffice.service.DomainService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,12 +24,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/domains")
 @Tag(name = "DomainController", description = "Quản lý Phòng ban")
 public class DomainController {
-	
-	@Autowired
-	private DomainService domainService;
+
+	private final DomainService domainService;
 
 	@GetMapping("/searchDomains")
 	public ResponseAPI getListDomain(

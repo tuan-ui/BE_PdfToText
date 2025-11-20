@@ -9,6 +9,8 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.HolidayTypeRepository;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,11 +20,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class HolidayTypeService {
-    @Autowired
-    private HolidayTypeRepository holidayTypeRepository;
-    @Autowired
-    private LogService logService;
+    private final HolidayTypeRepository holidayTypeRepository;
+    private final LogService logService;
 
     @Transactional
     public String deleteHolidayType(UUID id, User user, Long version) {

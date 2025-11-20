@@ -12,7 +12,8 @@ import com.noffice.repository.UserRepository;
 import com.noffice.ultils.Constants;
 import com.noffice.ultils.StringUtils;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -23,15 +24,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserGroupService {
-    @Autowired
-    UserGroupRepository userGroupRepository;
-    @Autowired
-    UserGroupsRepository userGroupsRepository;
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    LogService logService;
+    private final UserGroupRepository userGroupRepository;
+    private final UserGroupsRepository userGroupsRepository;
+    private final UserRepository userRepository;
+    private final LogService logService;
 
     @Transactional
     public UserGroup saveUserGroup(UUID id, String groupName, String groupCode, List<UUID> userIds) {

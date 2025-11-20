@@ -9,7 +9,8 @@ import com.noffice.enumType.ActionType;
 import com.noffice.enumType.FunctionType;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,11 @@ import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class PartnerService {
-	@Autowired
-	private PartnerRepository partnerRepository;
-	@Autowired
-	private LogService logService;
-    @Autowired
-    private UserRepository userRepository;
+	private final PartnerRepository partnerRepository;
+	private final LogService logService;
+    private final UserRepository userRepository;
 
 	public Page<Partners> searchPartners(PartnerRequest partnerRequest, Pageable pageable) {
         return partnerRepository.searchPartners(partnerRequest.getSearchString(),partnerRequest.getPartnerName(),partnerRequest.getEmail(),

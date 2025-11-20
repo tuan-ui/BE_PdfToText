@@ -9,7 +9,8 @@ import com.noffice.service.ContractTypeService;
 import com.noffice.ultils.FileUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,11 +24,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/contractType")
 public class ContractTypeController {
-	
-	@Autowired
-	private ContractTypeService contractTypeService;
+
+	private final ContractTypeService contractTypeService;
 
 	@GetMapping("/search")
 	public ResponseAPI search(

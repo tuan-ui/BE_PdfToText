@@ -4,7 +4,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.noffice.entity.RefreshToken;
@@ -12,14 +13,13 @@ import com.noffice.repository.RefreshTokenRepository;
 import com.noffice.repository.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
-	@Autowired
-	private RefreshTokenRepository refreshTokenRepository;
-	@Autowired
-	private UserRepository userRepository;
+	private final RefreshTokenRepository refreshTokenRepository;
+	private final UserRepository userRepository;
 
 	public RefreshToken createRefreshToken(String username) {
-		if (userRepository.findByUsername(username) == null) {
+		if (userRepository.findByUsername(username).isEmpty()) {
 			return null;
 		}
 		long sevenDaysInMilliseconds = 7 * 24 * 60 * 60 * 1000L;

@@ -9,7 +9,8 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.ContractTypeRepository;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -19,13 +20,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class ContractTypeService {
-
-    @Autowired
-    private ContractTypeRepository contractTypeRepository;
-
-    @Autowired
-    private LogService logService;
+    private final ContractTypeRepository contractTypeRepository;
+    private final LogService logService;
 
     @Transactional
     public String deleteContractType(UUID id, User user, Long version) {

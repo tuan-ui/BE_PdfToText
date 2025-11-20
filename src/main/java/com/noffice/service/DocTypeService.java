@@ -10,7 +10,8 @@ import com.noffice.repository.DocTypeRepository;
 import com.noffice.repository.DocumentTemplateDocumentTypesRepository;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -20,15 +21,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class DocTypeService {
-
-    @Autowired
-    private DocTypeRepository docTypeRepository;
-
-    @Autowired
-    private LogService logService;
-    @Autowired
-    private DocumentTemplateDocumentTypesRepository documentTemplateDocumentTypesRepository;
+    private final DocTypeRepository docTypeRepository;
+    private final LogService logService;
+    private final DocumentTemplateDocumentTypesRepository documentTemplateDocumentTypesRepository;
 
     @Transactional
     public String deleteDocType(UUID id, User user, Long version) {

@@ -1,9 +1,7 @@
 package com.noffice.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.noffice.entity.Notification;
 import com.noffice.entity.User;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.NotificationService;
@@ -22,10 +19,10 @@ import com.noffice.service.NotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/notifications")
 public class NotificationController {
-    @Autowired
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
 //    @GetMapping("/getNotificationsByToken")
 //    public ResponseEntity<ResponseAPI> getNotificationsByToken(

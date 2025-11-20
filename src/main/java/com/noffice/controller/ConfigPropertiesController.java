@@ -1,6 +1,7 @@
 package com.noffice.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,11 +30,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/configProperties")
 @Tag(name = "ConfigPropertiesController", description = "Cấu hình hệ thống")
 public class ConfigPropertiesController {
-	@Autowired
-	private ConfigPropertiesService configPropertiesService;
+	private final ConfigPropertiesService configPropertiesService;
 	@PostMapping("/search")
 	public ResponseEntity<ResponseAPI> searchRoles(@RequestBody @Parameter(description = "Thông tin tìm kiếm cấu hình") ConfigPropertiesDTO request) {
 	    try {

@@ -10,15 +10,16 @@ import com.noffice.entity.*;
 import com.noffice.enumType.FunctionType;
 import com.noffice.enumType.ActionType;
 import com.noffice.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class LogService {
-	@Autowired
-	private LogRepository logRepository;
+	private final LogRepository logRepository;
 
 	public void createLog(String key, Map<String, Object> params, UUID userId, UUID objectId, UUID partnerId) {
 		Logs log = new Logs();

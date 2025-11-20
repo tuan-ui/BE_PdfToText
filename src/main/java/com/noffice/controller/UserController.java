@@ -9,7 +9,8 @@ import com.noffice.service.*;
 import com.noffice.ultils.Constants.UPLOAD;
 import com.noffice.ultils.DateUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -37,12 +38,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
 public class UserController {
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private UserRepository userRepository;
+	private final UserService userService;
+	private final UserRepository userRepository;
 
     private ResponseEntity<ResponseAPI> validateToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

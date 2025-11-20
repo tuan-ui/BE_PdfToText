@@ -9,6 +9,8 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.DomainRepository;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,13 +21,10 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class DomainService {
-
-	@Autowired
-	private DomainRepository domainRepository;
-
-	@Autowired
-	private LogService logService;
+	private final DomainRepository domainRepository;
+	private final LogService logService;
 
 
 	@Transactional

@@ -5,10 +5,10 @@ import com.noffice.entity.PermissionRole;
 import com.noffice.entity.PermissionRoleId;
 import com.noffice.entity.User;
 import com.noffice.repository.RoleRepository;
-import com.noffice.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import com.noffice.repository.RolePermissionsRepository;
@@ -18,13 +18,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RolePermissionsService {
-	@Autowired
-	private RolePermissionsRepository rolePermissionsRepository;
-	@Autowired
-	private LogService logService;
-	@Autowired
-	private RoleRepository roleRepository;
+	private final RolePermissionsRepository rolePermissionsRepository;
+	private final LogService logService;
+	private final RoleRepository roleRepository;
 	
 	public List<Permission> getRolePermissions(UUID roleId) {
 

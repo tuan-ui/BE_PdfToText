@@ -11,7 +11,8 @@ import com.noffice.entity.Permission;
 import com.noffice.entity.Role;
 import com.noffice.service.RolePermissionsService;
 import com.noffice.reponse.ErrorListResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,13 +37,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.validation.Valid;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/roles")
 @Tag(name = "RoleController", description = "Quản lý Vai trò")
 public class RoleController {
-	@Autowired
-	private RoleService roleService;
-    @Autowired
-    private RolePermissionsService rolePermissionsService;
+	private final RoleService roleService;
+    private final RolePermissionsService rolePermissionsService;
 
 	@Operation(summary = "Lấy danh sách vai trò", description = "Trả về danh sách các vai trò dựa trên tiêu chí tìm kiếm")
 	@ApiResponses({

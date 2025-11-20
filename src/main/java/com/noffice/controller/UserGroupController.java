@@ -9,7 +9,8 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.reponse.UserGroupResponse;
 import com.noffice.service.UserGroupService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +22,10 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/userGroups")
 public class UserGroupController {
-    @Autowired
-    private UserGroupService userGroupService;
+    private final UserGroupService userGroupService;
 
     @PostMapping("/save")
     public ResponseAPI saveUserGroup(@RequestBody CreateUserGroupDTO payload) {

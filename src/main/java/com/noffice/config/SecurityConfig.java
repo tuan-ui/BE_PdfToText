@@ -1,6 +1,7 @@
 package com.noffice.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -22,15 +23,11 @@ import com.noffice.service.UserDetailsServiceImpl;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
-	@Autowired
-	private UserDetailsServiceImpl userDetailsService;
-
-	@Autowired
-	private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-	@Autowired
-	private CustomAccessDeniedHandler accessDeniedHandler;
+	private final UserDetailsServiceImpl userDetailsService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
+	private final CustomAccessDeniedHandler accessDeniedHandler;
 
 	@Bean
 	public BCryptPasswordEncoder passwordEncoder() {

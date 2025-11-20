@@ -7,7 +7,8 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.HolidayTypeService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +22,10 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/holiday-type")
 public class HolidayTypeController {
-    @Autowired
-    private HolidayTypeService holidayTypeService;
+    private final HolidayTypeService holidayTypeService;
 
     @GetMapping("/search")
     public ResponseAPI getHolidayTypesWithPagination(

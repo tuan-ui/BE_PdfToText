@@ -10,7 +10,8 @@ import com.noffice.ultils.FileUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +26,11 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/doc-type")
+@RequiredArgsConstructor
 @Tag(name = "DocTypeController", description = "Quản lý Loại Văn Bản")
 public class DocTypeController {
-	
-	@Autowired
-	private DocTypeService docTypeService;
+
+	private final DocTypeService docTypeService;
 
 	@GetMapping("/search")
 	public ResponseAPI search(

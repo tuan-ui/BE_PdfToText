@@ -11,8 +11,9 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.*;
 import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class DocumentTemplateService {
 
     @Value("${URL.COLLABORA.OFFICE}")
@@ -34,29 +36,25 @@ public class DocumentTemplateService {
     @Value("${API.URL}")
     private String apiUrl;
 
-    @Autowired
-    private DocumentTemplateRepository documentTemplateRepository;
 
-    @Autowired
-    private LogService logService;
-    @Autowired
-    private DocumentFileRepository documentFileRepository;
-    @Autowired
-    private DocumentTemplateDocumentTypesRepository documentTemplateDocumentTypesRepository;
-    @Autowired
+    private final DocumentTemplateRepository documentTemplateRepository;
+
+
+    private final LogService logService;
+
+    private final DocumentFileRepository documentFileRepository;
+
+    private final DocumentTemplateDocumentTypesRepository documentTemplateDocumentTypesRepository;
+
     private final ModelMapper mapper;
-    @Autowired
-    private DocumentAllowedEditorsRepository documentAllowedEditorsRepository;
-    @Autowired
-    private DocumentAllowedViewersRepository documentAllowedViewersRepository;
-    @Autowired
-    private JwtService jwtService;
-    @Autowired
-    private FormSchemaRepository formSchemaRepository;
 
-    public DocumentTemplateService(ModelMapper mapper) {
-        this.mapper = mapper;
-    }
+    private final DocumentAllowedEditorsRepository documentAllowedEditorsRepository;
+
+    private final DocumentAllowedViewersRepository documentAllowedViewersRepository;
+
+    private final JwtService jwtService;
+
+    private final FormSchemaRepository formSchemaRepository;
 
     @Transactional
     public String deleteDocumentTemplate(UUID id, User user, Long version) {

@@ -5,7 +5,8 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 
 import com.noffice.repository.RolePermissionsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -21,14 +22,13 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 	@Value("${jwt.secret}")
 	private String SECRET_KEY;
-	@Autowired
-	private ConfigRepository configRepository;
+	private final ConfigRepository configRepository;
 	private static ConfigRepository configRepositoryInstance;
-    @Autowired
-    private RolePermissionsRepository rolePermissionsRepository;
+    private final RolePermissionsRepository rolePermissionsRepository;
 	private final long IDLE_TIMEOUT_MS = 30 * 60 * 1000;
 	@PostConstruct
 	public void init() {
@@ -118,12 +118,8 @@ public class JwtService {
 			long absoluteExp = claims.get("absoluteExp", Long.class);
 
 			// Absolute timeout 12h
-			if (now > absoluteExp) {
-				return false; // absolute timeout
-			}
-
-			return true;
-		} catch (Exception e) {
+            return now <= absoluteExp; // absolute timeout
+        } catch (Exception e) {
 			return false;
 		}
 	}

@@ -10,7 +10,8 @@ import com.noffice.ultils.FileUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,11 +25,11 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/task-type")
 @Tag(name = "TaskTypeController", description = "Quản lý Loại Công việc")
 public class TaskTypeController {
-    @Autowired
-    private TaskTypeService taskTypeService;
+    private final TaskTypeService taskTypeService;
 
     @GetMapping("/search")
     public ResponseAPI search(

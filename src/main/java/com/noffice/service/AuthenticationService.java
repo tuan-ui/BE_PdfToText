@@ -10,15 +10,14 @@ import com.noffice.repository.PartnerRepository;
 import com.noffice.ultils.Constants;
 
 import jakarta.mail.internet.MimeMessage;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
+
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.noffice.entity.User;
@@ -37,34 +36,18 @@ import dev.samstevens.totp.time.SystemTimeProvider;
 import jakarta.transaction.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthenticationService {
 	private Base64 base64Codec = new Base64();
-
-	@Autowired
-	private UserRepository usersRepository;
-
-	@Autowired
-	private RoleRepository rolesRepository;
-
-	@Autowired
-	private RolePermissionsRepository permissionsRolesRepository;
-
-	@Autowired
-	private JwtService jwtService;
-
-	@Autowired
-	private BCryptPasswordEncoder passwordEncoder;
-
-	@Autowired
-	private RefreshTokenService refreshTokenService;
-
-	@Autowired
-	private LogService logService;
-    @Autowired
-    private PartnerRepository partnerRepository;
-
-	@Autowired
-	private JavaMailSender mailSender;
+	private final UserRepository usersRepository;
+	private final RoleRepository rolesRepository;
+	private final RolePermissionsRepository permissionsRolesRepository;
+	private final JwtService jwtService;
+	private final BCryptPasswordEncoder passwordEncoder;
+	private final RefreshTokenService refreshTokenService;
+	private final LogService logService;
+    private final PartnerRepository partnerRepository;
+	private final JavaMailSender mailSender;
 	private final Random random = new SecureRandom();
 
 	private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";

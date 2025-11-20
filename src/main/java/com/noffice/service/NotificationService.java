@@ -2,7 +2,8 @@ package com.noffice.service;
 
 import java.time.ZonedDateTime;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -11,9 +12,9 @@ import com.noffice.entity.Notification;
 import com.noffice.repository.NotificationRepository;
 
 @Service
+@RequiredArgsConstructor
 public class NotificationService {
-    @Autowired
-    private NotificationRepository notificationRepository;
+    private final NotificationRepository notificationRepository;
 
     public Page<Notification> getNotificationsByRecipientId(Long recipientId, Pageable pageable) {
         Page<Notification> notiPage =notificationRepository.findByRecipientId(recipientId, pageable);

@@ -8,7 +8,8 @@ import com.noffice.ultils.AppConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,7 @@ import java.util.UUID;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/wopi/files")
 @CrossOrigin(
         origins = "${URL.COLLABORA.OFFICE}",
@@ -36,17 +38,8 @@ public class WopiController {
 
     private static final String FILE_DIR = AppConfig.get("save_path");
     private final DocumentFileRepository documentFileRepository;
-
-    public WopiController(DocumentFileRepository documentFileRepository) {
-        this.documentFileRepository = documentFileRepository;
-    }
-
-    // 1. CheckFileInfo – BẮT BUỘC ĐỂ CHỈNH SỬA
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private DocumentAllowedEditorsRepository editorsRepo;
+    private final JwtService jwtService;
+    private final DocumentAllowedEditorsRepository editorsRepo;
 
     // 1. CheckFileInfo – BẮT BUỘC ĐỂ CHỈNH SỬA
     @GetMapping("/{filename}")

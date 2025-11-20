@@ -12,7 +12,8 @@ import com.noffice.service.DocumentTemplateService;
 import com.noffice.ultils.FileUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,11 +28,11 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/documentTemplates")
 public class DocumentTemplateController {
-	
-	@Autowired
-	private DocumentTemplateService documentTemplateService;
+
+	private final DocumentTemplateService documentTemplateService;
 
 	@GetMapping("/search")
 	public ResponseAPI search(

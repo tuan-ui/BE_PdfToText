@@ -19,8 +19,9 @@ import com.noffice.repository.*;
 import com.noffice.ultils.Constants;
 import com.noffice.ultils.DateUtil;
 import com.noffice.ultils.StringUtils;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -35,34 +36,17 @@ import com.noffice.ultils.Constants.UPLOAD;
 import jakarta.transaction.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ConfigRepository configRepository;
-
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserGroupsRepository userGroupsRepository;
-    @Autowired
-    private LogService logService;
-    @Autowired
-    private UserRolesRepository userRolesRepository;
-    @Autowired
+    private final UserRepository userRepository;
+    private final ConfigRepository configRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
+    private final UserGroupsRepository userGroupsRepository;
+    private final LogService logService;
+    private final UserRolesRepository userRolesRepository;
     private final ModelMapper mapper;
-    @Autowired
-    private PartnerRepository partnerRepository;
-    @Autowired
-    private UserRolesService userRolesService;
-
-    public UserService(ModelMapper mapper) {
-        this.mapper = mapper;
-    }
+    private final PartnerRepository partnerRepository;
+    private final UserRolesService userRolesService;
 
 
     public Page<User> listUsers(String searchString, String userName, String fullName, String phone,

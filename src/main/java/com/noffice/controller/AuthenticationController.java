@@ -12,8 +12,9 @@ import java.io.OutputStream;
 
 import com.noffice.dto.*;
 import com.noffice.service.LogService;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.httpclient.HttpClient;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,21 +47,14 @@ import com.github.cage.Cage;
 import com.github.cage.GCage;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthenticationController {
-	@Autowired
-	private UserRepository userRepository;
-
-	@Autowired
-	private AuthenticationService authenticationService;
-
-	@Autowired
-	private RefreshTokenService refreshTokenService;
-
-	@Autowired
-	private JwtService jwtService;
-	@Autowired
-	private LogService logService;
+	private final UserRepository userRepository;
+	private final AuthenticationService authenticationService;
+	private final RefreshTokenService refreshTokenService;
+	private final JwtService jwtService;
+	private final LogService logService;
 
 	private HttpClient client;
 
@@ -85,10 +79,7 @@ public class AuthenticationController {
 	    try {
 	        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
-	        if (authentication == null || 
-	            authentication instanceof AnonymousAuthenticationToken || 
-	            !authentication.isAuthenticated() || 
-	            authentication.getPrincipal() == null) {
+	        if (authentication instanceof AnonymousAuthenticationToken || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
 	            return ResponseEntity.status(HttpStatus.OK)
 	                    .body(new ResponseAPI(null, "Không có token hoặc phiên đăng nhập hợp lệ", 401));
 	        }
@@ -559,11 +550,7 @@ public class AuthenticationController {
 		// Ngày hiện tại
 		LocalDateTime currentDate = LocalDateTime.now();
 		// So sánh ngày
-		if (currentDate.isAfter(dateToCompare)) {
-			return true;
-		} else {
-			return false;
-		}
+        return currentDate.isAfter(dateToCompare);
 	}
 	@PostMapping("/forgetPassword")
 	public ResponseEntity<ResponseAPI> forgetPassword(@RequestBody ForgotPasswordRequest request) {

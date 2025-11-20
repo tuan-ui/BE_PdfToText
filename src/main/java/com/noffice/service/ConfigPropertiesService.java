@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,10 +18,9 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @Service
+@RequiredArgsConstructor
 public class ConfigPropertiesService {
-	
-	@Autowired
-	private ConfigRepository configRepository;
+	private final ConfigRepository configRepository;
 	
 	//get by label
 	public String getByLabel(String key) {
