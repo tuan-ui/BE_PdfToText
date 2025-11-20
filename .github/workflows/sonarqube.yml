@@ -46,7 +46,6 @@ jobs:
           # - Nếu để trên VPS/server công ty → thay bằng IP hoặc domain thật
           SONAR_HOST_URL: http://localhost:9000          # ← sửa thành link thật của bạn ở đây
         run: |
-          cd BE_PdfToText   # ← sửa nếu thư mục chứa pom.xml khác tên
 
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=nsoftBE \
