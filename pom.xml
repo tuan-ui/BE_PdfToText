@@ -348,7 +348,23 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		<dependency>
+        <groupId>net.sourceforge.tess4j</groupId>
+        <artifactId>tess4j</artifactId>
+        <version>5.13.0</version>   <!-- phiên bản mới nhất 2025 -->
+    </dependency>
 
+    <!-- 2. Apache HttpClient + Mime (gửi file multipart) -->
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpclient</artifactId>
+        <version>4.5.14</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.httpcomponents</groupId>
+        <artifactId>httpmime</artifactId>
+        <version>4.5.14</version>
+    </dependency>
 	</dependencies>
 	<build>
 		<plugins>
