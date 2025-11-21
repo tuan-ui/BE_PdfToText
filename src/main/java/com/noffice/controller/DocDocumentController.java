@@ -99,7 +99,7 @@ public class DocDocumentController {
 			User token = (User) authentication.getPrincipal();
 			
 			String deptName = docDocumentService.lockUnlock(id,token, version);
-			if(deptName != null && !deptName.isEmpty())
+			if(deptName == null || !deptName.trim().isEmpty())
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, deptName, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));

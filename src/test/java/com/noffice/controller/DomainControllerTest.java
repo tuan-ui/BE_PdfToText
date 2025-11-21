@@ -167,7 +167,7 @@ public class DomainControllerTest {
     @Test
     void deleteDoc_Success() throws Exception {
         Mockito.when(domainService.deleteDomain(eq(testId), any(), anyLong()))
-                .thenReturn(null); // result == null → thành công
+                .thenReturn("");
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/domains/delete")
                         .param("id", testId.toString())
@@ -198,7 +198,7 @@ public class DomainControllerTest {
         );
 
         Mockito.when(domainService.deleteMultiDomain(anyList(), any()))
-                .thenReturn(null);
+                .thenReturn("");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/domains/deleteMuti")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -229,7 +229,7 @@ public class DomainControllerTest {
     @Test
     void lock_Success() throws Exception {
         Mockito.when(domainService.lockUnlockDomain(eq(testId), any(), anyLong()))
-                .thenReturn(null);
+                .thenReturn("");
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/domains/lock")
                         .param("id", testId.toString())

@@ -230,7 +230,7 @@ class DocDocumentControllerTest {
     @Test
     void lock_Success() throws Exception {
         Mockito.when(docDocumentService.lockUnlock(eq(testId), any(), anyLong()))
-                .thenReturn(null);
+                .thenReturn("");
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/doc-document/lock")
                         .param("id", testId.toString())
