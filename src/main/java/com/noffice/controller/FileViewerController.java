@@ -8,6 +8,7 @@ import com.noffice.repository.DocumentFileRepository;
 import com.noffice.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,10 +23,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,38 +55,95 @@ public class FileViewerController {
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<Map<String, Object>> upload(
+            @RequestParam("file") MultipartFile file) {
+
         Map<String, Object> res = new HashMap<>();
+
         try {
+            // 1. Lấy thông tin user đang login
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
-            Path uploadPath = Paths.get(savePath);
+
+            // 2. Đường dẫn thư mục upload (có thể đưa ra application.yml)
+            Path uploadPath = Paths.get(savePath).normalize();
             if (!Files.exists(uploadPath)) {
                 Files.createDirectories(uploadPath);
             }
 
-            String originalFilename = System.nanoTime() +"_"+ file.getOriginalFilename();
+            // 3. LẤY TÊN FILE GỐC + KIỂM TRA AN TOÀN
+            String originalFilename = file.getOriginalFilename();
+            if (originalFilename == null || originalFilename.isBlank()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("message", "Tên file không hợp lệ", "status", 400));
+            }
 
-            // Lưu file vào thư mục
-            Path filePath = uploadPath.resolve(originalFilename);
+            // Chặn ngay nếu tên file có ký tự nguy hiểm
+            if (originalFilename.contains("..") || originalFilename.contains("/") || originalFilename.contains("\\")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Tên file không được chứa ký tự ../ hoặc /", "status", 403));
+            }
+
+            // 4. LẤY PHẦN MỞ RỘNG + WHITELIST (chỉ cho phép file văn phòng)
+            String fileExtension = "";
+            int lastDotIndex = originalFilename.lastIndexOf('.');
+            if (lastDotIndex > 0 && lastDotIndex < originalFilename.length() - 1) {
+                fileExtension = originalFilename.substring(lastDotIndex).toLowerCase(); // .docx, .pdf, ...
+            }
+
+            Set<String> allowedExtensions = Set.of(
+                    ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
+                    ".pdf", ".txt", ".jpg", ".jpeg", ".png", ".gif"
+            );
+
+            if (!allowedExtensions.contains(fileExtension)) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                        .body(Map.of("message", "Loại file không được phép: " + fileExtension, "status", 415));
+            }
+
+            // 5. TẠO TÊN FILE AN TOÀN: UUID + nanoTime + giữ nguyên đuôi
+            String safeFilename = UUID.randomUUID() + "_" + System.nanoTime() + fileExtension;
+
+            // 6. TẠO ĐƯỜNG DẪN + KIỂM TRA PATH TRAVERSAL (lớp bảo vệ cuối cùng)
+            Path filePath = uploadPath.resolve(safeFilename).normalize();
+
+            if (!filePath.startsWith(uploadPath)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(Map.of("message", "Lỗi bảo mật: Path traversal detected!", "status", 403));
+            }
+
+            // 7. LƯU FILE AN TOÀN
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            String wopiSrc = apiUrl+ "/wopi/files/" + originalFilename;
+
+            // 8. TẠO URL WOPI + mở bằng Collabora
+            String wopiSrc = apiUrl + "/wopi/files/" + safeFilename;
             String encodedWopiSrc = URLEncoder.encode(wopiSrc, StandardCharsets.UTF_8);
-            String url = urlCollaboraOffice+"/browser/dist/cool.html?WOPISrc=" + encodedWopiSrc;
+            String url = urlCollaboraOffice + "/browser/dist/cool.html?WOPISrc=" + encodedWopiSrc;
+
+            // 9. LƯU VÀO DB
             DocumentFiles documentFiles = new DocumentFiles();
-            documentFiles.setAttachName(originalFilename);
+            documentFiles.setAttachName(safeFilename);           // lưu tên file an toàn
             documentFiles.setAttachPath(url);
             documentFiles.setPartnerId(userDetails.getPartnerId());
             documentFiles.setCreateBy(userDetails.getId());
+
             DocumentFiles saved = documentFileRepository.save(documentFiles);
+
+            // 10. TRẢ KẾT QUẢ
             res.put("id", saved.getId());
             res.put("url", url);
+            res.put("message", "Upload thành công");
+            res.put("status", 200);
+
+            return ResponseEntity.ok(res);
+
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Lỗi lưu file: " + e.getMessage(), "status", 500));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("message", "Upload thất bại", "status", 500));
         }
-        res.put("message","success");
-        res.put("status",200);
-        return ResponseEntity.ok(res);
     }
 
     @PostMapping("/createTemp")

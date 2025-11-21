@@ -43,8 +43,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtils {
-	@Value("${save_path}")
-	private static String savePath;
 	public static String convertDateToString(Date date, String format) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		if (date == null) {
@@ -660,43 +658,6 @@ public class FileUtils {
 	        }
 	    }
 
-	public static Map<String, Object> saveFile(MultipartFile file, User token) throws IOException {
-		if (file.isEmpty()) {
-			throw new IOException("File is empty");
-		}
-
-		// Tạo đường dẫn thư mục: năm/tháng/ngày
-		LocalDate today = LocalDate.now();
-		String year = String.valueOf(today.getYear());
-		String month = String.format("%02d", today.getMonthValue());
-		String day = String.format("%02d", today.getDayOfMonth());
-
-		Path targetDir = Paths.get(savePath, year, month, day);
-		Files.createDirectories(targetDir);
-
-		// Tạo tên file duy nhất
-		String originalFilename = file.getOriginalFilename();
-		String extension = "";
-		if (originalFilename != null && originalFilename.contains(".")) {
-			extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-		}
-		String newFileName = UUID.randomUUID().toString() + extension;
-
-		// Lưu file vật lý
-		Path targetPath = targetDir.resolve(newFileName);
-		Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-
-		// Tạo URL để frontend truy cập
-		String relativePath = String.join("/", year, month, day, newFileName);
-		String fileUrl = "/uploads/" + relativePath;
-
-		// Trả kết quả
-		Map<String, Object> result = new HashMap<>();
-		result.put("Name", originalFilename);
-		result.put("Url", fileUrl);
-		result.put("Path", targetPath.toString());
-		return result;
-	}
 	public static String removeAccent(String text) {
 		if (text == null) return null;
 		String normalized = Normalizer.normalize(text, Normalizer.Form.NFD);

@@ -66,7 +66,7 @@ public class SecurityConfig {
 						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 		// Safe to disable CSRF: this is a stateless REST API using JWT (no cookies, no sessions)
-		http.csrf(AbstractHttpConfigurer::disable);
+		http.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
 		return http.build();
 	}
 
