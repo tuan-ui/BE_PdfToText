@@ -8,14 +8,11 @@ import com.noffice.entity.*;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.DocDocumentService;
-import com.noffice.service.DocTypeService;
 import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +32,7 @@ import java.util.UUID;
 @Tag(name = "DocDocumentController", description = "Quản lý Văn bản cá nhân")
 public class DocDocumentController {
 	private final DocDocumentService docDocumentService;
+	private final ObjectMapper objectMapper;
 
 	@GetMapping("/search")
 	public ResponseAPI search(
@@ -101,7 +99,7 @@ public class DocDocumentController {
 			User token = (User) authentication.getPrincipal();
 			
 			String deptName = docDocumentService.lockUnlock(id,token, version);
-			if(deptName == null || !deptName.trim().isEmpty())
+			if(deptName != null && !deptName.isEmpty())
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, deptName, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -118,7 +116,6 @@ public class DocDocumentController {
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
-			ObjectMapper objectMapper = new ObjectMapper();
 			DocDocumentDTO docDocument = null;
 			try {
 				docDocument = objectMapper.readValue(docDocumentJson, DocDocumentDTO.class);
@@ -156,12 +153,12 @@ public class DocDocumentController {
 	}
 
 	@GetMapping("/LogDetailDocType")
-	public ResponseAPI LogDetailDocType(@RequestParam String id) {
+	public ResponseAPI getLogDetailDocType(@RequestParam String id) {
 
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
-			docDocumentService.LogDetailDocType(id, userDetails);
+			docDocumentService.getLogDetailDocType(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 400);

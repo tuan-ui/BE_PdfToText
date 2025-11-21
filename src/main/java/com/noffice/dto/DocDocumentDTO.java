@@ -26,9 +26,9 @@ public class DocDocumentDTO {
     private String purpose;
     private Boolean isActive = true;
     private UUID[]removedFiles;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime createAt;
-    @JsonFormat(pattern = "dd-MM-yyyy")
+    @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updateAt;
     private List<NodeDeptUserDTO> approvalSteps;
     public DocDocumentDTO(UUID documentId, String documentTitle, String deptName,String purpose,String formData, UUID docTypeId,UUID docTemplateId, String docTypeName,LocalDateTime createAt, LocalDateTime updateAt,UUID formSchemaId) {

@@ -207,7 +207,7 @@ public class DocDocumentService {
         return docDocumentRepository.getAllDocType(partnerId);
     }
 
-    public void LogDetailDocType(String id, User user) {
+    public void getLogDetailDocType(String id, User user) {
         DocType docType = docDocumentRepository.findByDocTypeCode(id);
         logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_DOCTYPE.getFunction(), "object", docType.getDocTypeName()),
                 user.getId(), docType.getId(), user.getPartnerId());

@@ -59,7 +59,7 @@ public class DomainController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
 			String result = domainService.deleteDomain(id, token, version);
-			if(result == null || !result.trim().isEmpty())
+			if(result != null && !result.trim().isEmpty())
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -74,7 +74,7 @@ public class DomainController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
 			String result = domainService.deleteMultiDomain(id, token);
-			if(result == null || !result.trim().isEmpty())
+			if(result != null && !result.trim().isEmpty())
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -102,7 +102,7 @@ public class DomainController {
 			User token = (User) authentication.getPrincipal();
 			
 			String deptName = domainService.lockUnlockDomain(id,token, version);
-			if(deptName == null || !deptName.trim().isEmpty())
+			if(deptName != null && !deptName.trim().isEmpty())
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, deptName, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -112,12 +112,12 @@ public class DomainController {
 	}
 
 	@PostMapping("/add")
-	public ResponseEntity<ResponseAPI> save(@Valid @RequestBody Domain domain, HttpServletRequest request) { // Thêm @Valid
+	public ResponseEntity<ResponseAPI> save(@Valid @RequestBody Domain domain) {
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			String result = domainService.saveDomain(domain, authentication);
-			if (result == null || !result.trim().isEmpty())
+			if (result != null && !result.trim().isEmpty())
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
@@ -128,14 +128,14 @@ public class DomainController {
 	}
 
 	@PostMapping("/update")
-	public ResponseEntity<ResponseAPI> updateDomain(@Valid @RequestBody Domain domain, HttpServletRequest request) { // Thêm @Valid
+	public ResponseEntity<ResponseAPI> updateDomain(@Valid @RequestBody Domain domain) {
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 
 			String result = domainService.updateDomain(domain, authentication);
 
-			if (result == null || !result.trim().isEmpty())
+			if (result != null && !result.trim().isEmpty())
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));
