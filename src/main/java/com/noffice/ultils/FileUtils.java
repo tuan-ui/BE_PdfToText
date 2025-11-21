@@ -2,20 +2,13 @@ package com.noffice.ultils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.regex.Matcher;
 
 import javax.xml.namespace.QName;
 
-import com.noffice.entity.User;
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
 import org.docx4j.model.fields.merge.DataFieldName;
@@ -39,8 +32,6 @@ import org.docx4j.wml.Tr;
 import java.util.regex.Pattern;
 
 import jakarta.xml.bind.JAXBElement;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtils {
 	public static String convertDateToString(Date date, String format) {
