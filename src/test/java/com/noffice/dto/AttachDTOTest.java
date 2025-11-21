@@ -11,6 +11,7 @@ class AttachDTOTest {
 
     private static final UUID UUID_1 = UUID.fromString("11111111-1111-1111-1111-111111111111");
     private static final UUID UUID_2 = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    private static final LocalDateTime date = LocalDateTime.now();
 
     @Test
     void noArgsConstructor_Works() {
@@ -36,7 +37,6 @@ class AttachDTOTest {
     @Test
     void getterSetter_Works() {
         AttachDTO dto = new AttachDTO();
-        LocalDateTime date = LocalDateTime.now();
 
         dto.setObjectId(UUID_1);
         dto.setObjectType(1);
@@ -62,15 +62,15 @@ class AttachDTOTest {
         assertEquals("test", dto.getAttachName());
         assertEquals("/path/to/file", dto.getAttachPath());
         assertEquals(UUID_1, dto.getCreatorId());
-        assertEquals(dto.getDateCreate(),date);
+        assertEquals(date, dto.getDateCreate());
         assertEquals(1, dto.getAttachType());
         assertEquals("/save/path", dto.getSavePath());
         assertEquals(1L, dto.getVersionNumber());
         assertTrue(dto.getIsActive());
         assertFalse(dto.getIsDeleted());
-        assertEquals(dto.getCreateAt(),date);
-        assertEquals(dto.getUpdateAt(),date);
-        assertEquals(dto.getDeletedAt(),date);
+        assertEquals(date, dto.getCreateAt());
+        assertEquals(date, dto.getUpdateAt());
+        assertEquals(date, dto.getDeletedAt());
         assertEquals(UUID_1, dto.getPartnerId());
         assertEquals(UUID_1, dto.getCreateBy());
         assertEquals(UUID_1, dto.getUpdateBy());
@@ -79,7 +79,6 @@ class AttachDTOTest {
 
     @Test
     void builder_CreatesObjectCorrectly() {
-        LocalDateTime now = LocalDateTime.of(2025, 11, 21, 14, 0);
 
         AttachDTO dto = AttachDTO.builder()
                 .attachId(UUID_1)
@@ -87,18 +86,18 @@ class AttachDTOTest {
                 .attachName("test.pdf")
                 .attachPath("/uploads/2025/11/contract.pdf")
                 .creatorId(UUID_1)
-                .dateCreate(now)
+                .dateCreate(date)
                 .attachType(1)
                 .versionNumber(5L)
                 .isActive(true)
                 .isDeleted(false)
                 .partnerId(UUID_1)
-                .createAt(now)
+                .createAt(date)
                 .build();
 
         assertEquals("test.pdf", dto.getAttachName());
         assertEquals(1, dto.getAttachType());
-        assertEquals(now, dto.getDateCreate());
+        assertEquals(date, dto.getDateCreate());
     }
 
     @Test

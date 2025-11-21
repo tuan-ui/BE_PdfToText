@@ -53,6 +53,6 @@ class DomainTest {
 
         assertTrue(str.contains("Domain"));
         assertTrue(str.contains("domainCode=TEST"));
-        assertFalse(str.contains("BaseEntity")); // vì callSuper=false
+        assertFalse(str.contains("BaseEntity"));
     }
 }
