@@ -13,6 +13,7 @@ import com.noffice.repository.NodeDeptUserRepository;
 import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -25,17 +26,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class DocDocumentService {
-
-    @Autowired
-    private DocDocumentRepository docDocumentRepository;
-    @Autowired
-    private NodeDeptUserRepository nodeDeptUserRepository;
-
-    @Autowired
-    private LogService logService;
-    @Autowired
-    private AttachRepository attachRepository;
+    private final DocDocumentRepository docDocumentRepository;
+    private final NodeDeptUserRepository nodeDeptUserRepository;
+    private final LogService logService;
+    private final AttachRepository attachRepository;
 
     @Transactional
     public String delete(UUID id, User user, Long version) {
@@ -159,7 +155,7 @@ public class DocDocumentService {
                    attachRepository.save(attachs);
                }
             }
-            if(docDocumentDTO.getRemovedFiles()!=null&&docDocumentDTO.getRemovedFiles().length>0){
+            if(docDocumentDTO.getRemovedFiles() != null){
                 for(UUID attachId:docDocumentDTO.getRemovedFiles()){
                     Optional<Attachs>optional=attachRepository.findById(attachId);
                     if(optional.isPresent()){
@@ -183,7 +179,7 @@ public class DocDocumentService {
     public String update(DocDocument docDocumentDTO, Authentication authentication) {
         User token = (User) authentication.getPrincipal();
         DocDocument document = docDocumentRepository.findByDocumentId(docDocumentDTO.getId());
-        if (!Objects.equals(document.getVersion(), document.getVersion())) {
+        if (!Objects.equals(docDocumentDTO.getVersion(), document.getVersion())) {
             return "error.DataChangedReload";
         }
         if (document.getIsDeleted())

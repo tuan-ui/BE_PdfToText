@@ -14,6 +14,7 @@ import com.noffice.ultils.FileUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,11 +31,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/doc-document")
+@RequiredArgsConstructor
 @Tag(name = "DocDocumentController", description = "Quản lý Văn bản cá nhân")
 public class DocDocumentController {
-	
-	@Autowired
-	private DocDocumentService docDocumentService;
+	private final DocDocumentService docDocumentService;
 
 	@GetMapping("/search")
 	public ResponseAPI search(
