@@ -2,13 +2,22 @@ package com.noffice.ultils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Matcher;
 
 import javax.xml.namespace.QName;
 
+import com.noffice.entity.Attachs;
+import com.noffice.entity.User;
 import org.docx4j.XmlUtils;
 import org.docx4j.jaxb.Context;
 import org.docx4j.model.fields.merge.DataFieldName;
@@ -32,8 +41,12 @@ import org.docx4j.wml.Tr;
 import java.util.regex.Pattern;
 
 import jakarta.xml.bind.JAXBElement;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.multipart.MultipartFile;
 
 public class FileUtils {
+	@Value("${save_path}")
+	private String savePath;
 	public static String convertDateToString(Date date, String format) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		if (date == null) {
@@ -648,6 +661,51 @@ public class FileUtils {
 	            }
 	        }
 	    }
+
+	public static List<Attachs> saveFile(MultipartFile[] files, User token) throws IOException {
+		if (files == null || files.length == 0) {
+			throw new IOException("Files are empty");
+		}
+		String savePath = AppConfig.get("save_path");
+
+		LocalDate today = LocalDate.now();
+		String year = String.valueOf(today.getYear());
+		String month = String.format("%02d", today.getMonthValue());
+		String day  = String.format("%02d", today.getDayOfMonth());
+
+		Path targetDir = Paths.get(savePath, "uploads", year, month, day);
+		Files.createDirectories(targetDir);
+
+		List<Attachs> lstAttach = new ArrayList<>();
+
+		for (MultipartFile file : files) {
+
+			String originalFilename = file.getOriginalFilename();
+			String extension = "";
+
+			if (originalFilename != null && originalFilename.contains(".")) {
+				extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+			}
+
+			String newFileName = UUID.randomUUID().toString() + extension;
+
+			Path targetPath = targetDir.resolve(newFileName);
+
+			Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+			String relativeFolder = String.join("/", "/uploads", year, month, day);
+			String relativeFilePath = relativeFolder + "/" + newFileName;
+			Attachs attach = new Attachs();
+			attach.setAttachName(originalFilename);
+			attach.setSavePath("save_path");
+			attach.setAttachPath(relativeFilePath);
+			attach.setDateCreate(LocalDateTime.now());
+			attach.setIsActive(true);
+			lstAttach.add(attach);
+		}
+
+
+		return lstAttach;
+	}
 
 	public static String removeAccent(String text) {
 		if (text == null) return null;

@@ -194,6 +194,13 @@ public enum FunctionType {
 //    CLOUD_CA("CA Cloud"),
 //    USB_CA("USB"),
 //    SIM_CA("Sim CA"),
+
+    VIEW_DETAIL_DOCUMENT("log.action.docType.view"),
+    CREATE_DOCUMENT("log.action.docType.create"),
+    EDIT_DOCUMENT("log.action.docType.edit"),
+    DELETE_DOCUMENT("log.action.docType.delete"),
+    LOCK_DOCUMENT("log.action.docType.lock"),
+    UNLOCK_DOCUMENT("log.action.docType.unlock"),
     ;
     private final String function;
 
