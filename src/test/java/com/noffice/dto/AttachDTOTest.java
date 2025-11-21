@@ -43,7 +43,7 @@ class AttachDTOTest {
         dto.setAttachName("test");
         dto.setAttachPath("/path/to/file");
         dto.setCreatorId(UUID_1);
-        dto.setDateCreate(LocalDateTime.now());
+        dto.setDateCreate(date);
         dto.setAttachType(1);
         dto.setSavePath("/save/path");
         dto.setVersionNumber(1L);
