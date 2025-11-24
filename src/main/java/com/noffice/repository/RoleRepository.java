@@ -8,6 +8,7 @@ import com.noffice.dto.RoleDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import com.noffice.entity.Role;
@@ -83,4 +84,8 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
 
 	@Query("FROM Role r WHERE r.id = :id ")
 	Role findByRoleIdIncluideDeleted(UUID id);
+
+	@Modifying
+	@Query("DELETE FROM Role d WHERE d.id = :id")
+	void deleteRoleByRoleId(@Param("id") UUID id);
 }

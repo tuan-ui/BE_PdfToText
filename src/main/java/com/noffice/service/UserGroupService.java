@@ -32,18 +32,24 @@ public class UserGroupService {
     private final LogService logService;
 
     @Transactional
-    public UserGroup saveUserGroup(UUID id, String groupName, String groupCode, List<UUID> userIds) {
+    public String saveUserGroup(UUID id, String groupName, String groupCode, List<UUID> userIds, Long version) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userCreate = (User) authentication.getPrincipal();
         UserGroup userGroup;
         if (id != null) {
             userGroup = userGroupRepository.findById(id).orElse(new UserGroup());
+            if (!Objects.equals(userGroup.getVersion(), version)) {
+                return  "error.DataChangedReload";
+            }
             userGroup.setUpdateBy(userCreate.getId());
         } else {
-            userGroup = new UserGroup();
-            userGroup.setCreateBy(userCreate.getId());
-            userGroup.setPartnerId(userCreate.getPartnerId());
-            userGroup.setIsDeleted(Constants.isDeleted.ACTIVE);
+            if(userGroupRepository.getUserGroupByCode(groupCode)==null) {
+                userGroup = new UserGroup();
+                userGroup.setCreateBy(userCreate.getId());
+                userGroup.setPartnerId(userCreate.getPartnerId());
+                userGroup.setIsDeleted(Constants.isDeleted.ACTIVE);
+            } else
+                return "error.UserGroupDoesExist";
         }
         userGroup.setGroupName(groupName);
         userGroup.setGroupCode(groupCode);
@@ -60,7 +66,7 @@ public class UserGroupService {
                 newGroup.getId(),
                 userCreate.getPartnerId()
         );
-        return newGroup;
+        return "";
     }
 
     public Page<UserGroupResponse> searchUserGroups(UUID partnerId, String searchString, String groupCode, String groupName, Boolean status, Pageable pageable) {
@@ -107,12 +113,9 @@ public class UserGroupService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userDetails = (User) authentication.getPrincipal();
         UserGroup userGroup = userGroupRepository.findByIdIncludeDeleted(id);
-        if (!Objects.equals(userGroup.getVersion(), version)) {
+        if (userGroup == null || !Objects.equals(userGroup.getVersion(), version)) {
             return  "error.DataChangedReload";
-        }
-        if(userGroup.getIsDeleted())
-            return	"error.UserGroupDoesNotExist";
-        else {
+        } else {
             userGroup.setIsActive(!userGroup.getIsActive());
             userGroup.setUpdateBy(userDetails.getId());
             userGroupRepository.save(userGroup);
@@ -136,15 +139,10 @@ public class UserGroupService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User userDetails = (User) authentication.getPrincipal();
         UserGroup userGroup = userGroupRepository.findByIdIncludeDeleted(id);
-        if (!Objects.equals(userGroup.getVersion(), version)) {
+        if (userGroup == null || !Objects.equals(userGroup.getVersion(), version)) {
             return  "error.DataChangedReload";
-        }
-        if(userGroup.getIsDeleted())
-            return	"error.UserGroupDoesNotExist";
-        else {
-            userGroup.setIsDeleted(Constants.isDeleted.DELETED);
-            userGroup.setDeletedBy(userDetails.getId());
-            userGroupRepository.save(userGroup);
+        } else {
+            userGroupRepository.deleteUserGroupByUserGroupId(id);
             userGroupsRepository.deleteByGroupId(id);
             logService.createLog(
                     ActionType.DELETE.getAction(),
@@ -184,13 +182,19 @@ public class UserGroupService {
             ErrorListResponse.ErrorResponse object = new ErrorListResponse.ErrorResponse();
             object.setId(id.getId());
             UserGroup userGroup = userGroupRepository.findByIdIncludeDeleted(id.getId());
-            if (userGroupsRepository.existsUserByGroupId(id.getId())) {
-                object.setErrorMessage("error.UserGroupAlreadyUseOnUser");
-            } else if (userGroup.getIsDeleted()) {
-                object.setErrorMessage("error.RoleDoesNotExist");
+            if(userGroup == null) {
+                object.setErrorMessage("error.DataChangedReload");
+                object.setCode(id.getCode());
+                object.setName(id.getName());
             }
-            object.setCode(userGroup.getGroupCode());
-            object.setName(userGroup.getGroupName());
+            else if (userGroupsRepository.existsUserByGroupId(id.getId())) {
+                object.setErrorMessage("error.UserGroupAlreadyUseOnUser");
+                object.setCode(userGroup.getGroupCode());
+                object.setName(userGroup.getGroupName());
+            }   else {
+                object.setCode(userGroup.getGroupCode());
+                object.setName(userGroup.getGroupName());
+            }
             lstObject.add(object);
 
         }

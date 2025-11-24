@@ -29,22 +29,16 @@ public class DomainService {
 	@Transactional
 	public String deleteDomain(UUID id, User user, Long version) {
 		Domain domain = domainRepository.findByDomainIdIncludeDeleted(id);
-		if (!Objects.equals(domain.getVersion(), version)) {
+		if (domain == null || !Objects.equals(domain.getVersion(), version)) {
 			return "error.DataChangedReload";
-		}
-		if (domain.getIsDeleted())
-			return "error.RoleCodeNotExists";
-		else {
+		} else {
 			//			Long countChild = domainRepository.countChildDomains(domain.getDomainId(), domain.getPartnerId());
 //			if (countChild > 0) {
 //				return "error.UnableToDeleteExistingUnitOfSubordinateDomain";
 //			}
-			domain.setIsDeleted(Constants.isDeleted.DELETED);
-			domain.setDeletedBy(user.getId());
-			domain.setDeletedAt(LocalDateTime.now());
-			Domain savedDomain = domainRepository.save(domain);
-			logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOMAIN.getFunction(), "object", savedDomain.getDomainName()),
-					user.getId(), savedDomain.getId(), user.getPartnerId());
+			domainRepository.deleteDomainByDomainId(id);
+			logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOMAIN.getFunction(), "object", domain.getDomainName()),
+					user.getId(), domain.getId(), user.getPartnerId());
 		}
 		return"";
 	}
@@ -53,23 +47,17 @@ public class DomainService {
 	public String deleteMultiDomain(List<DeleteMultiDTO> ids, User user) {
 		for(DeleteMultiDTO id :ids) {
 			Domain domain = domainRepository.findByDomainIdIncludeDeleted(id.getId());
-			if (!Objects.equals(domain.getVersion(), id.getVersion())) {
+			if (domain == null || !Objects.equals(domain.getVersion(), id.getVersion())) {
 				return "error.DataChangedReload";
-			}
-			if (domain.getIsDeleted())
-				return "error.RoleCodeNotExists";
-			else {
+			} else {
 				//				Long countChild = domainRepository.countChildDomains(domain.getDomainId(), domain.getPartnerId());
 //				if (countChild > 0) {
 //					return "error.UnableToDeleteExistingUnitOfSubordinateDomain";
 //				}
 
-				domain.setIsDeleted(Constants.isDeleted.DELETED);
-				domain.setDeletedBy(user.getId());
-				domain.setDeletedAt(LocalDateTime.now());
-				Domain savedDomain = domainRepository.save(domain);
-				logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOMAIN.getFunction(), "object", savedDomain.getDomainName()),
-						user.getId(), savedDomain.getId(), user.getPartnerId());
+				domainRepository.deleteDomainByDomainId(id.getId());
+				logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOMAIN.getFunction(), "object", domain.getDomainName()),
+						user.getId(), domain.getId(), user.getPartnerId());
 			}
 		}
 		return "";
@@ -78,12 +66,9 @@ public class DomainService {
 	@Transactional
 	public String lockUnlockDomain(UUID id, User user, Long version) {
 		Domain domain = domainRepository.findByDomainIdIncludeDeleted(id);
-		if (!Objects.equals(domain.getVersion(), version)) {
+		if (domain == null || !Objects.equals(domain.getVersion(), version)) {
 			return "error.DataChangedReload";
-		}
-		if (domain.getIsDeleted())
-			return "error.RoleCodeNotExists";
-		else {
+		} else {
 			Boolean newStatus = !domain.getIsActive();
 			domain.setIsActive(newStatus);
 
@@ -116,7 +101,7 @@ public class DomainService {
 
 			return "";
 		} else {
-			return "error.DomainNotExists";
+			return "error.DomainExists";
 		}
 	}
 
@@ -124,12 +109,9 @@ public class DomainService {
 	public String updateDomain(Domain domainDTO, Authentication authentication) {
 		User token = (User) authentication.getPrincipal();
 		Domain domain = domainRepository.findByDomainIdIncludeDeleted(domainDTO.getId());
-		if (!Objects.equals(domain.getVersion(), domainDTO.getVersion())) {
+		if (domain == null || !Objects.equals(domain.getVersion(), domainDTO.getVersion())) {
 			return  "error.DataChangedReload";
-		}
-		if(domain.getIsDeleted())
-			return	"error.DomainNotExists";
-		else {
+		} else {
 			domain.setDomainName(domainDTO.getDomainName());
 			domain.setDomainCode(domainDTO.getDomainCode());
 			domain.setDomainDescription(domainDTO.getDomainDescription());
@@ -166,14 +148,15 @@ public class DomainService {
 		for(DeleteMultiDTO id : ids) {
 			ErrorListResponse.ErrorResponse object = new ErrorListResponse.ErrorResponse();
 			object.setId(id.getId());
-			Domain role = domainRepository.findByDomainIdIncludeDeleted(id.getId());
-			if (!Objects.equals(role.getVersion(), id.getVersion())) {
+			Domain domain = domainRepository.findByDomainIdIncludeDeleted(id.getId());
+			if(domain == null) {
 				object.setErrorMessage("error.DataChangedReload");
-			} else if (role.getIsDeleted()) {
-				object.setErrorMessage("error.DomainNotExists");
+				object.setCode(id.getCode());
+				object.setName(id.getName());
+			}   else {
+				object.setCode(domain.getDomainCode());
+				object.setName(domain.getDomainName());;
 			}
-			object.setCode(role.getDomainCode());
-			object.setName(role.getDomainName());
 			lstObject.add(object);
 		}
 		response.setErrors(lstObject);

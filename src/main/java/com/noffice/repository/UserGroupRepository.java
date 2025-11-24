@@ -1,5 +1,6 @@
 package com.noffice.repository;
 
+import com.noffice.entity.Partners;
 import com.noffice.entity.UserGroup;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,13 +41,13 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, UUID> {
             Pageable pageable
     );
 
-    @Modifying
-    @Query("UPDATE UserGroup ug SET ug.isDeleted = true WHERE ug.id = :groupId AND ug.deletedBy = :userId")
-    void deleteByGroupId(UUID groupId, UUID userId);
-
-    @Query("SELECT ug FROM UserGroup ug WHERE ug.id = :id AND ug.isDeleted = false")
-    UserGroup findByIdAndIsDeleted(UUID id);
-
     @Query("SELECT ug FROM UserGroup ug WHERE ug.id = :id")
     UserGroup findByIdIncludeDeleted(UUID id);
+
+    @Query(value = "FROM UserGroup p WHERE p.groupCode= :groupCode AND p.isDeleted = false")
+    UserGroup getUserGroupByCode(@Param("groupCode") String groupCode);
+
+    @Modifying
+    @Query("DELETE FROM UserGroup d WHERE d.id = :id")
+    void deleteUserGroupByUserGroupId(@Param("id") UUID id);
 }

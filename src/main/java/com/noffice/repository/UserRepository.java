@@ -139,4 +139,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	@Query("SELECT u FROM User u WHERE LOWER(u.username) = LOWER(:username) And LOWER(u.phone) = LOWER(:phone)  AND u.isDeleted = false")
 	User findByUsernameandPhone(String username, String phone);
+
+	@Modifying
+	@Query("DELETE FROM User d WHERE d.id = :id")
+	void deleteUserByUserId(@Param("id") UUID id);
 }

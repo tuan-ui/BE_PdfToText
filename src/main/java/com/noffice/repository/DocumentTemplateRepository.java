@@ -4,6 +4,7 @@ import com.noffice.entity.DocumentTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -68,4 +69,9 @@ public interface DocumentTemplateRepository extends JpaRepository<DocumentTempla
 	@Query(value = "FROM DocumentTemplate d " +
 			"WHERE d.id = :id")
 	DocumentTemplate findByDocumentTemplateIdIncludeDeleted(@Param("id") UUID id);
+
+
+	@Modifying
+	@Query("DELETE FROM DocumentTemplate d WHERE d.id = :id")
+	void deleteDocumentTemplateByDocumentTemplateId(@Param("id") UUID id);
 }

@@ -5,6 +5,7 @@ import com.noffice.entity.HolidayType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -48,7 +49,7 @@ public interface HolidayTypeRepository extends JpaRepository<HolidayType, Long> 
 	@Query(value = "FROM HolidayType ht " +
 			"WHERE(:holidayTypeCode IS NULL OR LOWER(ht.holidayTypeCode) = LOWER(:holidayTypeCode)) " +
 			"AND ht.isDeleted = false AND ht.partnerId = :partnerId ")
-	DocType findByCode(@Param("holidayTypeCode") String holidayTypeCode, @Param("partnerId") UUID partnerId);
+	HolidayType findByCode(@Param("holidayTypeCode") String holidayTypeCode, @Param("partnerId") UUID partnerId);
 
 	@Query(value = "FROM HolidayType ht WHERE ht.holidayTypeCode= :holidayTypeCode AND ht.isDeleted = false")
 	HolidayType getHolidayTypeByCode(@Param("holidayTypeCode") String holidayTypeCode);
@@ -59,4 +60,9 @@ public interface HolidayTypeRepository extends JpaRepository<HolidayType, Long> 
 	@Query(value = "FROM HolidayType ht " +
 			"WHERE ht.id = :id")
 	HolidayType findByHolidayTypeIdIncludeDeleted(@Param("id") UUID id);
+
+
+	@Modifying
+	@Query("DELETE FROM HolidayType d WHERE d.id = :id")
+	void deleteHolidayTypeByHolidayTypeId(@Param("id") UUID id);
 }

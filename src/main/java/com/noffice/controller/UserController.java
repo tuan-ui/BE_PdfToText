@@ -11,6 +11,7 @@ import com.noffice.ultils.DateUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -102,7 +103,7 @@ public class UserController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			String message = userService.deleteUser(id, userDetails, version);
-            if (message != null && !message.trim().isEmpty()) {
+            if(StringUtils.isNotBlank(message)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ResponseAPI(null, message, 400));
             }
@@ -120,7 +121,7 @@ public class UserController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             String message = userService.deleteMultiUser(ids, userDetails);
-            if (message != null && !message.trim().isEmpty()) {
+            if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
             return new ResponseAPI(null, "success", 200);
@@ -150,7 +151,7 @@ public class UserController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             String message = userService.lockUser(id,userDetails, version );
-            if (message != null && !message.trim().isEmpty()) {
+            if(StringUtils.isNotBlank(message)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ResponseAPI(null, message, 400));
             }
@@ -272,7 +273,7 @@ public class UserController {
             }
 
             String message = userService.updateUser(user, userDetails.getPartnerId(), profileImagePath, signatureImagePath, userDetails, roleIds, version);
-            if (message != null && !message.trim().isEmpty()) {
+            if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
             return new ResponseAPI(null, "success", 200);
@@ -440,7 +441,7 @@ public class UserController {
             }
 
             String message = userService.createUser(user, userDetails.getPartnerId(), profileImagePath, signatureImagePath, userDetails,roleIds);
-            if (message != null && !message.trim().isEmpty()) {
+            if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
             return new ResponseAPI(null, "success", 200);

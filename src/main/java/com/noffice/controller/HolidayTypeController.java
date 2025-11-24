@@ -9,6 +9,7 @@ import com.noffice.service.HolidayTypeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,7 +55,7 @@ public class HolidayTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User token = (User) authentication.getPrincipal();
             String message = holidayTypeService.deleteHolidayType(id, token, version);
-            if(message!=null && !message.isEmpty())
+            if(StringUtils.isNotBlank(message))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
             else
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -69,7 +70,7 @@ public class HolidayTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User token = (User) authentication.getPrincipal();
             String result = holidayTypeService.deleteMultiHolidayType(id, token);
-            if(result!=null && !result.isEmpty())
+            if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
             else
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -85,8 +86,8 @@ public class HolidayTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User token = (User) authentication.getPrincipal();
             String message = holidayTypeService.lockHolidayType(id,token, version);
-            if(message==null)
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "false", 400));
+            if(StringUtils.isNotBlank(message))
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
             else
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
         } catch (Exception e) {
@@ -100,7 +101,7 @@ public class HolidayTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User token = (User) authentication.getPrincipal();
             String result = holidayTypeService.createHolidayType(request, token);
-            if (result == null || !result.trim().isEmpty())
+            if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
             else
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
@@ -116,7 +117,7 @@ public class HolidayTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User token = (User) authentication.getPrincipal();
             String result = holidayTypeService.updateHolidayType(request, token);
-            if (result == null || !result.trim().isEmpty())
+            if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
             else
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));

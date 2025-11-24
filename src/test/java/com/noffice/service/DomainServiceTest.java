@@ -18,11 +18,11 @@ import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -67,14 +67,12 @@ class DomainServiceTest {
     @Test
     void deleteDomain_Success() {
         when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(sampleDomain);
-        when(domainRepository.save(any(Domain.class))).thenReturn(sampleDomain);
+        Mockito.doNothing().when(domainRepository).deleteDomainByDomainId(any(UUID.class));
 
         String result = domainService.deleteDomain(domainId, mockUser, 1L);
 
         assertEquals("", result);
-        assertEquals(Constants.isDeleted.DELETED, sampleDomain.getIsDeleted());
-        assertEquals(mockUser.getId(), sampleDomain.getDeletedBy());
-        verify(logService).createLog(eq(ActionType.DELETE.getAction()), any(Map.class), eq(mockUser.getId()), eq(domainId), eq(partnerId));
+        verify(logService).createLog(eq(ActionType.DELETE.getAction()), anyMap(), eq(mockUser.getId()), eq(domainId), eq(partnerId));
     }
 
     @Test
@@ -85,16 +83,6 @@ class DomainServiceTest {
 
         assertEquals("error.DataChangedReload", result);
         verifyNoInteractions(logService);
-    }
-
-    @Test
-    void deleteDomain_AlreadyDeleted() {
-        sampleDomain.setIsDeleted(Constants.isDeleted.DELETED);
-        when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(sampleDomain);
-
-        String result = domainService.deleteDomain(domainId, mockUser, 1L);
-
-        assertEquals("error.RoleCodeNotExists", result);
     }
 
     @Test
@@ -109,24 +97,24 @@ class DomainServiceTest {
         domain2.setPartnerId(partnerId);
 
         List<DeleteMultiDTO> ids = List.of(
-                new DeleteMultiDTO(domainId, 1L),
-                new DeleteMultiDTO(id2, 1L)
+                new DeleteMultiDTO(domainId,"name","code", 1L),
+                new DeleteMultiDTO(id2,"name","code", 1L)
         );
 
         when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(sampleDomain);
         when(domainRepository.findByDomainIdIncludeDeleted(eq(id2))).thenReturn(domain2);
-        when(domainRepository.save(any(Domain.class))).thenReturn(sampleDomain, domain2);
+        Mockito.doNothing().when(domainRepository).deleteDomainByDomainId(any(UUID.class));
 
         String result = domainService.deleteMultiDomain(ids, mockUser);
 
         assertEquals("", result);
-        verify(logService, times(2)).createLog(anyString(), any(Map.class), any(), any(), any());
+        verify(logService, times(2)).createLog(anyString(), anyMap(), any(), any(), any());
     }
 
     @Test
     void deleteMultiDomain_OneVersionMismatch() {
         List<DeleteMultiDTO> ids = List.of(
-                new DeleteMultiDTO(domainId, 999L)
+                new DeleteMultiDTO(domainId,"name","code", 999L)
         );
 
         when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(sampleDomain);
@@ -147,7 +135,7 @@ class DomainServiceTest {
 
         assertEquals("", result);
         assertFalse(sampleDomain.getIsActive());
-        verify(logService).createLog(eq(ActionType.LOCK.getAction()), any(Map.class), any(), any(), any());
+        verify(logService).createLog(eq(ActionType.LOCK.getAction()), anyMap(), any(), any(), any());
     }
 
     @Test
@@ -159,7 +147,17 @@ class DomainServiceTest {
         domainService.lockUnlockDomain(domainId, mockUser, 1L);
 
         assertTrue(sampleDomain.getIsActive());
-        verify(logService).createLog(eq(ActionType.UNLOCK.getAction()), any(Map.class), any(), any(), any());
+        verify(logService).createLog(eq(ActionType.UNLOCK.getAction()), anyMap(), any(), any(), any());
+    }
+
+    @Test
+    void lockUnlockDomain_Error() {
+        sampleDomain.setIsActive(false);
+        when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(null);
+
+        String result = domainService.lockUnlockDomain(domainId, mockUser, 1L);
+
+        assertEquals("error.DataChangedReload", result);
     }
 
     @Test
@@ -177,7 +175,7 @@ class DomainServiceTest {
         String result = domainService.saveDomain(domainDTO, auth);
 
         assertEquals("", result);
-        verify(logService).createLog(eq(ActionType.CREATE.getAction()), any(Map.class), any(), any(), any());
+        verify(logService).createLog(eq(ActionType.CREATE.getAction()), anyMap(), any(), any(), any());
     }
 
     @Test
@@ -191,7 +189,7 @@ class DomainServiceTest {
 
         String result = domainService.saveDomain(domainDTO, auth);
 
-        assertEquals("error.DomainNotExists", result);
+        assertEquals("error.DomainExists", result);
         verifyNoInteractions(logService);
     }
 
@@ -213,7 +211,20 @@ class DomainServiceTest {
 
         assertEquals("", result);
         assertEquals("Updated Name", sampleDomain.getDomainName());
-        verify(logService).createLog(eq(ActionType.UPDATE.getAction()), any(Map.class), any(), any(), any());
+        verify(logService).createLog(eq(ActionType.UPDATE.getAction()), anyMap(), any(), any(), any());
+    }
+
+    @Test
+    void updateDomain_Error() {
+        Domain domainDTO = new Domain();
+        domainDTO.setId(domainId);
+        Authentication auth = new TestingAuthenticationToken(mockUser, null);
+
+        when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(null);
+
+        String result = domainService.updateDomain(domainDTO, auth);
+
+        assertEquals("error.DataChangedReload", result);
     }
 
     @Test
@@ -245,28 +256,25 @@ class DomainServiceTest {
 
         domainService.getLogDetailDomain("TEST001", mockUser);
 
-        verify(logService).createLog(eq(ActionType.VIEW.getAction()), any(Map.class), any(), any(), any());
+        verify(logService).createLog(eq(ActionType.VIEW.getAction()), anyMap(), any(), any(), any());
     }
 
     @Test
-    @DisplayName("checkDeleteMulti - Có lỗi → trả về ErrorListResponse")
     void checkDeleteMulti_HasError() {
         sampleDomain.setVersion(999L); // version không khớp
-        List<DeleteMultiDTO> ids = List.of(new DeleteMultiDTO(domainId, 1L));
+        List<DeleteMultiDTO> ids = List.of(new DeleteMultiDTO(domainId,"name","code", 1L));
 
-        when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(sampleDomain);
+        when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(null);
 
         ErrorListResponse result = domainService.checkDeleteMulti(ids);
 
-        assertNotNull(result);
         assertTrue(result.getHasError());
         assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
     }
 
     @Test
-    @DisplayName("checkDeleteMulti - Không lỗi → trả về null")
     void checkDeleteMulti_NoError_ReturnsNull() {
-        List<DeleteMultiDTO> ids = List.of(new DeleteMultiDTO(domainId, 1L));
+        List<DeleteMultiDTO> ids = List.of(new DeleteMultiDTO(domainId,"name","code", 1L));
 
         when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(sampleDomain);
 

@@ -6,6 +6,7 @@ import com.noffice.reponse.Response;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,10 +55,13 @@ public class PartnerController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User token = (User) authentication.getPrincipal();
-            Partners partnerSave = partnerService.createPartner(partner, token);
-            return new Response(partnerSave, "success", 200);
+            String partnerSave = partnerService.createPartner(partner, token);
+            if(StringUtils.isNotBlank(partnerSave))
+                return new Response(partnerSave, "fail", 400);
+            else
+                return new Response(partnerSave, "success", 200);
         } catch (Exception e) {
-            return new Response("error", "fail", 400);
+            return new Response("error", "fail", 500);
         }
     }
 
@@ -66,10 +70,13 @@ public class PartnerController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User token = (User) authentication.getPrincipal();
-            Partners partnerSave = partnerService.updatePartner(partner, token);
-            return new Response(partnerSave, "success", 200);
+            String partnerSave = partnerService.updatePartner(partner, token);
+            if(StringUtils.isNotBlank(partnerSave))
+                return new Response(partnerSave, "fail", 400);
+            else
+                return new Response(partnerSave, "success", 200);
         } catch (Exception e) {
-            return new Response("error", "fail", 400);
+            return new Response("error", "fail", 500);
         }
     }
 
@@ -80,9 +87,12 @@ public class PartnerController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             String message = partnerService.deletePartner(id,userDetails, version);
-            return new ResponseAPI(null, message, 200);
+            if(StringUtils.isNotBlank(message))
+                return new ResponseAPI(message, "fail", 400);
+            else
+                return new ResponseAPI(message, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -105,12 +115,10 @@ public class PartnerController {
             User userDetails = (User) authentication.getPrincipal();
             String message = partnerService.deleteMultiPartner(ids, userDetails);
 
-            if (message != null && !message.trim().isEmpty()) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ResponseAPI(null, message, 400));
-            }
-
-            return ResponseEntity.ok(new ResponseAPI(null, "Xóa thành công", 200));
+            if(StringUtils.isNotBlank(message))
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
+            else
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
@@ -124,9 +132,12 @@ public class PartnerController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             String message = partnerService.lockPartner(partner,userDetails, version);
-            return new Response("", message, 201);
+            if(StringUtils.isNotBlank(message))
+                return new Response(message, "fail", 400);
+            else
+                return new Response(message, "success", 200);
         } catch (Exception e) {
-            return new Response("error", "Thao tác thất bại", 201);
+            return new Response("error", "Thao tác thất bại", 500);
         }
     }
 

@@ -28,16 +28,10 @@ public class HolidayTypeService {
     public String deleteHolidayType(UUID id, User user, Long version) {
             // find and update is del
             HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id);
-            if (!Objects.equals(holidayType.getVersion(), version)) {
+            if (holidayType == null || !Objects.equals(holidayType.getVersion(), version)) {
                 return "error.DataChangedReload";
-            }
-            if (holidayType.getIsDeleted())
-                return "error.HolidayTypeNotExists";
-            else {
-                holidayType.setIsDeleted(Constants.isDeleted.DELETED);
-                holidayType.setDeletedAt(LocalDateTime.now());
-                holidayType.setDeletedBy(user.getId());
-                holidayTypeRepository.save(holidayType);
+            } else {
+                holidayTypeRepository.deleteHolidayTypeByHolidayTypeId(id);
                 logService.createLog(ActionType.DELETE.getAction(),
                         Map.of("actor", user.getFullName(),"action", FunctionType.DELETE_HOLIDAYTYPE.getFunction(),
                                 "object", holidayType.getHolidayTypeName()), user.getId(), holidayType.getId(),
@@ -50,16 +44,10 @@ public class HolidayTypeService {
     public String deleteMultiHolidayType(List<DeleteMultiDTO> ids, User user) {
         for(DeleteMultiDTO id : ids) {
             HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id.getId());
-            if (!Objects.equals(holidayType.getVersion(), id.getVersion())) {
+            if (holidayType == null || !Objects.equals(holidayType.getVersion(), id.getVersion())) {
                 return "error.DataChangedReload";
-            }
-            if (holidayType.getIsDeleted()) {
-                return "error.HolidayTypeNotExists";
             } else {
-                holidayType.setIsDeleted(Constants.isDeleted.DELETED);
-                holidayType.setDeletedAt(LocalDateTime.now());
-                holidayType.setDeletedBy(user.getId());
-                holidayTypeRepository.save(holidayType);
+                holidayTypeRepository.deleteHolidayTypeByHolidayTypeId(id.getId());
                 logService.createLog(ActionType.DELETE.getAction(),
                         Map.of("actor", user.getFullName(),"action", FunctionType.DELETE_HOLIDAYTYPE.getFunction(),
                                 "object", holidayType.getHolidayTypeName()),
@@ -72,12 +60,9 @@ public class HolidayTypeService {
     @Transactional
     public String lockHolidayType(UUID id, User user, Long version) {
         HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id);
-        if (!Objects.equals(holidayType.getVersion(), version)) {
+        if (holidayType == null || !Objects.equals(holidayType.getVersion(), version)) {
             return "error.DataChangedReload";
-        }
-        if (holidayType.getIsDeleted())
-            return "error.HolidayTypeNotExists";
-        else {
+        } else {
             holidayType.setIsActive(!holidayType.getIsActive());
             holidayType.setUpdateAt(LocalDateTime.now());
             holidayType.setUpdateBy(user.getId());
@@ -110,19 +95,16 @@ public class HolidayTypeService {
                     token.getId(), holidayType.getId(), token.getPartnerId());
             return "";
         } else {
-            return "error.HolidayTypeNotExists";
+            return "error.HolidayTypeExists";
         }
     }
 
     @Transactional
     public String updateHolidayType(HolidayType holidayTypeRequest, User token) {
         HolidayType holiday = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(holidayTypeRequest.getId());
-        if (!Objects.equals(holiday.getVersion(), holidayTypeRequest.getVersion())) {
+        if (holiday == null || !Objects.equals(holiday.getVersion(), holidayTypeRequest.getVersion())) {
             return "error.DataChangedReload";
-        }
-        if (holiday.getIsDeleted())
-            return "error.HolidayTypeNotExists";
-        else {
+        }else {
             holiday.setHolidayTypeCode(holidayTypeRequest.getHolidayTypeCode());
             holiday.setHolidayTypeName(holidayTypeRequest.getHolidayTypeName());
             holiday.setDescription(holidayTypeRequest.getDescription());
@@ -165,13 +147,14 @@ public class HolidayTypeService {
             ErrorListResponse.ErrorResponse object = new ErrorListResponse.ErrorResponse();
             object.setId(id.getId());
             HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id.getId());
-            if (!Objects.equals(holidayType.getVersion(), id.getVersion())) {
+            if(holidayType == null) {
                 object.setErrorMessage("error.DataChangedReload");
-            } else if (holidayType.getIsDeleted()) {
-                object.setErrorMessage("error.HolidayTypeNotExists");
+                object.setCode(id.getCode());
+                object.setName(id.getName());
+            }   else {
+                object.setCode(holidayType.getHolidayTypeCode());
+                object.setName(holidayType.getHolidayTypeName());
             }
-            object.setCode(holidayType.getHolidayTypeCode());
-            object.setName(holidayType.getHolidayTypeName());
             lstObject.add(object);
         }
         response.setErrors(lstObject);

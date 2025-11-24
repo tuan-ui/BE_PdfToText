@@ -4,6 +4,7 @@ import com.noffice.entity.Domain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -68,4 +69,8 @@ public interface DomainRepository extends JpaRepository<Domain, Long> {
 
 	@Query("FROM Domain d WHERE d.partnerId = :partnerId  AND d.isDeleted = false AND d.isActive = true")
 	List<Domain> getAllDomain(UUID partnerId);
+
+	@Modifying
+	@Query("DELETE FROM Domain d WHERE d.id = :domaineId")
+	void deleteDomainByDomainId(@Param("domaineId") UUID domaineId);
 }

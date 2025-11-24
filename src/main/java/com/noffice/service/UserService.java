@@ -95,22 +95,16 @@ public class UserService {
     @Transactional
     public String deleteUser(UUID id, User user, Long version) {
         User deletedUser = userRepository.getUserByUserIdIncluideDeleted(id);
-        if (!Objects.equals(deletedUser.getVersion(), version)) {
+        if (deletedUser == null || !Objects.equals(deletedUser.getVersion(), version)) {
             return  "error.DataChangedReload";
-        }
-        if(deletedUser.getIsDeleted())
-            return	"error.RoleCodeNotExists";
-        else {
+        } else {
             if (userGroupsRepository.existsByUserId(deletedUser.getId())) {
                 return "error.UserGroupUsed";
             }
-            deletedUser.setIsDeleted(Constants.isDeleted.DELETED);
-            deletedUser.setDeletedAt(LocalDateTime.now());
-            deletedUser.setDeletedBy(deletedUser.getId());
-            User updatedUser = userRepository.save(deletedUser);
-            userRolesRepository.deleteByUserId(updatedUser.getId());
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", updatedUser.getUsername()),
-                    user.getId(), updatedUser.getId(), user.getPartnerId());
+            userRepository.deleteUserByUserId(id);
+            userRolesRepository.deleteByUserId(deletedUser.getId());
+            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", deletedUser.getUsername()),
+                    user.getId(), deletedUser.getId(), user.getPartnerId());
         }
             return "";
     }
@@ -119,22 +113,16 @@ public class UserService {
     public String deleteMultiUser(List<DeleteMultiDTO> ids, User userDetails) {
         for (DeleteMultiDTO id : ids) {
             User user = userRepository.getUserByUserIdIncluideDeleted(id.getId());
-            if (!Objects.equals(user.getVersion(), id.getVersion())) {
+            if (user == null || !Objects.equals(user.getVersion(), id.getVersion())) {
                 return  "error.DataChangedReload";
-            }
-            if(user.getIsDeleted())
-                return	"error.RoleCodeNotExists";
-            else {
+            } else {
                 if (userGroupsRepository.existsByUserId(user.getId())) {
                     return "error.UserGroupUsed";
                 }
-                user.setIsDeleted(Constants.isDeleted.DELETED);
-                user.setDeletedAt(LocalDateTime.now());
-                user.setDeletedBy(userDetails.getId());
-                User updatedUser = userRepository.save(user);
-                userRolesRepository.deleteByUserId(updatedUser.getId());
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", updatedUser.getUsername()),
-                        userDetails.getId(), updatedUser.getId(), userDetails.getPartnerId());
+                userRepository.deleteUserByUserId(id.getId());
+                userRolesRepository.deleteByUserId(id.getId());
+                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", user.getUsername()),
+                        userDetails.getId(), user.getId(), userDetails.getPartnerId());
             }
         }
         return "";
@@ -151,12 +139,9 @@ public class UserService {
     @Transactional
     public String updateUser(UserCreateDTO userCreateDTO, UUID partnerId, String profileImagePath, String signatureImagePath, User user, List<UUID> roleIds, Long version) {
         User existingUser = userRepository.findByUsernameIncluideDeleted(userCreateDTO.getUsername());
-        if (!Objects.equals(existingUser.getVersion(), version)) {
+        if (existingUser == null || !Objects.equals(existingUser.getVersion(), version)) {
             return "error.DataChangedReload";
-        }
-        if (existingUser.getIsDeleted())
-            return "error.UserDoesNotExist";
-        else {
+        } else {
             if (userCreateDTO.getUserCode() != null && !userCreateDTO.getUserCode().equals(existingUser.getUserCode())) {
                return "error.UserCodeError";
             }
@@ -176,7 +161,7 @@ public class UserService {
     @Transactional
     public String createUser(UserCreateDTO userCreateDTO, UUID partnerId, String profileImagePath, String signatureImagePath, User userDetails, List<UUID> roleIds) {
         if (userRepository.existsByUsername(userCreateDTO.getUsername()) > 0) {
-            return "error.UserNameDoesExist";
+            return "error.DataChangedReload";
         }
         if (userRepository.existsByUserCode(userCreateDTO.getUserCode(), partnerId) > 0) {
             return "error.UserCodeDoesExist";
@@ -299,12 +284,9 @@ public class UserService {
     @Transactional
     public String lockUser(UUID id, User userDetails,Long version) {
         User user = userRepository.getUserByUserIdIncluideDeleted(id);
-        if (!Objects.equals(user.getVersion(), version)) {
+        if (user == null || !Objects.equals(user.getVersion(), version)) {
             return  "error.DataChangedReload";
-        }
-        if(user.getIsDeleted())
-            return	"error.RoleCodeNotExists";
-        else {
+        } else {
             user.setIsActive(!user.getIsActive());
             user.setUpdateAt(LocalDateTime.now());
             user.setUpdateBy(userDetails.getId());
@@ -347,15 +329,18 @@ public class UserService {
             ErrorListResponse.ErrorResponse object = new ErrorListResponse.ErrorResponse();
             object.setId(id.getId());
             User user = userRepository.getUserByUserIdIncluideDeleted(id.getId());
-            if (!Objects.equals(user.getVersion(), id.getVersion())) {
+            if(user == null) {
                 object.setErrorMessage("error.DataChangedReload");
-            } else if (user.getIsDeleted()) {
-                object.setErrorMessage("error.UserCodeNotExists");
+                object.setCode(id.getCode());
+                object.setName(id.getName());
             } else if (userGroupsRepository.existsByUserId(user.getId())) {
                 object.setErrorMessage("error.UserGroupUsed");
+                object.setCode(user.getUserCode());
+                object.setName(user.getFullName());
+            }   else {
+                object.setCode(user.getUserCode());
+                object.setName(user.getFullName());
             }
-            object.setCode(user.getUserCode());
-            object.setName(user.getFullName());
             lstObject.add(object);
         }
         response.setErrors(lstObject);

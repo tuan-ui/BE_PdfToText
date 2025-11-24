@@ -11,6 +11,7 @@ import com.noffice.reponse.UserGroupResponse;
 import com.noffice.service.UserGroupService;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,10 +35,13 @@ public class UserGroupController {
             if (payload.getId() != null && !payload.getId().toString().isEmpty()) {
                 id = payload.getId();
             }
-            UserGroup userGroup = userGroupService.saveUserGroup(id, payload.getGroupName(), payload.getGroupCode(), payload.getUserIds());
-            return new ResponseAPI(userGroup, "User group created successfully", 200);
+            String userGroup = userGroupService.saveUserGroup(id, payload.getGroupName(), payload.getGroupCode(), payload.getUserIds(), payload.getVersion());
+            if(org.apache.commons.lang3.StringUtils.isNotBlank(userGroup)) {
+                return new ResponseAPI(null, userGroup, 400);
+            }
+            return new ResponseAPI(userGroup, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error creating user group: " + e.getMessage(), 400);
+            return new ResponseAPI(null, "Error creating user group: " + e.getMessage(), 500);
         }
     }
 
@@ -68,7 +72,7 @@ public class UserGroupController {
     public ResponseAPI updateUserGroupStatus(@RequestParam(value = "id") UUID id,@RequestParam(value = "version") Long version) {
         try {
             String message = userGroupService.updateUserGroupStatus(id, version);
-            if (message != null && !message.trim().isEmpty()) {
+            if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
             return new ResponseAPI(null, "User group status updated successfully", 200);
@@ -81,7 +85,7 @@ public class UserGroupController {
     public ResponseAPI deleteUserGroup(@RequestParam(value = "id") UUID id, @RequestParam(value = "version") Long version) {
         try {
             String message = userGroupService.deleteUserGroup(id, version);
-            if (message != null && !message.trim().isEmpty()) {
+            if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
             return new ResponseAPI(null, "User group deleted successfully", 200);

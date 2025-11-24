@@ -114,7 +114,7 @@ public class RoleController {
 			User userDetails = (User) authentication.getPrincipal();
 			
 			String message = roleService.save(roleDTO, userDetails);
-			if(message == null || !message.trim().isEmpty())
+			if(org.apache.commons.lang3.StringUtils.isNotBlank(message))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
@@ -139,7 +139,7 @@ public class RoleController {
 			User userDetails = (User) authentication.getPrincipal();
 			
 			String message = roleService.update(roleDTO, userDetails);
-			if(message == null || !message.trim().isEmpty())
+			if(org.apache.commons.lang3.StringUtils.isNotBlank(message))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
 			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
@@ -167,7 +167,7 @@ public class RoleController {
 
 	        String message = roleService.delete(id, userDetails, version);
 
-	        if (message != null && !message.trim().isEmpty()) {
+			if(org.apache.commons.lang3.StringUtils.isNotBlank(message)) {
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 	                    .body(new ResponseAPI(null, message, 400));
 	        }
@@ -198,7 +198,7 @@ public class RoleController {
 			User userDetails = (User) authentication.getPrincipal();
 	        String message = roleService.lockRole(id,userDetails, version);
 
-			if (message != null && !message.trim().isEmpty()) {
+			if(org.apache.commons.lang3.StringUtils.isNotBlank(message)) {
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 	                    .body(new ResponseAPI(null, message, 400));
 	        }
@@ -218,7 +218,7 @@ public class RoleController {
 
 			String message = roleService.deleteMuti(ids, userDetails);
 
-			if (message != null && !message.trim().isEmpty()) {
+			if(org.apache.commons.lang3.StringUtils.isNotBlank(message)) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ResponseAPI(null, message, 400));
 			}
@@ -283,7 +283,10 @@ public class RoleController {
 	public ResponseAPI updateRolePermissions(@RequestBody RolePermissionRequest res) {
 
 		try {
-			rolePermissionsService.updatePermissionsForRole(res.getRoleId(), res.getCheckedKeys(), res.getCheckedHalfKeys());
+			String message = rolePermissionsService.updatePermissionsForRole(res.getRoleId(), res.getCheckedKeys(), res.getCheckedHalfKeys());
+			if(org.apache.commons.lang3.StringUtils.isNotBlank(message)) {
+				return new ResponseAPI(null, message, 400);
+			}
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 400);

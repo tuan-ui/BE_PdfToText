@@ -11,5 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class DeleteMultiDTO {
     private UUID id;
+    private String name;
+    private String code;
     private Long version;
 }

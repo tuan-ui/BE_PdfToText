@@ -64,7 +64,6 @@ public class DomainControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private User mockUser;
     private UUID partnerId;
     private UUID testId;
     private Domain domain;
@@ -72,7 +71,7 @@ public class DomainControllerTest {
     void setUp() {
         partnerId = UUID.fromString("411f2d97-96ed-4bd2-a480-cec1afba65e8");
         testId = UUID.randomUUID();
-        mockUser = new User();
+        User mockUser = new User();
         mockUser.setId(UUID.randomUUID());
         mockUser.setUsername("testuser");
         mockUser.setPartnerId(partnerId);
@@ -193,8 +192,8 @@ public class DomainControllerTest {
     @Test
     void deleteMulti_Success() throws Exception {
         List<DeleteMultiDTO> ids = List.of(
-                new DeleteMultiDTO(testId, 1L),
-                new DeleteMultiDTO(UUID.randomUUID(), 1L)
+                new DeleteMultiDTO(testId,"name","code", 1L),
+                new DeleteMultiDTO(UUID.randomUUID(),"name","code", 1L)
         );
 
         Mockito.when(domainService.deleteMultiDomain(anyList(), any()))
@@ -211,8 +210,8 @@ public class DomainControllerTest {
     @Test
     void deleteMulti_BusinessError() throws Exception {
         List<DeleteMultiDTO> ids = List.of(
-                new DeleteMultiDTO(testId, 1L),
-                new DeleteMultiDTO(UUID.randomUUID(), 1L)
+                new DeleteMultiDTO(testId,"name","code", 1L),
+                new DeleteMultiDTO(UUID.randomUUID(),"name","code", 1L)
         );
 
         Mockito.when(domainService.deleteMultiDomain(anyList(), any()))
@@ -354,7 +353,7 @@ public class DomainControllerTest {
 
         Mockito.when(domainService.checkDeleteMulti(anyList())).thenReturn(response);
 
-        List<DeleteMultiDTO> ids = List.of(new DeleteMultiDTO(testId, 1L));
+        List<DeleteMultiDTO> ids = List.of(new DeleteMultiDTO(testId,"name","code", 1L));
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/domains/checkDeleteMulti")
                         .contentType(MediaType.APPLICATION_JSON)

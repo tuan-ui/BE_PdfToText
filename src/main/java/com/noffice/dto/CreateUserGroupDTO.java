@@ -15,4 +15,5 @@ public class CreateUserGroupDTO {
     private String groupName;
     private String groupCode;
     private List<UUID> userIds;
+    private Long version;
 }

@@ -28,18 +28,12 @@ public class TaskTypeService {
     @Transactional
     public String deleteTaskType(UUID id, User user, Long version) {
         TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id);
-        if (!Objects.equals(taskType.getVersion(), version)) {
+        if (taskType == null || !Objects.equals(taskType.getVersion(), version)) {
             return "error.DataChangedReload";
-        }
-        if (taskType.getIsDeleted())
-            return "error.TaskTypeNotExists";
-        else {
-            taskType.setIsDeleted(Constants.isDeleted.DELETED);
-            taskType.setDeletedBy(user.getId());
-            taskType.setDeletedAt(LocalDateTime.now());
-            TaskType savedTaskType = taskTypeRepository.save(taskType);
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_TASKTYPE.getFunction(), "object", savedTaskType.getTaskTypeName()),
-                    user.getId(), savedTaskType.getId(), user.getPartnerId());
+        } else {
+            taskTypeRepository.deleteTaskTypeByTaskTypeId(id);
+            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_TASKTYPE.getFunction(), "object", taskType.getTaskTypeName()),
+                    user.getId(), taskType.getId(), user.getPartnerId());
         }
         return "";
 
@@ -49,18 +43,12 @@ public class TaskTypeService {
     public String deleteMultiTaskType(List<DeleteMultiDTO> ids, User user) {
         for (DeleteMultiDTO id : ids) {
             TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id.getId());
-            if (!Objects.equals(taskType.getVersion(), id.getVersion())) {
+            if (taskType == null || !Objects.equals(taskType.getVersion(), id.getVersion())) {
                 return "error.DataChangedReload";
-            }
-            if (taskType.getIsDeleted()) {
-                return "error.TaskTypeNotExists";
             } else {
-                taskType.setIsDeleted(Constants.isDeleted.DELETED);
-                taskType.setDeletedBy(user.getId());
-                taskType.setDeletedAt(LocalDateTime.now());
-                TaskType savedTaskType = taskTypeRepository.save(taskType);
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_TASKTYPE.getFunction(), "object", savedTaskType.getTaskTypeName()),
-                        user.getId(), savedTaskType.getId(), user.getPartnerId());
+                taskTypeRepository.deleteTaskTypeByTaskTypeId(id.getId());
+                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_TASKTYPE.getFunction(), "object", taskType.getTaskTypeName()),
+                        user.getId(), taskType.getId(), user.getPartnerId());
             }
         }
         return "";
@@ -69,12 +57,9 @@ public class TaskTypeService {
     @Transactional
     public String lockUnlockTaskType(UUID id, User user, Long version) {
         TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id);
-        if (!Objects.equals(taskType.getVersion(), version)) {
+        if (taskType == null || !Objects.equals(taskType.getVersion(), version)) {
             return "error.DataChangedReload";
-        }
-        if (taskType.getIsDeleted())
-            return "error.TaskTypeNotExists";
-        else {
+        } else {
             Boolean newStatus = !taskType.getIsActive();
             taskType.setIsActive(newStatus);
 
@@ -108,7 +93,7 @@ public class TaskTypeService {
 
             return "";
         } else {
-            return "error.TaskTypeNotExists";
+            return "error.TaskTypeExists";
         }
     }
 
@@ -116,12 +101,9 @@ public class TaskTypeService {
     public String updateTaskType(TaskType taskTypeDTO, Authentication authentication) {
         User token = (User) authentication.getPrincipal();
         TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(taskTypeDTO.getId());
-        if (!Objects.equals(taskType.getVersion(), taskTypeDTO.getVersion())) {
+        if (taskType == null || !Objects.equals(taskType.getVersion(), taskTypeDTO.getVersion())) {
             return "error.DataChangedReload";
-        }
-        if (taskType.getIsDeleted())
-            return "error.TaskTypeNotExists";
-        else {
+        } else {
             taskType.setTaskTypeName(taskTypeDTO.getTaskTypeName());
             taskType.setTaskTypeCode(taskTypeDTO.getTaskTypeCode());
             taskType.setTaskTypeDescription(taskTypeDTO.getTaskTypeDescription());
@@ -161,13 +143,14 @@ public class TaskTypeService {
             ErrorListResponse.ErrorResponse object = new ErrorListResponse.ErrorResponse();
             object.setId(id.getId());
             TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id.getId());
-            if (!Objects.equals(taskType.getVersion(), id.getVersion())) {
+            if(taskType == null) {
                 object.setErrorMessage("error.DataChangedReload");
-            } else if (taskType.getIsDeleted()) {
-                object.setErrorMessage("error.TaskTypeNotExists");
+                object.setCode(id.getCode());
+                object.setName(id.getName());
+            }   else {
+                object.setCode(taskType.getTaskTypeCode());
+                object.setName(taskType.getTaskTypeName());
             }
-            object.setCode(taskType.getTaskTypeCode());
-            object.setName(taskType.getTaskTypeName());
             lstObject.add(object);
         }
         response.setErrors(lstObject);

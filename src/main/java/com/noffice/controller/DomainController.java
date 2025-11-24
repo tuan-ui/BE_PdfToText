@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +60,7 @@ public class DomainController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
 			String result = domainService.deleteDomain(id, token, version);
-			if(result == null || !result.trim().isEmpty())
+			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -74,7 +75,7 @@ public class DomainController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
 			String result = domainService.deleteMultiDomain(id, token);
-			if(result == null || !result.trim().isEmpty())
+			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
@@ -101,9 +102,9 @@ public class DomainController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
 			
-			String deptName = domainService.lockUnlockDomain(id,token, version);
-			if(deptName == null || !deptName.trim().isEmpty())
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, deptName, 400));
+			String result = domainService.lockUnlockDomain(id,token, version);
+			if(StringUtils.isNotBlank(result))
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
@@ -117,7 +118,7 @@ public class DomainController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			String result = domainService.saveDomain(domain, authentication);
-			if (result == null || !result.trim().isEmpty())
+			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
@@ -135,7 +136,7 @@ public class DomainController {
 
 			String result = domainService.updateDomain(domain, authentication);
 
-			if (result == null || !result.trim().isEmpty())
+			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));

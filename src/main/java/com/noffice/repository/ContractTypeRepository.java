@@ -4,6 +4,7 @@ import com.noffice.entity.ContractType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -66,4 +67,9 @@ public interface ContractTypeRepository extends JpaRepository<ContractType, UUID
 	@Query(value = "FROM ContractType d " +
 			"WHERE d.id = :id")
 	ContractType findByContractTypeIdIncludeDeleted(@Param("id") UUID id);
+
+
+	@Modifying
+	@Query("DELETE FROM ContractType d WHERE d.id = :id")
+	void deleteContractTypeByContractTypeId(@Param("id") UUID id);
 }

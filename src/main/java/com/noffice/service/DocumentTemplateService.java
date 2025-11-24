@@ -59,20 +59,13 @@ public class DocumentTemplateService {
     @Transactional
     public String deleteDocumentTemplate(UUID id, User user, Long version) {
         DocumentTemplate documentTemplate = documentTemplateRepository.findByDocumentTemplateIdIncludeDeleted(id);
-        if (!Objects.equals(documentTemplate.getVersion(), version)) {
+        if (documentTemplate == null || !Objects.equals(documentTemplate.getVersion(), version)) {
             return "error.DataChangedReload";
-        }
-        if (documentTemplate.getIsDeleted())
-            return "error.DocumentTemplateNotExists";
-        else {
-
-            documentTemplate.setIsDeleted(Constants.isDeleted.DELETED);
-            documentTemplate.setDeletedBy(user.getId());
-            documentTemplate.setDeletedAt(LocalDateTime.now());
-            DocumentTemplate savedDocumentTemplate = documentTemplateRepository.save(documentTemplate);
-            documentTemplateDocumentTypesRepository.deleteByDocumentTemplateId(savedDocumentTemplate.getId());
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOC_TEMPLATE.getFunction(), "object", savedDocumentTemplate.getDocumentTemplateName()),
-                    user.getId(), savedDocumentTemplate.getId(), user.getPartnerId());
+        } else {
+            documentTemplateRepository.deleteDocumentTemplateByDocumentTemplateId(id);
+            documentTemplateDocumentTypesRepository.deleteByDocumentTemplateId(documentTemplate.getId());
+            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOC_TEMPLATE.getFunction(), "object", documentTemplate.getDocumentTemplateName()),
+                    user.getId(), documentTemplate.getId(), user.getPartnerId());
         }
         return "";
 
@@ -82,19 +75,13 @@ public class DocumentTemplateService {
     public String deleteMultiDocumentTemplate(List<DeleteMultiDTO> ids, User user) {
         for (DeleteMultiDTO id : ids) {
             DocumentTemplate documentTemplate = documentTemplateRepository.findByDocumentTemplateIdIncludeDeleted(id.getId());
-            if (!Objects.equals(documentTemplate.getVersion(), id.getVersion())) {
+            if (documentTemplate == null || !Objects.equals(documentTemplate.getVersion(), id.getVersion())) {
                 return "error.DataChangedReload";
-            }
-            if (documentTemplate.getIsDeleted()) {
-                return "error.DocumentTemplateNotExists";
             } else {
-                documentTemplate.setIsDeleted(Constants.isDeleted.DELETED);
-                documentTemplate.setDeletedBy(user.getId());
-                documentTemplate.setDeletedAt(LocalDateTime.now());
-                DocumentTemplate savedDocumentTemplate = documentTemplateRepository.save(documentTemplate);
-                documentTemplateDocumentTypesRepository.deleteByDocumentTemplateId(savedDocumentTemplate.getId());
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOC_TEMPLATE.getFunction(), "object", savedDocumentTemplate.getDocumentTemplateName()),
-                        user.getId(), savedDocumentTemplate.getId(), user.getPartnerId());
+                documentTemplateRepository.deleteDocumentTemplateByDocumentTemplateId(id.getId());
+                documentTemplateDocumentTypesRepository.deleteByDocumentTemplateId(id.getId());
+                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOC_TEMPLATE.getFunction(), "object", documentTemplate.getDocumentTemplateName()),
+                        user.getId(), documentTemplate.getId(), user.getPartnerId());
             }
         }
         return "";
@@ -103,12 +90,9 @@ public class DocumentTemplateService {
     @Transactional
     public String lockUnlockDocumentTemplate(UUID id, User user, Long version) {
         DocumentTemplate documentTemplate = documentTemplateRepository.findByDocumentTemplateIdIncludeDeleted(id);
-        if (!Objects.equals(documentTemplate.getVersion(), version)) {
+        if (documentTemplate == null || !Objects.equals(documentTemplate.getVersion(), version)) {
             return "error.DataChangedReload";
-        }
-        if (documentTemplate.getIsDeleted())
-            return "error.DocumentTemplateNotExists";
-        else {
+        } else {
             Boolean newStatus = !documentTemplate.getIsActive();
             documentTemplate.setIsActive(newStatus);
 
@@ -167,7 +151,7 @@ public class DocumentTemplateService {
 
             return "";
         } else {
-            return "error.DocumentTemplateNotExists";
+            return "error.DocumentTemplateExists";
         }
     }
 
@@ -175,12 +159,9 @@ public class DocumentTemplateService {
     public String updateDocumentTemplate(DocumentTemplateCreateDTO documentTemplateDTO, Authentication authentication) {
         User token = (User) authentication.getPrincipal();
         DocumentTemplate documentTemplate = documentTemplateRepository.findByDocumentTemplateIdIncludeDeleted(documentTemplateDTO.getId());
-        if (!Objects.equals(documentTemplate.getVersion(), documentTemplateDTO.getVersion())) {
+        if (documentTemplate == null || !Objects.equals(documentTemplate.getVersion(), documentTemplateDTO.getVersion())) {
             return "error.DataChangedReload";
-        }
-        if (documentTemplate.getIsDeleted())
-            return "error.DocumentTemplateNotExists";
-        else {
+        } else {
             documentTemplate.setDocumentTemplateName(documentTemplateDTO.getDocumentTemplateName());
             documentTemplate.setDocumentTemplateCode(documentTemplateDTO.getDocumentTemplateCode());
             documentTemplate.setDocumentTemplateDescription(documentTemplateDTO.getDocumentTemplateDescription());
@@ -295,13 +276,14 @@ public class DocumentTemplateService {
             ErrorListResponse.ErrorResponse object = new ErrorListResponse.ErrorResponse();
             object.setId(id.getId());
             DocumentTemplate documentTemplate = documentTemplateRepository.findByDocumentTemplateIdIncludeDeleted(id.getId());
-            if (!Objects.equals(documentTemplate.getVersion(), id.getVersion())) {
+            if(documentTemplate == null) {
                 object.setErrorMessage("error.DataChangedReload");
-            } else if (documentTemplate.getIsDeleted()) {
-                object.setErrorMessage("error.DocumentTemplateNotExists");
+                object.setCode(id.getCode());
+                object.setName(id.getName());
+            }   else {
+                object.setCode(documentTemplate.getDocumentTemplateCode());
+                object.setName(documentTemplate.getDocumentTemplateName());
             }
-            object.setCode(documentTemplate.getDocumentTemplateCode());
-            object.setName(documentTemplate.getDocumentTemplateName());
             lstObject.add(object);
         }
         response.setErrors(lstObject);

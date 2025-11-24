@@ -34,46 +34,44 @@ public class PartnerService {
     }
 
 	@Transactional
-	public Partners createPartner(PartnerRequest partner, User token) {
-		 Partners save = new Partners();
-		 save.setAddress(partner.getAddress());
-		 save.setPartnerName(partner.getPartnerName());
-		 save.setEmail(partner.getEmail());
-		 save.setWebsite(partner.getWebsite());
-		 save.setPhone(partner.getPhone());
-		 save.setTaxCode(partner.getTaxCode());
-		 save.setPartnerCode(partner.getPartnerCode());
-		 save.setImgLogo(partner.getBase64Image());
-		 save.setFax(partner.getFax());
+	public String createPartner(PartnerRequest partner, User token) {
+		if(partnerRepository.getPartnerByCode(partner.getPartnerCode())==null){
+			 Partners save = new Partners();
+			 save.setAddress(partner.getAddress());
+			 save.setPartnerName(partner.getPartnerName());
+			 save.setEmail(partner.getEmail());
+			 save.setWebsite(partner.getWebsite());
+			 save.setPhone(partner.getPhone());
+			 save.setTaxCode(partner.getTaxCode());
+			 save.setPartnerCode(partner.getPartnerCode());
+			 save.setImgLogo(partner.getBase64Image());
+			 save.setFax(partner.getFax());
 
-		save.setCreateAt(LocalDateTime.now());
-		save.setCreateBy(token.getId());
-		save.setIsActive(true);
-		save.setIsDeleted(Constants.isDeleted.ACTIVE);
-		 partnerRepository.save(save);
-         logService.createLog(ActionType.CREATE.getAction(),
-				 Map.of("actor", token.getFullName(), "action",FunctionType.CREATE_PARTNER.getFunction(),
-						 "object", save.getPartnerName()),
-				 token.getId(), save.getId(), token.getPartnerId());
-        return save;
+			save.setCreateAt(LocalDateTime.now());
+			save.setCreateBy(token.getId());
+			save.setIsActive(true);
+			save.setIsDeleted(Constants.isDeleted.ACTIVE);
+			 partnerRepository.save(save);
+			 logService.createLog(ActionType.CREATE.getAction(),
+					 Map.of("actor", token.getFullName(), "action",FunctionType.CREATE_PARTNER.getFunction(),
+							 "object", save.getPartnerName()),
+					 token.getId(), save.getId(), token.getPartnerId());
+			return "";
+		} else {
+			return "error.PartnerIsExist";
+		}
     }
 
 	@Transactional
 	public String deletePartner(UUID partnerId,User userDetails, Long version) {
 		Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(partnerId);
-		if (!Objects.equals(partner.getVersion(), version)) {
+		if (partner == null || !Objects.equals(partner.getVersion(), version)) {
 			return  "error.DataChangedReload";
-		}
-		if(partner.getIsDeleted())
-			return	"error.PartnerDoesNotExist";
-		else {
+		} else {
 			if (userRepository.existsUserByPartnerId(partnerId) != 0) {
 				return "error.PartnerAlreadyUseOnUser";
 			}
-			partner.setIsDeleted(Constants.isDeleted.DELETED);
-			partner.setDeletedAt(LocalDateTime.now());
-			partner.setDeletedBy(userDetails.getId());
-			partnerRepository.save(partner);
+			partnerRepository.deletePartnersByPartnersId(partnerId);
 			logService.createLog(ActionType.DELETE.getAction(),
 					Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_PARTNER.getFunction(), "object", partner.getPartnerName()),
 					userDetails.getId(), partner.getId(), userDetails.getPartnerId());
@@ -83,12 +81,9 @@ public class PartnerService {
 	@Transactional
 	public String lockPartner(UUID partnerId,User userDetails,  Long version) {
 		Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(partnerId);
-		if (!Objects.equals(partner.getVersion(), version)) {
+		if (partner == null || !Objects.equals(partner.getVersion(), version)) {
 			return  "error.DataChangedReload";
-		}
-		if(partner.getIsDeleted())
-			return	"error.PartnerDoesNotExist";
-		else {
+		} else {
 			partner.setIsActive(!partner.getIsActive());
 			partner.setUpdateAt(LocalDateTime.now());
 			partner.setUpdateBy(userDetails.getId());
@@ -101,26 +96,30 @@ public class PartnerService {
 	}
 
 
-	public Partners updatePartner(PartnerRequest partner, User token) {
+	public String updatePartner(PartnerRequest partner, User token) {
 		Partners save = partnerRepository.getPartnerByCode(partner.getPartnerCode());
-		save.setAddress(partner.getAddress());
-		save.setPartnerName(partner.getPartnerName());
-		save.setEmail(partner.getEmail());
-		save.setWebsite(partner.getWebsite());
-		save.setPhone(partner.getPhone());
-		save.setTaxCode(partner.getTaxCode());
-		save.setPartnerCode(partner.getPartnerCode());
-		save.setImgLogo(partner.getBase64Image());
-		save.setFax(partner.getFax());
-		save.setIsActive(save.getIsActive());
-		save.setUpdateAt(LocalDateTime.now());
-		save.setUpdateBy(token.getId());
-		partnerRepository.save(save);
-		logService.createLog(ActionType.UPDATE.getAction(),
+		if (save == null || !Objects.equals(save.getVersion(), partner.getVersion())) {
+			return  "error.DataChangedReload";
+		} else {
+			save.setAddress(partner.getAddress());
+			save.setPartnerName(partner.getPartnerName());
+			save.setEmail(partner.getEmail());
+			save.setWebsite(partner.getWebsite());
+			save.setPhone(partner.getPhone());
+			save.setTaxCode(partner.getTaxCode());
+			save.setPartnerCode(partner.getPartnerCode());
+			save.setImgLogo(partner.getBase64Image());
+			save.setFax(partner.getFax());
+			save.setIsActive(save.getIsActive());
+			save.setUpdateAt(LocalDateTime.now());
+			save.setUpdateBy(token.getId());
+			partnerRepository.save(save);
+			logService.createLog(ActionType.UPDATE.getAction(),
 				Map.of("actor", token.getFullName(), "action",FunctionType.UPDATE_PARTNER.getFunction(),
 						"object", save.getPartnerName()),
 				token.getId(), save.getId(), token.getPartnerId());
-		return save;
+		}
+		return "";
 	}
 	public Partners updatePartnerImage(PartnerRequest partner,  User userDetails) {
 		if(partner.getBase64Image() != null) {
@@ -145,17 +144,19 @@ public class PartnerService {
 			ErrorListResponse.ErrorResponse object = new ErrorListResponse.ErrorResponse();
 			object.setId(id.getId());
 			Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(id.getId());
-			if (!Objects.equals(partner.getVersion(), id.getVersion())) {
+			if(partner == null) {
 				object.setErrorMessage("error.DataChangedReload");
-			}
-			else if(partner.getIsDeleted())
-				object.setErrorMessage("error.PartnerDoesNotExist");
-			else if (userRepository.existsUserByPartnerId(id.getId()) != 0) {
+				object.setCode(id.getCode());
+				object.setName(id.getName());
+			} else if (userRepository.existsUserByPartnerId(id.getId()) != 0) {
 				object.setErrorMessage("error.PartnerAlreadyUseOnUser");
+				object.setCode(partner.getPartnerCode());
+				object.setName(partner.getPartnerName());
+			} else {
+				object.setCode(partner.getPartnerCode());
+				object.setName(partner.getPartnerName());
 			}
-                object.setCode(partner.getPartnerCode());
-                object.setName(partner.getPartnerName());
-                lstObject.add(object);
+			lstObject.add(object);
 		}
 		response.setErrors(lstObject);
 		response.setTotal(ids.size());
@@ -174,19 +175,13 @@ public class PartnerService {
 	public String deleteMultiPartner(List<DeleteMultiDTO> ids, User userDetails) {
 		for(DeleteMultiDTO id : ids) {
 			Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(id.getId());
-			if (!Objects.equals(partner.getVersion(), id.getVersion())) {
+			if (partner == null || !Objects.equals(partner.getVersion(), id.getVersion())) {
 				return  "error.DataChangedReload";
-			}
-			if(partner.getIsDeleted())
-				return	"error.PartnerDoesNotExist";
-			else {
+			} else {
 				if (userRepository.existsUserByPartnerId(id.getId()) != 0) {
 					return "error.PartnerAlreadyUseOnUser";
 				}
-				partner.setIsDeleted(Constants.isDeleted.DELETED);
-				partner.setDeletedAt(LocalDateTime.now());
-				partner.setDeletedBy(userDetails.getId());
-				partnerRepository.save(partner);
+				partnerRepository.deletePartnersByPartnersId(id.getId());
 				logService.createLog(ActionType.DELETE.getAction(),
 						Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_PARTNER.getFunction(), "object", partner.getPartnerName()),
 						userDetails.getId(), partner.getId(), userDetails.getPartnerId());

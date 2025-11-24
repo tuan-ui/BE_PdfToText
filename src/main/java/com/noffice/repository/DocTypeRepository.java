@@ -5,6 +5,7 @@ import com.noffice.entity.Domain;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -50,7 +51,7 @@ public interface DocTypeRepository extends JpaRepository<DocType, Long> {
 	);
 
 	@Query(value = "FROM DocType d " +
-			"WHERE(:DocTypeCode IS NULL OR LOWER(d.docTypeCode) = LOWER(:docTypeCode)) " +
+			"WHERE(:docTypeCode IS NULL OR LOWER(d.docTypeCode) = LOWER(:docTypeCode)) " +
 			"AND d.isDeleted = false AND d.partnerId = :partnerId ")
 	DocType findByCode(@Param("docTypeCode") String docTypeCode, @Param("partnerId") UUID partnerId);
 
@@ -67,4 +68,8 @@ public interface DocTypeRepository extends JpaRepository<DocType, Long> {
 	@Query(value = "FROM DocType d " +
 			"WHERE d.id = :id")
 	DocType findByDocTypeIdIncludeDeleted(@Param("id") UUID id);
+
+	@Modifying
+	@Query("DELETE FROM DocType d WHERE d.id = :id")
+	void deleteDocTypeByDocTypeId(@Param("id") UUID id);
 }
