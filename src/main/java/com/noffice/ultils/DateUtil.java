@@ -29,18 +29,26 @@ public class DateUtil {
         }
     }
     public static LocalDateTime parseFlexibleDate(String input) {
+        if (input == null || input.trim().isEmpty()) {
+            throw new IllegalArgumentException("Không thể phân tích ngày: null hoặc rỗng");
+        }
+
         try {
-            // 1. Thử parse RFC 1123
             ZonedDateTime zdt = ZonedDateTime.parse(input, DateTimeFormatter.RFC_1123_DATE_TIME);
             return zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
         } catch (DateTimeParseException e) {
-            // 2. Thử định dạng JS Date.toString() ví dụ: "Tue May 27 2025 08:12:00 GMT+0700 (Indochina Time)"
             try {
-                DateTimeFormatter jsFormat = DateTimeFormatter.ofPattern("EEE MMM dd yyyy HH:mm:ss 'GMT'Z", Locale.ENGLISH);
-                ZonedDateTime zdt = ZonedDateTime.parse(input.substring(0, input.indexOf('(')).trim(), jsFormat);
+                int openParenIndex = input.indexOf('(');
+                String cleanInput = openParenIndex > 0
+                        ? input.substring(0, openParenIndex).trim()
+                        : input.trim();
+
+                DateTimeFormatter jsFormat = DateTimeFormatter.ofPattern(
+                        "EEE MMM dd yyyy HH:mm:ss 'GMT'Z", Locale.ENGLISH);
+                ZonedDateTime zdt = ZonedDateTime.parse(cleanInput, jsFormat);
                 return zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-            } catch (DateTimeParseException ex) {
-                throw new IllegalArgumentException("Không thể phân tích ngày: " + input);
+            } catch (Exception ex) {  // Bắt Exception thay vì chỉ DateTimeParseException
+                throw new IllegalArgumentException("Không thể phân tích ngày: " + input, ex);
             }
         }
     }
