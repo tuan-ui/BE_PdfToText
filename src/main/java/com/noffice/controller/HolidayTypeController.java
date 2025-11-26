@@ -120,7 +120,7 @@ public class HolidayTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw e;

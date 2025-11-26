@@ -18,6 +18,8 @@ public interface DocumentTemplateDocumentTypesRepository extends JpaRepository<D
     List<UUID> getDocumentTypeIdByDocumentTemplateId(@Param("documentTemplateId") UUID documentTemplateId);
     @Query("SELECT COUNT(pr) > 0 FROM DocTemplateDocTypes pr WHERE pr.documentTypeId = :documentTypeId")
     boolean existsDocumentTemplateByDocumentTypeId(@Param("documentTypeId") UUID documentTypeId);
+    @Query("SELECT COUNT(pr) > 0 FROM DocTemplateDocTypes pr WHERE pr.documentTemplateId = :documentTemplateId")
+    boolean existsDocumentTemplateBydocumentTemplateId(@Param("documentTemplateId") UUID documentTemplateId);
 
     @Query("Select dt FROM DocTemplateDocTypes pr Join DocType dt on pr.documentTypeId = dt.id WHERE pr.documentTemplateId = :documentTemplateId")
     List<DocType> getDocumentTypesByDocumentTemplateId(@Param("documentTemplateId") UUID documentTemplateId);

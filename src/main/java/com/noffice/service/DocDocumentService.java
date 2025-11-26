@@ -34,27 +34,22 @@ public class DocDocumentService {
     private final AttachRepository attachRepository;
 
     @Transactional
-    public String delete(UUID id, User user, Long version) {
-        DocDocument docDocument = docDocumentRepository.findByDocumentId(id);
-        if (!Objects.equals(docDocument.getVersion(), version)) {
-            return "error.DataChangedReload";
-        }
-        if (docDocument.getIsDeleted())
-            return "error.DocTypeNotExists";
-        else {
-//			Long countChild = docTypeRepository.countChildDocTypes(DocType.getDocTypeId(), DocType.getPartnerId());
-//			if (countChild > 0) {
-//				return "error.UnableToDeleteExistingUnitOfSubordinateDocType";
-//			}
+    public Boolean delete(UUID id, User user) {
+       try {
+           DocDocument docDocument = docDocumentRepository.findByDocumentId(id);
+           docDocument.setIsDeleted(Constants.isDeleted.DELETED);
+           docDocument.setDeletedBy(user.getId());
+           docDocument.setDeletedAt(LocalDateTime.now());
+           DocDocument savedDocType = docDocumentRepository.save(docDocument);
+           logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOCUMENT.getFunction(), "object", savedDocType.getDocumentTitle()),
+                   user.getId(), savedDocType.getId(), user.getPartnerId());
+           return true;
+       }catch (Exception e) {
+           System.out.println(e.toString());
+           return false;
+       }
 
-            docDocument.setIsDeleted(Constants.isDeleted.DELETED);
-            docDocument.setDeletedBy(user.getId());
-            docDocument.setDeletedAt(LocalDateTime.now());
-            DocDocument savedDocType = docDocumentRepository.save(docDocument);
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOCUMENT.getFunction(), "object", savedDocType.getDocumentTitle()),
-                    user.getId(), savedDocType.getId(), user.getPartnerId());
-        }
-        return "";
+
 
     }
 
@@ -102,7 +97,7 @@ public class DocDocumentService {
     }
 
     @Transactional
-    public boolean save(DocDocumentDTO docDocumentDTO, MultipartFile[] files, User token) {
+    public DocDocument save(DocDocumentDTO docDocumentDTO, MultipartFile[] files, User token) {
         try {
             DocDocument docDocument =docDocumentRepository.findByDocumentId(docDocumentDTO.getId());
             if(docDocument==null){
@@ -113,31 +108,58 @@ public class DocDocumentService {
                 docDocument.setUpdateAt(LocalDateTime.now());
                 docDocument.setUpdateBy(token.getId());
             }
-            docDocument.setDocumentTitle(docDocumentDTO.getDocumentTitle());
-            docDocument.setDocTemplateId(docDocumentDTO.getDocTemplateId());
-            docDocument.setDocTypeId(docDocumentDTO.getDocTypeId());
-            docDocument.setDeptName(docDocumentDTO.getDeptName());
-            docDocument.setPurpose(docDocumentDTO.getPurpose());
-            docDocument.setFormData(docDocumentDTO.getFormData());
+            if (docDocumentDTO.getDocumentTitle() != null) {
+                docDocument.setDocumentTitle(docDocumentDTO.getDocumentTitle());
+            }
+
+            if (docDocumentDTO.getDocTemplateId() != null) {
+                docDocument.setDocTemplateId(docDocumentDTO.getDocTemplateId());
+            }
+
+            if (docDocumentDTO.getDocTypeId() != null) {
+                docDocument.setDocTypeId(docDocumentDTO.getDocTypeId());
+            }
+
+            if (docDocumentDTO.getDeptName() != null) {
+                docDocument.setDeptName(docDocumentDTO.getDeptName());
+            }
+
+            if (docDocumentDTO.getPurpose() != null) {
+                docDocument.setPurpose(docDocumentDTO.getPurpose());
+            }
+            if(docDocumentDTO.getFormData()!=null){
+                docDocument.setFormData(docDocumentDTO.getFormData());
+            }
             docDocument.setIsActive(docDocumentDTO.getIsActive());
             docDocument.setIsDeleted(Constants.isDeleted.ACTIVE);
             docDocument.setPartnerId(token.getPartnerId());
             DocDocument saveDocument = docDocumentRepository.save(docDocument);
             if(docDocumentDTO.getApprovalSteps()!=null){
+                int index = 0;
                 for (NodeDeptUserDTO ndu:docDocumentDTO.getApprovalSteps()) {
+                    index++;
                     NodeDeptUser nodeDeptUser = new NodeDeptUser();
                     if(ndu.getId()!=null){
                         Optional<NodeDeptUser> optional = nodeDeptUserRepository.findById(ndu.getId());
                         if(optional.isPresent()){
                             nodeDeptUser=optional.get();
                         }
+                        nodeDeptUser.setVersion(nodeDeptUser.getVersion()+1);
+                        nodeDeptUser.setUpdateAt(LocalDateTime.now());
+                        nodeDeptUser.setUpdateBy(token.getId());
+                    }else {
+                        nodeDeptUser.setCreateAt(LocalDateTime.now());
+                        nodeDeptUser.setCreateBy(token.getId());
                     }
+
                     nodeDeptUser.setDocId(saveDocument.getId());
-                    nodeDeptUser.setStep(Integer.valueOf(ndu.getStep()));
+                    nodeDeptUser.setStep(ndu.getStep());
                     nodeDeptUser.setUserId(ndu.getUserId());
                     nodeDeptUser.setDeptName(ndu.getDeptName());
                     nodeDeptUser.setRoleId(ndu.getRoleId());
                     nodeDeptUser.setApproveType(ndu.getApprovalType());
+                    nodeDeptUser.setIndex(index);
+                    nodeDeptUser.setPartnerId(token.getPartnerId());
                     nodeDeptUser.setNote(ndu.getNote());
                     nodeDeptUserRepository.save(nodeDeptUser);
                 }
@@ -168,10 +190,10 @@ public class DocDocumentService {
 
             logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_DOCUMENT.getFunction(), "object", saveDocument.getDocumentTitle()),
                     token.getId(), saveDocument.getId(), token.getPartnerId());
-            return true;
+            return docDocument;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return false;
+            return null;
         }
     }
 

@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import com.noffice.dto.RoleDTO;
 import com.noffice.entity.Role;
 import com.noffice.repository.RoleRepository;
-import com.noffice.ultils.Constants;
 
 import jakarta.transaction.Transactional;
 
@@ -59,7 +58,6 @@ public class RoleService {
 		role.setRoleCode(roleDTO.getRoleCode());
 		role.setRoleName(roleDTO.getRoleName());
 		role.setRoleDescription(roleDTO.getRoleDescription());
-		role.setPriority(roleDTO.getPriority());
 		role.setPartnerId(token.getPartnerId());
 		role.setIsActive(true);
 		role.setIsDeleted(false);
@@ -85,7 +83,6 @@ public class RoleService {
 			role.setRoleCode(roleDTO.getRoleCode());
 			role.setRoleName(roleDTO.getRoleName());
 			role.setRoleDescription(roleDTO.getRoleDescription());
-			role.setPriority(roleDTO.getPriority());
 			role.setPartnerId(token.getPartnerId());
 			role.setUpdateAt(LocalDateTime.now());
 			role.setUpdateBy(token.getId());

@@ -43,5 +43,9 @@ public final class Constants {
         public String CA_CLOUD_CLIENT_SECRET = "CA_CLOUD_CLIENT_SECRET";
         public String CA_CLOUD_PROFILE_ID = "CA_CLOUD_PROFILE_ID";
     }
-    
+
+	public interface TYPE_APPROVE {
+		String PARALLEL = "parallel";//song song
+		String SEQUENTIAL = "sequential";//tuan tu
+	}
 }

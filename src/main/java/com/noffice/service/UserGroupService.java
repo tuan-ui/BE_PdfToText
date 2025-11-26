@@ -142,8 +142,10 @@ public class UserGroupService {
         if (userGroup == null || !Objects.equals(userGroup.getVersion(), version)) {
             return  "error.DataChangedReload";
         } else {
+            if (userGroupsRepository.existsUserByGroupId(id)) {
+                return "error.UserGroupsUsed";
+            }
             userGroupRepository.deleteUserGroupByUserGroupId(id);
-            userGroupsRepository.deleteByGroupId(id);
             logService.createLog(
                     ActionType.DELETE.getAction(),
                     Map.of(

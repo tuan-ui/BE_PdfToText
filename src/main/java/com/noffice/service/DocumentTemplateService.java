@@ -62,8 +62,9 @@ public class DocumentTemplateService {
         if (documentTemplate == null || !Objects.equals(documentTemplate.getVersion(), version)) {
             return "error.DataChangedReload";
         } else {
+            if(documentTemplateDocumentTypesRepository.existsDocumentTemplateBydocumentTemplateId(documentTemplate.getId()))
+                return "error.HasDocumentType";
             documentTemplateRepository.deleteDocumentTemplateByDocumentTemplateId(id);
-            documentTemplateDocumentTypesRepository.deleteByDocumentTemplateId(documentTemplate.getId());
             logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOC_TEMPLATE.getFunction(), "object", documentTemplate.getDocumentTemplateName()),
                     user.getId(), documentTemplate.getId(), user.getPartnerId());
         }
@@ -78,8 +79,9 @@ public class DocumentTemplateService {
             if (documentTemplate == null || !Objects.equals(documentTemplate.getVersion(), id.getVersion())) {
                 return "error.DataChangedReload";
             } else {
+                if(documentTemplateDocumentTypesRepository.existsDocumentTemplateBydocumentTemplateId(documentTemplate.getId()))
+                    return "error.HasDocumentType";
                 documentTemplateRepository.deleteDocumentTemplateByDocumentTemplateId(id.getId());
-                documentTemplateDocumentTypesRepository.deleteByDocumentTemplateId(id.getId());
                 logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOC_TEMPLATE.getFunction(), "object", documentTemplate.getDocumentTemplateName()),
                         user.getId(), documentTemplate.getId(), user.getPartnerId());
             }

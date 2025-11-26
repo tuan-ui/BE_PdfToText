@@ -36,7 +36,4 @@ public class DocumentFiles extends BaseEntity{
     @Column(name = "lock_user_id")
     private UUID lockUserId;
 
-    @Column(name = "is_modified")
-    private Boolean isModified = false;
-
 }

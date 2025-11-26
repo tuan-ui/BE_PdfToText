@@ -4,6 +4,7 @@ package com.noffice.entity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -78,6 +79,9 @@ public class User extends BaseEntity implements UserDetails {
     private String birthdayStr;
     @Transient
     private String roleIds;
+
+    @Transient
+    private List<Role> lstRole;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

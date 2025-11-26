@@ -17,7 +17,7 @@ public interface DocDocumentRepository extends JpaRepository<DocDocument, Long> 
 
 	@Query("""
     SELECT new com.noffice.dto.DocDocumentDTO(
-        d.id, d.documentTitle, d.deptName,d.purpose,d.formData, dt.id,d.docTemplateId, dt.docTypeName,d.createAt,d.updateAt,fs.id
+        d.id, d.documentTitle, d.deptName,d.purpose,d.formData, dt.id,d.docTemplateId, dt.docTypeName,d.createAt,d.updateAt,fs.id,dtemp.documentTemplateName
     )
     FROM DocDocument d
     LEFT JOIN DocType dt ON dt.id = d.docTypeId AND dt.isDeleted = false

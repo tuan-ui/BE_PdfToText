@@ -60,14 +60,13 @@ public class DocDocumentController {
 
 	@GetMapping("/delete")
 	public ResponseEntity<ResponseAPI> deleteDocType(@RequestParam(value = "id") UUID id,
-													 @RequestParam(value = "version") Long version,
 			HttpServletRequest request) {
 		try {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
-			String result = docDocumentService.delete(id, token, version);
-			if(result!=null && !result.isEmpty())
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
+			Boolean result = docDocumentService.delete(id, token);
+			if(!result)
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "error", 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
@@ -124,13 +123,13 @@ public class DocDocumentController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ResponseAPI(null, "Lỗi dữ liệu đầu vào", 400));
 			}
-			boolean result = docDocumentService.save(docDocument,files, userDetails);
-			if (!result)
+			DocDocument result = docDocumentService.save(docDocument,files, userDetails);
+			if (result==null)
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ResponseAPI(null, "Thao tác thất bại", 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseAPI(null, "Thêm mới thành công", 200));
+						.body(new ResponseAPI(result, "Thêm mới thành công", 200));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, "error", 400));

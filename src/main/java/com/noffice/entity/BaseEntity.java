@@ -28,10 +28,10 @@ public abstract class BaseEntity {
     private UUID partnerId;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
+    private Boolean isActive;
 
     @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    private Boolean isDeleted;
 
     @Column(name = "create_at", nullable = false, updatable = false)
     private LocalDateTime createAt;
@@ -55,6 +55,12 @@ public abstract class BaseEntity {
     protected void onCreate() {
         if (id == null) {
             id = UUID.randomUUID();
+        }
+        if (isActive == null) {
+            isActive = true;
+        }
+        if (isDeleted == null) {
+            isDeleted = false;
         }
         if (createAt == null) {
             createAt = LocalDateTime.now();

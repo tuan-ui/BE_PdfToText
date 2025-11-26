@@ -17,6 +17,7 @@ import java.util.UUID;
 public class DocDocumentDTO {
     private UUID id;
     private String documentTitle;
+    private String docTemplateName;
     private String deptName;
     private String formData;
     private UUID docTypeId;
@@ -31,7 +32,7 @@ public class DocDocumentDTO {
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private LocalDateTime updateAt;
     private List<NodeDeptUserDTO> approvalSteps;
-    public DocDocumentDTO(UUID documentId, String documentTitle, String deptName,String purpose,String formData, UUID docTypeId,UUID docTemplateId, String docTypeName,LocalDateTime createAt, LocalDateTime updateAt,UUID formSchemaId) {
+    public DocDocumentDTO(UUID documentId, String documentTitle, String deptName,String purpose,String formData, UUID docTypeId,UUID docTemplateId, String docTypeName,LocalDateTime createAt, LocalDateTime updateAt,UUID formSchemaId,String docTemplateName) {
         this.id = documentId;
         this.documentTitle = documentTitle;
         this.deptName = deptName;
@@ -43,5 +44,6 @@ public class DocDocumentDTO {
         this.createAt = createAt;
         this.updateAt = updateAt;
         this.formSchemaId = formSchemaId;
+        this.docTemplateName = docTemplateName;
     }
 }

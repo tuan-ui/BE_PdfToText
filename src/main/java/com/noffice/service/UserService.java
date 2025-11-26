@@ -47,6 +47,8 @@ public class UserService {
     private final ModelMapper mapper;
     private final PartnerRepository partnerRepository;
     private final UserRolesService userRolesService;
+    private final RoleService roleService;
+    private final RoleRepository roleRepository;
 
 
     public Page<User> listUsers(String searchString, String userName, String fullName, String phone,
@@ -67,6 +69,15 @@ public class UserService {
                 u.setRoleIds(lstRoles.stream()
                         .map(String::valueOf)
                         .collect(Collectors.joining(",")));
+                List<Role>lstRole=new ArrayList<>();
+                for (UUID roleId:lstRoles) {
+                    Optional<Role> optional=roleRepository.findByRoleId(roleId);
+                    if (optional.isPresent()) {
+                        Role role=optional.get();
+                        lstRole.add(role);
+                    }
+                }
+                u.setLstRole(lstRole);
             }
             if (u.getIssueDate() != null) {
                 u.setIssueDateStr(DateUtil.convertStringDateFormat(u.getIssueDate().toString()));
@@ -101,8 +112,10 @@ public class UserService {
             if (userGroupsRepository.existsByUserId(deletedUser.getId())) {
                 return "error.UserGroupUsed";
             }
+            if (userRolesRepository.existsUserByUserId(deletedUser.getId())) {
+                return "error.UserRolesUsed";
+            }
             userRepository.deleteUserByUserId(id);
-            userRolesRepository.deleteByUserId(deletedUser.getId());
             logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", deletedUser.getUsername()),
                     user.getId(), deletedUser.getId(), user.getPartnerId());
         }
@@ -119,8 +132,10 @@ public class UserService {
                 if (userGroupsRepository.existsByUserId(user.getId())) {
                     return "error.UserGroupUsed";
                 }
+                if (userRolesRepository.existsUserByUserId(user.getId())) {
+                    return "error.UserRolesUsed";
+                }
                 userRepository.deleteUserByUserId(id.getId());
-                userRolesRepository.deleteByUserId(id.getId());
                 logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", user.getUsername()),
                         userDetails.getId(), user.getId(), userDetails.getPartnerId());
             }

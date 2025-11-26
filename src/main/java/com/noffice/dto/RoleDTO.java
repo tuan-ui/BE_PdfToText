@@ -15,7 +15,6 @@ public class RoleDTO {
 	private String roleName;
 	private String roleCode;
 	private String roleDescription;
-    private Long priority;
     private Long version;
     private UUID partnerId;
     private String partnerName;

@@ -84,11 +84,6 @@ public class WopiController {
                 return ResponseEntity.status(403).body("Không có quyền sửa");
             }
 
-            // 5. Kiểm tra isModified (nếu cần)
-            if (Boolean.TRUE.equals(file.getIsModified()) && "edit".equals(mode)) {
-                return ResponseEntity.status(403).body("File đã bị khóa sửa đổi");
-            }
-
             // 6. Trả về WOPI CheckFileInfo
             Map<String, Object> info = new HashMap<>();
             info.put("BaseFileName", filename);

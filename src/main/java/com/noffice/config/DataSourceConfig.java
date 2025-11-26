@@ -27,17 +27,21 @@ public class DataSourceConfig {
     @Value("${spring.datasource.password}")
     private String encryptedPassword;
 
-    private static final String AES_KEY = AppConfig.get("AES_KEY");
-    private static final byte[] KEY_BYTES = AES_KEY.getBytes(StandardCharsets.UTF_8);
+//    private static final String AES_KEY = AppConfig.get("AES_KEY");
+//    private static final byte[] KEY_BYTES = AES_KEY.getBytes(StandardCharsets.UTF_8);
 
     private static final int GCM_IV_LENGTH = 12;
     private static final int GCM_TAG_LENGTH = 128;
 
     @Bean
-    public DataSource dataSource() throws EncryptionException {
-        String url = decrypt(encryptedUrl);
-        String username = decrypt(encryptedUsername);
-        String password = decrypt(encryptedPassword);
+    public DataSource dataSource(@Value("${AES_KEY}") String aesKey) throws EncryptionException {
+        if (aesKey == null || aesKey.isEmpty()) {
+            throw new EncryptionException("AES_KEY chưa được set trong môi trường container");
+        }
+        byte[] KEY_BYTES = aesKey.getBytes(StandardCharsets.UTF_8);
+        String url = decrypt(encryptedUrl,KEY_BYTES);
+        String username = decrypt(encryptedUsername,KEY_BYTES);
+        String password = decrypt(encryptedPassword,KEY_BYTES);
 
         return DataSourceBuilder.create()
                 .driverClassName("org.postgresql.Driver")
@@ -51,7 +55,7 @@ public class DataSourceConfig {
      * Giải mã bằng AES/GCM/NoPadding – chuẩn bảo mật 2025
      * Chỉ dùng cho dữ liệu được mã hóa bằng hàm encrypt() dưới đây
      */
-    public static String decrypt(String encryptedData) throws EncryptionException {
+    public static String decrypt(String encryptedData, byte[] KEY_BYTES) throws EncryptionException {
         if (encryptedData == null || encryptedData.isEmpty()) {
             throw new EncryptionException("Dữ liệu mã hóa không được để trống");
         }
@@ -83,7 +87,7 @@ public class DataSourceConfig {
         }
     }
 
-    public static String encrypt(String plainText) throws EncryptionException {
+    public static String encrypt(String plainText, byte[] KEY_BYTES) throws EncryptionException {
         if (plainText == null || plainText.isEmpty()) {
             throw new EncryptionException("Dữ liệu cần mã hóa không được để trống");
         }

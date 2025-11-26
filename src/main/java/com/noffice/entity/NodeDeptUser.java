@@ -22,7 +22,7 @@ public class NodeDeptUser extends BaseEntity{
     @Column(name = "doc_id")
     private UUID docId;
     @Column(name = "step")
-    private Integer step;
+    private String step;
     @Column(name = "user_id")
     private UUID userId;
     @Column(name = "dept_id")
@@ -36,6 +36,6 @@ public class NodeDeptUser extends BaseEntity{
     private String approveType;
     @Column(name = "note")
     private String note;
-    @Column(name = "parallel_step")
-    private Integer parallelStep;
+    @Column(name = "index")
+    private Integer index;
 }

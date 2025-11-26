@@ -33,7 +33,6 @@ class DomainTest {
         Domain d1 = new Domain("ABC", "Tên", "Desc");
         Domain d2 = new Domain("ABC", "Tên", "Desc");
 
-        // Dù id, createAt... khác nhau (do BaseEntity), nhưng equals vẫn true
         assertEquals(d1, d2);
         assertEquals(d1.hashCode(), d2.hashCode());
     }

@@ -27,7 +27,6 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
         r.roleName,
         r.roleCode,
         r.roleDescription,
-        r.priority,
         r.version,
         r.partnerId,
         pn.partnerName,
@@ -63,7 +62,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID> {
           )
       AND r.partnerId = :partnerId
       AND (:status IS NULL OR r.isActive = :status)
-    ORDER BY r.priority ASC, r.roleName ASC
+    ORDER BY r.roleName ASC
     """)
 	Page<RoleDTO> searchRoles(
 			@Param("searchString") String searchString,

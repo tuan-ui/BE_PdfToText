@@ -25,9 +25,6 @@ public class Role extends BaseEntity implements Cloneable{
     @Column(name = "role_description", length = 2000)
     private String roleDescription;
 
-    @Column(name = "priority")
-    private Long priority;
-
     @Override
     public Role clone() {
         try {
