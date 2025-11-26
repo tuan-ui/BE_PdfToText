@@ -28,30 +28,6 @@ public class DateUtil {
             return createTime.format(formatter);
         }
     }
-    public static LocalDateTime parseFlexibleDate(String input) {
-        if (input == null || input.trim().isEmpty()) {
-            throw new IllegalArgumentException("Không thể phân tích ngày: null hoặc rỗng");
-        }
-
-        try {
-            ZonedDateTime zdt = ZonedDateTime.parse(input, DateTimeFormatter.RFC_1123_DATE_TIME);
-            return zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-        } catch (DateTimeParseException e) {
-            try {
-                int openParenIndex = input.indexOf('(');
-                String cleanInput = openParenIndex > 0
-                        ? input.substring(0, openParenIndex).trim()
-                        : input.trim();
-
-                DateTimeFormatter jsFormat = DateTimeFormatter.ofPattern(
-                        "EEE MMM dd yyyy HH:mm:ss 'GMT'Z", Locale.ENGLISH);
-                ZonedDateTime zdt = ZonedDateTime.parse(cleanInput, jsFormat);
-                return zdt.withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
-            } catch (Exception ex) {  // Bắt Exception thay vì chỉ DateTimeParseException
-                throw new IllegalArgumentException("Không thể phân tích ngày: " + input, ex);
-            }
-        }
-    }
 
     public static String formatLocalDateToString(LocalDate date) {
         if (date == null) {
@@ -61,13 +37,6 @@ public class DateUtil {
         return date.format(formatter);
     }
 
-    public static String formatLocalDateTimeToString(LocalDateTime dateTime) {
-        if (dateTime == null) {
-            return null;
-        }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-        return dateTime.format(formatter);
-    }
 
     public static String convertStringDateFormat(String date) {
         if (date == null || date.trim().isEmpty()) {

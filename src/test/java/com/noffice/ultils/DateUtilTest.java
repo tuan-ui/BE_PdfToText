@@ -64,58 +64,7 @@ class DateUtilTest {
         assertEquals("22/05/2025", DateUtil.formatTimeDiff(createTime, now));
     }
 
-    // ====================================================================
-    // parseFlexibleDate - ĐÃ SỬA BUG + TEST ỔN ĐỊNH
-    // ====================================================================
-    @Test
-    void shouldParse_RFC1123_Successfully() {
-        String input = "Tue, 27 May 2025 03:12:00 GMT";
-        LocalDateTime result = DateUtil.parseFlexibleDate(input);
-        assertEquals(LocalDateTime.of(2025, 5, 27, 10, 12, 0), result);
-    }
 
-    @Test
-    void shouldParse_JavaScriptDateToString_Successfully() {
-        String input = "Tue May 27 2025 10:12:00 GMT+0700 (Indochina Time)";
-        LocalDateTime result = DateUtil.parseFlexibleDate(input);
-        assertEquals(LocalDateTime.of(2025, 5, 27, 10, 12, 0), result);
-    }
-
-    @Test
-    void shouldThrow_IllegalArgumentException_WhenInvalidFormat() {
-        String invalid = "abc xyz";
-
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> DateUtil.parseFlexibleDate(invalid)
-        );
-
-        assertTrue(ex.getMessage().contains("Không thể phân tích ngày"));
-        // Cause có thể là DateTimeParseException hoặc StringIndexOutOfBoundsException
-        // → chỉ cần kiểm tra message là đủ
-    }
-
-    @Test
-    void shouldThrow_IllegalArgumentException_WhenBlank() {
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> DateUtil.parseFlexibleDate("")
-        );
-        assertTrue(ex.getMessage().contains("Không thể phân tích ngày"));
-    }
-
-    @Test
-    void shouldThrow_IllegalArgumentException_WhenNull() {
-        IllegalArgumentException ex = assertThrows(
-                IllegalArgumentException.class,
-                () -> DateUtil.parseFlexibleDate(null)
-        );
-        assertTrue(ex.getMessage().contains("Không thể phân tích ngày"));
-    }
-
-    // ====================================================================
-    // Các test khác - giữ nguyên, đã ổn
-    // ====================================================================
     @Test
     void formatLocalDateToString_ShouldReturn_ddMMYYYY() {
         LocalDate date = LocalDate.of(2025, 3, 5);
@@ -125,17 +74,6 @@ class DateUtilTest {
     @Test
     void formatLocalDateToString_ShouldReturnNull_WhenNull() {
         assertNull(DateUtil.formatLocalDateToString(null));
-    }
-
-    @Test
-    void formatLocalDateTimeToString_ShouldReturn_ddMMYYYY_HHmmss() {
-        LocalDateTime dt = LocalDateTime.of(2025, 12, 25, 8, 9, 10);
-        assertEquals("25/12/2025 08:09:10", DateUtil.formatLocalDateTimeToString(dt));
-    }
-
-    @Test
-    void formatLocalDateTimeToString_ShouldReturnNull_WhenNull() {
-        assertNull(DateUtil.formatLocalDateTimeToString(null));
     }
 
     @Test
@@ -165,14 +103,14 @@ class DateUtilTest {
     @Test
     void parseFlexibleDate2_shouldParse_yyyyMMdd_Successfully() throws ParseException {
         java.util.Date date = DateUtil.parseFlexibleDate2("2025-05-27");
-        LocalDateTime expected = LocalDate.of(2025, 5, 27).atStartOfDay();
+        LocalDateTime expected = LocalDate.of(2025, 5, 27).atStartOfDay().atZone(ZONE_VN).toLocalDateTime();
         assertEquals(expected.atZone(ZONE_VN).toInstant(), date.toInstant());
     }
 
     @Test
     void parseFlexibleDate2_shouldParse_ddMMyyyy_Successfully() throws ParseException {
         java.util.Date date = DateUtil.parseFlexibleDate2("27/05/2025");
-        LocalDateTime expected = LocalDate.of(2025, 5, 27).atStartOfDay();
+        LocalDateTime expected = LocalDate.of(2025, 5, 27).atStartOfDay().atZone(ZONE_VN).toLocalDateTime();
         assertEquals(expected.atZone(ZONE_VN).toInstant(), date.toInstant());
     }
 
