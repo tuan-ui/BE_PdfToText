@@ -167,7 +167,7 @@ class DocDocumentControllerTest {
     @Test
     void deleteDoc_Success() throws Exception {
         Mockito.when(docDocumentService.delete(eq(testId), any(User.class)))
-                .thenReturn(null); // result == null → thành công
+                .thenReturn(true); // result == null → thành công
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/doc-document/delete")
                         .param("id", testId.toString())
@@ -180,13 +180,13 @@ class DocDocumentControllerTest {
     @Test
     void deleteDoc_BusinessError() throws Exception {
         Mockito.when(docDocumentService.delete(eq(testId), any(User.class)))
-                .thenReturn(true);
+                .thenReturn(false);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/doc-document/delete")
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Văn bản đang được xử lý, không thể xóa!"))
+                .andExpect(jsonPath("$.message").value("error"))
                 .andExpect(jsonPath("$.status").value(400));
     }
 
