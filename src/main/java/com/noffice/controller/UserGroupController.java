@@ -64,7 +64,7 @@ public class UserGroupController {
             GenericPaginationDTO paginationDTO = new GenericPaginationDTO(userGroups.getTotalElements(), userGroups.getContent());
             return new ResponseAPI(paginationDTO, "User groups retrieved successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error retrieving user groups: " + e.getMessage(), 400);
+            return new ResponseAPI(null, "Error retrieving user groups: " + e.getMessage(), 500);
         }
     }
 
@@ -77,7 +77,7 @@ public class UserGroupController {
             }
             return new ResponseAPI(null, "User group status updated successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error updating user group status: " + e.getMessage(), 400);
+            return new ResponseAPI(null, "Error updating user group status: " + e.getMessage(), 500);
         }
     }
 
@@ -90,7 +90,7 @@ public class UserGroupController {
             }
             return new ResponseAPI(null, "User group deleted successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error deleting user group: " + e.getMessage(), 400);
+            return new ResponseAPI(null, "Error deleting user group: " + e.getMessage(), 500);
         }
     }
 
@@ -105,7 +105,7 @@ public class UserGroupController {
             }
             return new ResponseAPI(null, "User groups deleted successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error deleting user groups: " + e.getMessage(), 400);
+            return new ResponseAPI(null, "Error deleting user groups: " + e.getMessage(), 500);
         }
     }
 
@@ -117,7 +117,7 @@ public class UserGroupController {
             userGroupService.saveLogDetail(groupId, userDetails);
             return new ResponseAPI(null, "Log details retrieved successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error retrieving log details: " + e.getMessage(), 400);
+            return new ResponseAPI(null, "Error retrieving log details: " + e.getMessage(), 500);
         }
     }
 
@@ -127,7 +127,7 @@ public class UserGroupController {
             ErrorListResponse message = userGroupService.checkDeleteMulti(ids);
             return new ResponseAPI(message, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 }

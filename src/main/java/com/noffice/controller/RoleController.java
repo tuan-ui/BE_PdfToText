@@ -241,7 +241,7 @@ public class RoleController {
 			List<Role> roles = roleService.getAllRole(userDetails.getPartnerId());
 			return new ResponseAPI(roles, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 	@GetMapping("/LogDetailRole")
@@ -253,7 +253,7 @@ public class RoleController {
 			roleService.getLogDetailRole(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 	@GetMapping("/getALlPermisstion")
@@ -262,7 +262,7 @@ public class RoleController {
 			List<Permission> response = roleService.getALlPermisstion();
 			return new ResponseAPI(response, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -289,7 +289,7 @@ public class RoleController {
 			}
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -300,7 +300,7 @@ public class RoleController {
 			ErrorListResponse message = roleService.checkDeleteMulti(ids);
 			return new ResponseAPI(message, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 

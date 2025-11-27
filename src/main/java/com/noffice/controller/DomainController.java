@@ -48,7 +48,7 @@ public class DomainController {
 			Page<Domain> domains = domainService.getListDomain(searchString, domainCode, domainName,domainDescription, pageable, userDetails.getPartnerId());
 			return new ResponseAPI(domains, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class DomainController {
 			List<Domain> domains = domainService.getAllDomain(userDetails.getPartnerId());
 			return new ResponseAPI(domains, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -168,7 +168,7 @@ public class DomainController {
 			domainService.getLogDetailDomain(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 

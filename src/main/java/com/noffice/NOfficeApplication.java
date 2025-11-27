@@ -12,7 +12,7 @@ public class NOfficeApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NOfficeApplication.class, args);
-		//openSwaggerUI();
+		openSwaggerUI();
 	}
 
 	private static void openSwaggerUI() {

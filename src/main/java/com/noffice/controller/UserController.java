@@ -90,7 +90,7 @@ public class UserController {
                     userCode, userDetails, pageable);
             return new ResponseAPI(users, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, e.getMessage(), 400);
+            return new ResponseAPI(null, e.getMessage(), 500);
         }
     }
 	
@@ -126,7 +126,7 @@ public class UserController {
             }
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 	
@@ -138,7 +138,7 @@ public class UserController {
 			userService.resetPassword(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -280,7 +280,7 @@ public class UserController {
         } catch (IOException e) {
             return new ResponseAPI(null, "error.ErrorProcessingFile", 400);
         } catch (RuntimeException e) {
-            return new ResponseAPI(null, e.getMessage(), 400);
+            return new ResponseAPI(null, e.getMessage(), 500);
         }
     }
 	
@@ -351,7 +351,7 @@ public class UserController {
         } catch (RuntimeException e) {
             return new ResponseAPI(null, e.getMessage(), 400);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Cập nhật thất bại", 400);
+            return new ResponseAPI(null, "Cập nhật thất bại", 500);
         }
     }
     
@@ -448,7 +448,7 @@ public class UserController {
         } catch (IOException e) {
             return new ResponseAPI(null, "error.ErrorProcessingFile", 400);
         } catch (RuntimeException e) {
-            return new ResponseAPI(null, e.getMessage(), 400);
+            return new ResponseAPI(null, e.getMessage(), 500);
         }
     }
 	
@@ -475,7 +475,7 @@ public class UserController {
             UserDetailDTO userDetail = userService.getByUserId(userId);
             return new ResponseAPI(userDetail, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail: " + e.getMessage(), 400);
+            return new ResponseAPI(null, "fail: " + e.getMessage(), 500);
         }
     }
 	
@@ -803,7 +803,7 @@ public class UserController {
             userService.getLogDetailUser(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
     @PostMapping("/checkDeleteMulti")
@@ -812,7 +812,7 @@ public class UserController {
             ErrorListResponse message = userService.checkDeleteMulti(ids);
             return new ResponseAPI(message, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 

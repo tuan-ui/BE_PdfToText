@@ -52,7 +52,7 @@ public class DocTypeController {
 			Page<DocType> docTypes = docTypeService.getListDocType(searchStringStr, docTypeCode, docTypNameStr,docTypeDescriptionStr, pageable, userDetails.getPartnerId());
 			return new ResponseAPI(docTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -150,7 +150,7 @@ public class DocTypeController {
 			List<DocType> docTypes = docTypeService.getAllDocType(userDetails.getPartnerId());
 			return new ResponseAPI(docTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -163,7 +163,7 @@ public class DocTypeController {
 			docTypeService.getLogDetailDocType(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class DocTypeController {
 			ErrorListResponse message = docTypeService.checkDeleteMulti(ids);
 			return new ResponseAPI(message, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 

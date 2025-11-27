@@ -44,7 +44,7 @@ public class HolidayTypeController {
             Page<HolidayType> holidayTypePage = holidayTypeService.searchHolidayTypes(searchString, holidayTypeCode, holidayTypeName, description, pageable, userDetails.getPartnerId());
             return new ResponseAPI(holidayTypePage, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -136,7 +136,7 @@ public class HolidayTypeController {
             List<HolidayType> holidayTypes = holidayTypeService.getAllHolidayType(userDetails.getPartnerId());
             return new ResponseAPI(holidayTypes, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -149,7 +149,7 @@ public class HolidayTypeController {
             holidayTypeService.getLogDetailHolidayType(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -159,7 +159,7 @@ public class HolidayTypeController {
             ErrorListResponse message = holidayTypeService.checkDeleteMulti(ids);
             return new ResponseAPI(message, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 }

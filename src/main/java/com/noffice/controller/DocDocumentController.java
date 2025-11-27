@@ -54,7 +54,7 @@ public class DocDocumentController {
 			Page<DocDocumentDTO> docTypes = docDocumentService.getListDoc(searchStringStr, docTypeCode, docTypNameStr,docTypeDescriptionStr, pageable, userDetails.getPartnerId());
 			return new ResponseAPI(docTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -132,7 +132,7 @@ public class DocDocumentController {
 						.body(new ResponseAPI(result, "Thêm mới thành công", 200));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, "error", 400));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, "error", 500));
 		}
 	}
 
@@ -147,7 +147,7 @@ public class DocDocumentController {
 			List<DocType> docTypes = docDocumentService.getAllDocType(userDetails.getPartnerId());
 			return new ResponseAPI(docTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -160,7 +160,7 @@ public class DocDocumentController {
 			docDocumentService.getLogDetailDocType(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -170,7 +170,7 @@ public class DocDocumentController {
 			ErrorListResponse message = docDocumentService.checkDeleteMulti(ids);
 			return new ResponseAPI(message, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 	@GetMapping("/attachs")

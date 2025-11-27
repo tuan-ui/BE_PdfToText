@@ -45,7 +45,7 @@ public class PartnerController {
             Page<Partners> partnersPage = partnerService.searchPartners(request, pageable);
             return new Response(partnersPage, "success", 200);
         } catch (Exception e) {
-            return new Response(e.toString(), "fail", 400);
+            return new Response(e.toString(), "fail", 500);
         }
     }
     
@@ -104,7 +104,7 @@ public class PartnerController {
             ErrorListResponse message = partnerService.checkDeleteMulti(items, userDetails);
             return new ResponseAPI(message, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -151,7 +151,7 @@ public class PartnerController {
             Partners partnerSave = partnerService.updatePartnerImage(partner, userDetails);
             return new Response(partnerSave, "success", 200);
         } catch (Exception e) {
-            return new Response("error", "Thêm mới đối tác thất bại", 201);
+            return new Response("error", "Thao tác thất bại", 500);
         }
     }
 
@@ -164,7 +164,7 @@ public class PartnerController {
             partnerService.getLogDetailPartner(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 }

@@ -51,7 +51,7 @@ public class TaskTypeController {
             Page<TaskType> taskTypes = taskTypeService.getListTaskType(searchStringStr, taskTypeCode, taskTypNameStr,taskTypeDescriptionStr, pageable, userDetails.getPartnerId());
             return new ResponseAPI(taskTypes, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -149,7 +149,7 @@ public class TaskTypeController {
             List<TaskType> taskTypes = taskTypeService.getAllTaskType(userDetails.getPartnerId());
             return new ResponseAPI(taskTypes, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -162,7 +162,7 @@ public class TaskTypeController {
             taskTypeService.getLogDetailTaskType(id, userDetails);
             return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -172,7 +172,7 @@ public class TaskTypeController {
             ErrorListResponse message = taskTypeService.checkDeleteMulti(ids);
             return new ResponseAPI(message, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 400);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 }

@@ -54,7 +54,7 @@ public class DocumentTemplateController {
 			Page<DocumentTemplateDTO> documentTemplates = documentTemplateService.getListDocumentTemplate(searchStringStr, documentTemplateCode, docTypNameStr,documentTemplateDescriptionStr, pageable, userDetails.getPartnerId());
 			return new ResponseAPI(documentTemplates, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class DocumentTemplateController {
 			List<DocumentTemplate> documentTemplates = documentTemplateService.getAllDocumentTemplate(userDetails.getPartnerId());
 			return new ResponseAPI(documentTemplates, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -164,7 +164,7 @@ public class DocumentTemplateController {
 			DocumentTemplateDetailDTO response = documentTemplateService.getDocumentDetail(id, userDetails);
 			return new ResponseAPI(response, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 

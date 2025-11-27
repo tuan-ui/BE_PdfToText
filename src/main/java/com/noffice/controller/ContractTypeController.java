@@ -50,7 +50,7 @@ public class ContractTypeController {
 			Page<ContractType> contractTypes = contractTypeService.getListContractType(searchStringStr, contractTypeCode, docTypNameStr,contractTypeDescriptionStr, pageable, userDetails.getPartnerId());
 			return new ResponseAPI(contractTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -148,7 +148,7 @@ public class ContractTypeController {
 			List<ContractType> contractTypes = contractTypeService.getAllContractType(userDetails.getPartnerId());
 			return new ResponseAPI(contractTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -161,7 +161,7 @@ public class ContractTypeController {
 			contractTypeService.getLogDetailContractType(id, userDetails);
 			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -171,7 +171,7 @@ public class ContractTypeController {
 			ErrorListResponse message = contractTypeService.checkDeleteMulti(ids);
 			return new ResponseAPI(message, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
