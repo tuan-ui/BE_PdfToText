@@ -98,12 +98,12 @@ public class UserGroupController {
     public ResponseAPI deleteMultipleUserGroups(@RequestBody List<DeleteMultiDTO> ids) {
         try {
             if (ids == null || ids.isEmpty()) {
-                return new ResponseAPI(null, "No user groups to delete", 404);
+                return new ResponseAPI(null, "No user groups to delete", 400);
             }
             for (DeleteMultiDTO groupId : ids) {
                 userGroupService.deleteUserGroup(groupId.getId(), groupId.getVersion());
             }
-            return new ResponseAPI(null, "User groups deleted successfully", 200);
+            return new ResponseAPI(null, "Deleted multiple user group successfully", 200);
         } catch (Exception e) {
             return new ResponseAPI(null, "Error deleting user groups: " + e.getMessage(), 500);
         }

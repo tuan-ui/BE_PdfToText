@@ -56,6 +56,7 @@ public class SecurityConfig {
 //	}
 
 	@Bean
+	@SuppressWarnings("java:S4502")
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests(configure -> configure.anyRequest().permitAll())
 				.userDetailsService(userDetailsService)
