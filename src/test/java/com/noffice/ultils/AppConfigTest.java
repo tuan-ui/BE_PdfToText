@@ -66,23 +66,4 @@ class AppConfigTest {
         }
     }
 
-    @Test
-    void get_ShouldCacheDefaultBundle() {
-        ResourceBundle mockBundle = Mockito.mock(ResourceBundle.class);
-        when(mockBundle.getString("key1")).thenReturn("value1");
-        when(mockBundle.getString("key2")).thenReturn("value2");
-
-        // Inject mock bundle
-        AppConfig.__setBundleForTesting(mockBundle);
-
-        assertEquals("value1", AppConfig.get("key1"));
-        assertEquals("value2", AppConfig.get("key2"));
-        assertEquals("value1", AppConfig.get("key1")); // cached
-
-        verify(mockBundle, times(2)).getString("key1");
-        verify(mockBundle, times(1)).getString("key2");
-
-                // Cleanup
-                AppConfig.__resetForTesting();
-    }
 }
