@@ -54,13 +54,15 @@ public class LogService {
 		}
 
 		if (functionKey != null && !functionKey.trim().isEmpty()) {
-			functionKey = FunctionType.fromFunction(functionKey).getFunction();
+			FunctionType ft = FunctionType.fromFunction(functionKey);
+			functionKey = (ft != null) ? ft.getFunction() : null;
 		} else {
 			functionKey = null;
 		}
 
 		if (actionKey != null && !actionKey.trim().isEmpty()) {
-			actionKey = ActionType.fromAction(actionKey).getAction();
+			ActionType ft = ActionType.fromAction(actionKey);
+			actionKey = (ft != null) ? ft.getAction() : null;
 		} else {
 			actionKey = null;
 		}

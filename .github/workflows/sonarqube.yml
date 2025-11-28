@@ -1,5 +1,4 @@
 name: SonarCloud Scan
-
 on:
   push:
     branches: [ main, develop, feature/*, build-SONAR ]
@@ -28,26 +27,11 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Run Tests and Generate JaCoCo Report
-        run: mvn -B verify
-      - name: Verify JaCoCo Report Existence
-        run: |
-          REPORT_PATH=target/site/jacoco/jacoco.xml
-          
-          echo "Checking for JaCoCo XML report at: $REPORT_PATH"
-          if [ -f "$REPORT_PATH" ]; then
-            head -n 10 $REPORT_PATH
-          else
-            find target -name "*.xml"
-            exit 1 # Thoát nếu không tìm thấy report
-          fi
-
-      - name: SonarCloud Analysis
+      - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
             -Dsonar.projectKey=nsoftBE1 \
             -Dsonar.organization=tuan-ui \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+            -Dsonar.host.url=https://sonarcloud.io

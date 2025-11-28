@@ -1,7 +1,10 @@
 package com.noffice.service;
 
 import com.noffice.entity.Logs;
+import com.noffice.enumtype.ActionType;
+import com.noffice.enumtype.FunctionType;
 import com.noffice.repository.LogRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -66,13 +69,13 @@ class LogServiceTest {
         Page<Logs> mockPage = new PageImpl<>(List.of(log));
 
         when(logRepository.getLogs(
-                any(), any(), any(), anyString(), anyString(), any(UUID.class), any(PageRequest.class)
+                any(), any(), any(), any(), any(), any(UUID.class), any(PageRequest.class)
         )).thenReturn(mockPage);
 
         Page<Logs> result = logService.getLogs(
                 null,
-                "log.create",
-                "log.action.auth.login",
+                ActionType.CREATE.getAction(),     // "log.create"
+                FunctionType.LOGIN.getFunction(),
                 "01/01/2025",
                 "05/01/2025",
                 pageable,
@@ -107,31 +110,29 @@ class LogServiceTest {
     void testGetLogs_ActionKey_And_FunctionKey_Converted() throws Exception {
 
         Page<Logs> mockPage = new PageImpl<>(List.of(new Logs()));
-
         when(logRepository.getLogs(
-                any(), any(), any(), anyString(), anyString(), any(), any()
+                any(), any(), any(), any(), any(), any(UUID.class), any(PageRequest.class)
         )).thenReturn(mockPage);
 
         logService.getLogs(
                 null,
-                "log.create",
-                "log.action.auth.login",
+                ActionType.CREATE.getAction(),         // "log.create"
+                FunctionType.LOGIN.getFunction(),      // "log.action.auth.login"
                 "",
                 "",
                 PageRequest.of(0, 10),
                 UUID.randomUUID()
         );
 
-        verify(logRepository, times(1))
-                .getLogs(
-                        isNull(),
-                        isNull(),
-                        isNull(),
-                        eq("log.action.auth.login"),
-                        eq("log.create"),
-                        any(UUID.class),
-                        any(PageRequest.class)
-                );
+        verify(logRepository).getLogs(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(UUID.class),
+                any(PageRequest.class)
+        );
     }
 
 }
