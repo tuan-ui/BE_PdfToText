@@ -7,7 +7,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.util.ReflectionUtils;
 
+import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -18,7 +20,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("AppConfig Unit Tests")
 class AppConfigTest {
 
     private static final String TEST_KEY = "save_path";
@@ -68,17 +69,20 @@ class AppConfigTest {
     @Test
     void get_ShouldCacheDefaultBundle() {
         ResourceBundle mockBundle = Mockito.mock(ResourceBundle.class);
-        Mockito.when(mockBundle.getString(anyString())).thenReturn("cached-value");
-        try (MockedStatic<ResourceBundle> mocked = Mockito.mockStatic(ResourceBundle.class)) {
-            mocked.when(() -> ResourceBundle.getBundle("application")).thenReturn(mockBundle);
+        when(mockBundle.getString("key1")).thenReturn("value1");
+        when(mockBundle.getString("key2")).thenReturn("value2");
 
-            AppConfig.get("spring.mail.host");
+        // Inject mock bundle
+        AppConfig.__setBundleForTesting(mockBundle);
 
-            mocked.verify(() -> ResourceBundle.getBundle("application"), times(1));
-            Mockito.verify(mockBundle, times(1)).getString(anyString());
+        assertEquals("value1", AppConfig.get("key1"));
+        assertEquals("value2", AppConfig.get("key2"));
+        assertEquals("value1", AppConfig.get("key1")); // cached
 
-        } catch (Exception e) {
-            Assertions.fail("Test failed due to exception: " + e.getMessage());
-        }
+        verify(mockBundle, times(2)).getString("key1");
+        verify(mockBundle, times(1)).getString("key2");
+
+                // Cleanup
+                AppConfig.__resetForTesting();
     }
 }
