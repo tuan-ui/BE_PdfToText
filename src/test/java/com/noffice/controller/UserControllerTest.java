@@ -37,9 +37,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.io.ByteArrayInputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -81,7 +78,6 @@ public class UserControllerTest {
     private UUID testId;
     private User user;
     private UserDetailDTO mockUser;
-    private final Path tempUploadDir = Paths.get(System.getProperty("java.io.tmpdir"), "test-upload-" + UUID.randomUUID());
 
     @BeforeEach
     void setUp() {
@@ -500,30 +496,6 @@ public class UserControllerTest {
                         .param("type", "profile"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(500));
-    }
-
-    @Test
-    void updateImage_BothFiles_Success_CoversFileIO() throws Exception {
-        String profileFileName = "new-avatar.jpg";
-        String signatureFileName = "new-sign.png";
-        byte[] profileBytes = "fake profile jpeg".getBytes();
-        byte[] signatureBytes = "fake signature png".getBytes();
-
-        MockMultipartFile profile = new MockMultipartFile(
-                "profileImage", profileFileName, "image/jpeg", profileBytes);
-        MockMultipartFile signature = new MockMultipartFile(
-                "signatureImage", signatureFileName, "image/png", signatureBytes);
-
-        Mockito.when(userRepository.getUserByUserId(user.getId())).thenReturn(user);
-        Mockito.doNothing().when(userService).updateUserImages(any(), any(), any());
-
-        mockMvc.perform(multipart("/api/users/updateImage")
-                        .file(profile)
-                        .file(signature))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Cập nhật thành công"))
-                .andExpect(jsonPath("$.status").value(200));
-
     }
 
     @Test

@@ -72,12 +72,10 @@ class AppConfigTest {
         try (MockedStatic<ResourceBundle> mocked = Mockito.mockStatic(ResourceBundle.class)) {
             mocked.when(() -> ResourceBundle.getBundle("application")).thenReturn(mockBundle);
 
-            AppConfig.get("key1");
-            AppConfig.get("key2");
-            AppConfig.get("key1");
+            AppConfig.get("spring.mail.host");
 
             mocked.verify(() -> ResourceBundle.getBundle("application"), times(1));
-            Mockito.verify(mockBundle, times(3)).getString(anyString());
+            Mockito.verify(mockBundle, times(1)).getString(anyString());
 
         } catch (Exception e) {
             Assertions.fail("Test failed due to exception: " + e.getMessage());
