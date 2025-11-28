@@ -90,10 +90,6 @@ public class UserService {
         return users;
     }
 
-    public Optional<User> findByUserId(Long userId) {
-        return userRepository.findById(userId);
-    }
-
     public UserDetailDTO getByUserId(UUID userId) {
         User result = userRepository.getUserByUserId(userId);
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -141,14 +137,6 @@ public class UserService {
             }
         }
         return "";
-    }
-
-    @Transactional
-    public void resetPassword(UUID userId, User userDetails) {
-        String newPassword = configRepository.findByKey("default_password").getValue();
-        String newPasswordEncode = passwordEncoder.encode(newPassword);
-        userRepository.resetPassword(userId, newPasswordEncode);
-        userRepository.getUserByUserId(userId);
     }
 
     @Transactional
@@ -274,25 +262,6 @@ public class UserService {
         }
 
         return new FileSystemResource(filePath.toFile());
-    }
-
-    @Transactional
-    public void updateUserProfile(User existingUser, String phoneNumber, String email, String profileImagePath, String signatureImagePath, UUID partnerId, String digitalCertificateName, String simCa) {
-        // Update only the specified fields
-        if (phoneNumber != null) {
-            existingUser.setPhone(phoneNumber);
-        }
-        if (email != null) {
-            existingUser.setEmail(email);
-        }
-        if (profileImagePath != null) {
-            existingUser.setProfileImage(profileImagePath);
-        }
-        if (signatureImagePath != null) {
-            existingUser.setSignatureImage(signatureImagePath);
-        }
-        User user = userRepository.save(existingUser);
-
     }
 
 

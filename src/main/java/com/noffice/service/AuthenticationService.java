@@ -126,14 +126,6 @@ public class AuthenticationService {
 		return passwordEncoder.matches(user.getPassword(), userOpt.getPassword());
 	}
 
-	public boolean changePassword(UserLoginDTO user) {
-		User userOpt = usersRepository.findByUsername(user.getUsername())
-				.orElseThrow(() -> new UsernameNotFoundException("Người dùng không tồn tại!"));
-		userOpt.setPassword(passwordEncoder.encode(user.getPassword()));
-		usersRepository.save(userOpt);
-		return true;
-	}
-
 	 @Transactional
     public void changePassword(ChangePasswordDTO changePasswordDTO, User currentUser) {
         // Tìm user hiện tại từ username trong token

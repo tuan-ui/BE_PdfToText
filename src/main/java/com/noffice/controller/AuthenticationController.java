@@ -523,17 +523,6 @@ public class AuthenticationController {
 	}
 
 
-	public boolean checkExpriedToken(Date expiredDate) {
-		// Định dạng ngày giờ
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
-		// Ngày cần so sánh
-		String dateToCompareString = expiredDate.toString();
-		LocalDateTime dateToCompare = LocalDateTime.parse(dateToCompareString, formatter);
-		// Ngày hiện tại
-		LocalDateTime currentDate = LocalDateTime.now();
-		// So sánh ngày
-        return currentDate.isAfter(dateToCompare);
-	}
 	@PostMapping("/forgetPassword")
 	public ResponseEntity<ResponseAPI> forgetPassword(@RequestBody ForgotPasswordRequest request) {
 		try {

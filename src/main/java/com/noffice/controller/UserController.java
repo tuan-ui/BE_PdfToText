@@ -129,19 +129,6 @@ public class UserController {
             return new ResponseAPI(null, "fail", 500);
         }
     }
-	
-	@GetMapping("/resetPassword")
-	public ResponseAPI resetPassword(@RequestParam(value = "id") UUID id) {
-		try {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			User userDetails = (User) authentication.getPrincipal();
-			userService.resetPassword(id, userDetails);
-			return new ResponseAPI(null, "success", 200);
-		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
-		}
-	}
-
 
     @GetMapping("/lock")
     public ResponseEntity<ResponseAPI> lock(
@@ -284,77 +271,6 @@ public class UserController {
         }
     }
 	
-    @PostMapping(value = "/updateProfile", consumes = "multipart/form-data")
-    public ResponseAPI updateUserProfile(
-            @RequestParam("userId") String userIdStr,
-            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
-            @RequestParam(value = "email", required = false) String email,
-            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
-            @RequestParam(value = "signatureImage", required = false) MultipartFile signatureImage,
-            @RequestParam(value = "digitalCertificateName", required = false) String digitalCertificateName,
-            @RequestParam(value = "simCa", required = false) String simCa,
-            HttpServletRequest request) {
-
-        try {
-            // Parse userId
-            long userId;
-            try {
-                userId = Long.parseLong(userIdStr);
-            } catch (NumberFormatException e) {
-                return new ResponseAPI(null, "userId phải là số hợp lệ", 400);
-            }
-
-            // Validation for non-mandatory fields only if provided
-            if (email != null && !email.trim().isEmpty() && !isValidEmail(email)) {
-                return new ResponseAPI(null, "Email không hợp lệ", 400);
-            }
-            if (phoneNumber != null && !phoneNumber.trim().isEmpty() && !isValidPhoneNumber(phoneNumber)) {
-                return new ResponseAPI(null, "Số điện thoại không hợp lệ", 400);
-            }
-
-            // Get authenticated user
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            User userDetails = (User) authentication.getPrincipal();
-
-            // Find existing user
-            User existingUser = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Người dùng không tồn tại"));
-
-            // Get old file paths
-            String oldProfileImagePath = existingUser.getProfileImage();
-            String oldSignatureImagePath = existingUser.getSignatureImage();
-
-            // Save files and get paths
-            String profileImagePath = null;
-            String signatureImagePath = null;
-            if (profileImage != null && !profileImage.isEmpty()) {
-                // Delete old profile image if it exists
-                deleteFile(oldProfileImagePath);
-                profileImagePath = saveFile(profileImage, userDetails.getPartnerId(), "profile");
-            } else {
-                profileImagePath = oldProfileImagePath; // Retain old path if no new file
-            }
-            if (signatureImage != null && !signatureImage.isEmpty()) {
-                // Delete old signature image if it exists
-                deleteFile(oldSignatureImagePath);
-                signatureImagePath = saveFile(signatureImage, userDetails.getPartnerId(), "signature");
-            } else {
-                signatureImagePath = oldSignatureImagePath; // Retain old path if no new file
-            }
-
-            // Update user with new values
-            userService.updateUserProfile(existingUser, phoneNumber, email, profileImagePath, signatureImagePath, userDetails.getPartnerId(), digitalCertificateName, simCa);
-            return new ResponseAPI(null, "Cập nhật thành công", 200);
-
-        } catch (IOException e) {
-            return new ResponseAPI(null, "Lỗi khi xử lý file: " + e.getMessage(), 400);
-        } catch (RuntimeException e) {
-            return new ResponseAPI(null, e.getMessage(), 400);
-        } catch (Exception e) {
-            return new ResponseAPI(null, "Cập nhật thất bại", 500);
-        }
-    }
-    
     @PostMapping(value = "/add", consumes = "multipart/form-data")
     public ResponseAPI createUser(
             @RequestParam("userName") String username,
@@ -683,20 +599,6 @@ public class UserController {
 //			return new ResponseAPI(null, "fail", 400);
 //		}
 //	}
-
-    @GetMapping("/detailLog")
-    public ResponseAPI logDetailAccess(@RequestParam("userId") Long userId) {
-        try {
-//            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//            User userDetails = (User) authentication.getPrincipal();
-//
-//            userService.detailLog(userId, userDetails);
-
-            return new ResponseAPI(null, "Đã ghi nhận truy cập", 200);
-        } catch (Exception e) {
-            return new ResponseAPI(null, "Thất bại", 400);
-        }
-    }
 
 //    @GetMapping("/getOptionUsersByUserId")
 //    public ResponseAPI getOptionUsersByUserId() {
