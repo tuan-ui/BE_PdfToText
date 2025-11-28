@@ -1,5 +1,6 @@
 package com.noffice.ultils;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,10 +67,9 @@ class AppConfigTest {
 
     @Test
     void get_ShouldCacheDefaultBundle() {
+        ResourceBundle mockBundle = Mockito.mock(ResourceBundle.class);
+        Mockito.when(mockBundle.getString(anyString())).thenReturn("cached-value");
         try (MockedStatic<ResourceBundle> mocked = Mockito.mockStatic(ResourceBundle.class)) {
-            ResourceBundle mockBundle = Mockito.mock(ResourceBundle.class);
-            Mockito.when(mockBundle.getString(anyString())).thenReturn("cached-value");
-
             mocked.when(() -> ResourceBundle.getBundle("application")).thenReturn(mockBundle);
 
             AppConfig.get("key1");
@@ -77,6 +77,10 @@ class AppConfigTest {
             AppConfig.get("key1");
 
             mocked.verify(() -> ResourceBundle.getBundle("application"), times(1));
+            Mockito.verify(mockBundle, times(3)).getString(anyString());
+
+        } catch (Exception e) {
+            Assertions.fail("Test failed due to exception: " + e.getMessage());
         }
     }
 }
