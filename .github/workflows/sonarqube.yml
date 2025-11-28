@@ -33,10 +33,12 @@ jobs:
       - name: Run SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn sonar:sonar \
+        run: |
+          mvn clean verify sonar:sonar \
             -Dsonar.projectKey=nsoftBE1 \
             -Dsonar.organization=tuan-ui \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+
 
