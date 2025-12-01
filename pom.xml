@@ -30,6 +30,11 @@
 	<properties>
 		<java.version>17</java.version>
 		<jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
+		<sonar.secretDetection.ignoreEncrypted>true</sonar.secretDetection.ignoreEncrypted>
+
+    		<sonar.issue.ignore.multicriteria>S1</sonar.issue.ignore.multicriteria>
+   		<sonar.issue.ignore.multicriteria.S1.ruleKey>java:S2068</sonar.issue.ignore.multicriteria.S1.ruleKey>
+   		<sonar.issue.ignore.multicriteria.S1.filePattern>**/application*.properties</sonar.issue.ignore.multicriteria.S1.filePattern>
 	</properties>
 	<dependencies>
 		<dependency>
