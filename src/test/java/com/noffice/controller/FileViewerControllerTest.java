@@ -195,7 +195,6 @@ class FileViewerControllerTest {
                     .andExpect(jsonPath("$.id").isString());
         }
     }
-
     @Test
     void uploadFile_BlockExe() throws Exception {
         User mockUser = new User();
@@ -211,9 +210,14 @@ class FileViewerControllerTest {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
-        MockMultipartFile file = new MockMultipartFile("file", "virus.exe", null, new byte[0]);
+        MockMultipartFile exeFile = new MockMultipartFile(
+                "file",                    // tên field
+                "virus.exe",               // ← tên file gốc (có .exe)
+                "application/octet-stream", // ← content type của file .exe
+                "fake exe content".getBytes()
+        );
 
-        mockMvc.perform(withJwt(multipart("/api/fileViewer/upload").file(file)))
+        mockMvc.perform(withJwt(multipart("/api/fileViewer/upload").file(exeFile)))
                 .andExpect(status().isUnsupportedMediaType())
                 .andExpect(jsonPath("$.status").value(415));
     }
