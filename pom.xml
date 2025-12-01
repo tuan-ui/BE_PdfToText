@@ -30,7 +30,6 @@
 	<properties>
 		<java.version>17</java.version>
 		<jacoco-maven-plugin.version>0.8.11</jacoco-maven-plugin.version>
-		<sonar.exclusions>src/main/resources/application*.properties</sonar.exclusions>
 	</properties>
 	<dependencies>
 		<dependency>
