@@ -38,4 +38,5 @@ jobs:
             -Dsonar.secretDetection.ignoreEncrypted=true \
             -Dsonar.issue.ignore.multicriteria=S1 \
             -Dsonar.issue.ignore.multicriteria.S1.ruleKey=java:S2068 \
-            -Dsonar.issue.ignore.multicriteria.S1.filePattern=**/application*.properties
+            -Dsonar.issue.ignore.multicriteria.S1.resourceKey=**/application*.properties
+
