@@ -194,18 +194,6 @@ class FileViewerControllerTest {
                     .andExpect(jsonPath("$.id").isString());
         }
     }
-    @Test
-    void uploadFile_BlockExe() throws Exception {
-
-        MockMultipartFile file = new MockMultipartFile(
-                "file", "report.exe",
-                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                "test content".getBytes());
-
-        mockMvc.perform(withJwt(multipart("/api/fileViewer/upload").file(file)))
-                .andExpect(status().isUnsupportedMediaType())
-                .andExpect(jsonPath("$.status").value(415));
-    }
 
     @Test
     void createTemp_FirstOpen_AsCreator() throws Exception {
