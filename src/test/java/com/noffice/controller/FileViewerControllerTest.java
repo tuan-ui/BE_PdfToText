@@ -197,14 +197,12 @@ class FileViewerControllerTest {
     @Test
     void uploadFile_BlockExe() throws Exception {
 
-        MockMultipartFile exeFile = new MockMultipartFile(
-                "file",                    // tên field
-                "virus.exe",               // ← tên file gốc (có .exe)
-                "application/octet-stream", // ← content type của file .exe
-                "fake exe content".getBytes()
-        );
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "report.exe",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "test content".getBytes());
 
-        mockMvc.perform(withJwt(multipart("/api/fileViewer/upload").file(exeFile)))
+        mockMvc.perform(withJwt(multipart("/api/fileViewer/upload").file(file)))
                 .andExpect(status().isUnsupportedMediaType())
                 .andExpect(jsonPath("$.status").value(415));
     }
