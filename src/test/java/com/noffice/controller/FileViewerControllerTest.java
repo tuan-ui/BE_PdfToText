@@ -71,6 +71,7 @@ class FileViewerControllerTest {
     private static final UUID CURRENT_USER_ID = UUID.randomUUID();
     private static final String VALID_ACCESS_TOKEN = "valid.jwt.access.token.here";
     private static final String WOPI_TOKEN = "wopi.jwt.token.generated";
+    private User mockUser;
 
     @BeforeEach
     void setUp() {
@@ -83,7 +84,7 @@ class FileViewerControllerTest {
         ReflectionTestUtils.setField(controller, "savePath", SAVE_PATH);
 
         // Mock User trả về khi load từ DB
-        User mockUser = new User();
+        mockUser = new User();
         mockUser.setId(CURRENT_USER_ID);
         mockUser.setUsername("999");
         mockUser.setFullName("Lê Thái Anh");
@@ -110,6 +111,16 @@ class FileViewerControllerTest {
                 return "";
             }
         });
+
+        Authentication authentication = new TestingAuthenticationToken(
+                mockUser,
+                null,
+                "ROLE_USER"
+        );
+
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(authentication);
+        SecurityContextHolder.setContext(securityContext);
 
         // Khi JwtService validate token → trả về true
         when(jwtService.isValidateToken(eq(VALID_ACCESS_TOKEN), any(UserDetails.class))).thenReturn(true);
@@ -149,19 +160,7 @@ class FileViewerControllerTest {
 
     @Test
     void uploadFile_Success() throws Exception {
-        User mockUser = new User();
-        mockUser.setId(UUID.randomUUID());
-        mockUser.setUsername("testuser");
-        mockUser.setPartnerId(CURRENT_USER_ID);
-        Authentication authentication = new TestingAuthenticationToken(
-                mockUser,
-                null,
-                "ROLE_USER"
-        );
 
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authentication);
-        SecurityContextHolder.setContext(securityContext);
         MockMultipartFile file = new MockMultipartFile(
                 "file", "report.docx",
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
@@ -197,19 +196,7 @@ class FileViewerControllerTest {
     }
     @Test
     void uploadFile_BlockExe() throws Exception {
-        User mockUser = new User();
-        mockUser.setId(UUID.randomUUID());
-        mockUser.setUsername("testuser");
-        mockUser.setPartnerId(CURRENT_USER_ID);
-        Authentication authentication = new TestingAuthenticationToken(
-                mockUser,
-                null,
-                "ROLE_USER"
-        );
 
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authentication);
-        SecurityContextHolder.setContext(securityContext);
         MockMultipartFile exeFile = new MockMultipartFile(
                 "file",                    // tên field
                 "virus.exe",               // ← tên file gốc (có .exe)
@@ -224,26 +211,14 @@ class FileViewerControllerTest {
 
     @Test
     void createTemp_FirstOpen_AsCreator() throws Exception {
-        User mockUser = new User();
-        mockUser.setId(UUID.randomUUID());
-        mockUser.setUsername("testuser");
-        mockUser.setPartnerId(CURRENT_USER_ID);
-        Authentication authentication = new TestingAuthenticationToken(
-                mockUser,
-                null,
-                "ROLE_USER"
-        );
 
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authentication);
-        SecurityContextHolder.setContext(securityContext);
         UUID fileId = UUID.fromString("11111111-1111-1111-1111-111111111111");
         UUID tempId = UUID.randomUUID();
 
         DocumentFiles original = new DocumentFiles();
         original.setId(fileId);
         original.setAttachName("test.docx");
-        original.setCreateBy(CURRENT_USER_ID);
+        original.setCreateBy(fileId);
 
         DocumentFiles tempFile = new DocumentFiles();
         tempFile.setId(tempId);
@@ -305,19 +280,7 @@ class FileViewerControllerTest {
 
     @Test
     void saveFromTemp_Success() throws Exception {
-        User mockUser = new User();
-        mockUser.setId(UUID.randomUUID());
-        mockUser.setUsername("testuser");
-        mockUser.setPartnerId(CURRENT_USER_ID);
-        Authentication authentication = new TestingAuthenticationToken(
-                mockUser,
-                null,
-                "ROLE_USER"
-        );
 
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authentication);
-        SecurityContextHolder.setContext(securityContext);
         UUID tempId = UUID.randomUUID();
         UUID origId = UUID.randomUUID();
 
