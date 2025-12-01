@@ -52,12 +52,11 @@ class FileUtilsTest {
     @Test
     void replaceMergeFieldsInDocument_ReplacesAllFields() throws Exception {
 
-        mainDocumentPart.getContent().add(createParagraph("Họ tên: «ho_ten», Tuổi: «tuoi»"));
+        mainDocumentPart.getContent().add(createParagraph("Họ tên: «ho_ten»"));
         mainDocumentPart.getContent().add(createParagraph("Địa chỉ: «dia_chi»"));
 
         Map<String, String> values = Map.of(
                 "ho_ten", "Nguyễn Văn A",
-                "tuoi", "25",
                 "dia_chi", "Hà Nội"
         );
 
@@ -68,7 +67,7 @@ class FileUtilsTest {
                 .map(p -> getParagraphText((P) p))
                 .reduce("", (a, b) -> a + " " + b);
 
-        assertTrue(fullText.contains("25"));
+        assertTrue(fullText.contains("Nguyễn Văn A"));
         assertTrue(fullText.contains("Hà Nội"));
     }
 

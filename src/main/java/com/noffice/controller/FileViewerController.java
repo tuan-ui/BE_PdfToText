@@ -95,7 +95,7 @@ public class FileViewerController {
                     ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx",
                     ".pdf", ".txt", ".jpg", ".jpeg", ".png", ".gif"
             );
-            System.out.println("3");
+            System.out.println(fileExtension);
 
             if (!allowedExtensions.contains(fileExtension)) {
                 return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
