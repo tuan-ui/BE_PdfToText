@@ -184,25 +184,25 @@ public class FileUtils {
 		return false;
 	}
 
-	public static void replaceMergeFieldWithParagraphs(String mergeFieldName, List<Object> newParagraphs,
-			WordprocessingMLPackage wordMLPackage) {
-		MainDocumentPart mainDoc = wordMLPackage.getMainDocumentPart();
-		List<Object> content = mainDoc.getContent();
-
-		for (int i = 0; i < content.size(); i++) {
-			Object obj = content.get(i);
-			if (obj instanceof P) {
-				P paragraph = (P) obj;
-				if (paragraphContainsMergeField(paragraph, mergeFieldName)) {
-					// Xóa mergefield
-					content.remove(i);
-					// Thêm đoạn mới tại đúng vị trí
-					content.addAll(i, newParagraphs);
-					return;
-				}
-			}
-		}
-	}
+//	public static void replaceMergeFieldWithParagraphs(String mergeFieldName, List<Object> newParagraphs,
+//			WordprocessingMLPackage wordMLPackage) {
+//		MainDocumentPart mainDoc = wordMLPackage.getMainDocumentPart();
+//		List<Object> content = mainDoc.getContent();
+//
+//		for (int i = 0; i < content.size(); i++) {
+//			Object obj = content.get(i);
+//			if (obj instanceof P) {
+//				P paragraph = (P) obj;
+//				if (paragraphContainsMergeField(paragraph, mergeFieldName)) {
+//					// Xóa mergefield
+//					content.remove(i);
+//					// Thêm đoạn mới tại đúng vị trí
+//					content.addAll(i, newParagraphs);
+//					return;
+//				}
+//			}
+//		}
+//	}
 
 	private static boolean paragraphContainsMergeField(P paragraph, String fieldName) {
 		List<Object> texts = getAllElementFromObject(paragraph, Text.class);
@@ -254,68 +254,68 @@ public class FileUtils {
 		}
 	}
 
-	public static void replacePlaceholderWithAltChunk(WordprocessingMLPackage wordMLPackage, String placeholder,
-			List<ByteArrayOutputStream> byteArrayOutputs) throws Exception {
-
-		MainDocumentPart mainDocumentPart = wordMLPackage.getMainDocumentPart();
-		List<Object> content = mainDocumentPart.getContent();
-
-		// Lấy tất cả các paragraph
-		List<Object> paragraphs = getAllElementFromObject(mainDocumentPart, P.class);
-
-		int index = 0;
-
-		for (Object paraObj : paragraphs) {
-			P paragraph = (P) paraObj;
-			String text = getTextFromParagraph(paragraph);
-
-			if (text != null && text.contains(placeholder)) {
-				int indexInContent = content.indexOf(XmlUtils.unwrap(paragraph));
-				if (indexInContent == -1)
-					continue;
-
-				// Xoá placeholder paragraph
-				content.remove(indexInContent);
-
-				for (ByteArrayOutputStream baos : byteArrayOutputs) {
-					// Tạo một part mới từ ByteArrayOutputStream
-					AlternativeFormatInputPart afiPart = new AlternativeFormatInputPart(
-							new PartName("/chunk" + index + ".docx"));
-					afiPart.setBinaryData(baos.toByteArray());
-					afiPart.setContentType(new ContentType(
-							"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"));
-
-					// Gắn phần chunk vào tài liệu chính
-					Relationship altChunkRel = mainDocumentPart.addTargetPart(afiPart);
-
-					// Tạo AltChunk element
-					CTAltChunk ac = Context.getWmlObjectFactory().createCTAltChunk();
-					ac.setId(altChunkRel.getId());
-
-					javax.xml.bind.JAXBElement<CTAltChunk> altChunkElement = new javax.xml.bind.JAXBElement<>(
-							new QName("http://schemas.openxmlformats.org/wordprocessingml/2006/main", "altChunk"),
-							CTAltChunk.class, ac);
-
-					// Thêm AltChunk vào đúng vị trí
-					content.add(indexInContent++, altChunkElement);
-
-					index++;
-				}
-
-				break; // Chỉ thay thế placeholder đầu tiên tìm được
-			}
-		}
-	}
-
-	private static String getTextFromParagraph(P paragraph) {
-		StringBuilder sb = new StringBuilder();
-		List<Object> texts = getAllElementFromObject(paragraph, Text.class);
-		for (Object obj : texts) {
-			Text textElement = (Text) obj;
-			sb.append(textElement.getValue());
-		}
-		return sb.toString();
-	}
+//	public static void replacePlaceholderWithAltChunk(WordprocessingMLPackage wordMLPackage, String placeholder,
+//			List<ByteArrayOutputStream> byteArrayOutputs) throws Exception {
+//
+//		MainDocumentPart mainDocumentPart = wordMLPackage.getMainDocumentPart();
+//		List<Object> content = mainDocumentPart.getContent();
+//
+//		// Lấy tất cả các paragraph
+//		List<Object> paragraphs = getAllElementFromObject(mainDocumentPart, P.class);
+//
+//		int index = 0;
+//
+//		for (Object paraObj : paragraphs) {
+//			P paragraph = (P) paraObj;
+//			String text = getTextFromParagraph(paragraph);
+//
+//			if (text != null && text.contains(placeholder)) {
+//				int indexInContent = content.indexOf(XmlUtils.unwrap(paragraph));
+//				if (indexInContent == -1)
+//					continue;
+//
+//				// Xoá placeholder paragraph
+//				content.remove(indexInContent);
+//
+//				for (ByteArrayOutputStream baos : byteArrayOutputs) {
+//					// Tạo một part mới từ ByteArrayOutputStream
+//					AlternativeFormatInputPart afiPart = new AlternativeFormatInputPart(
+//							new PartName("/chunk" + index + ".docx"));
+//					afiPart.setBinaryData(baos.toByteArray());
+//					afiPart.setContentType(new ContentType(
+//							"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"));
+//
+//					// Gắn phần chunk vào tài liệu chính
+//					Relationship altChunkRel = mainDocumentPart.addTargetPart(afiPart);
+//
+//					// Tạo AltChunk element
+//					CTAltChunk ac = Context.getWmlObjectFactory().createCTAltChunk();
+//					ac.setId(altChunkRel.getId());
+//
+//					javax.xml.bind.JAXBElement<CTAltChunk> altChunkElement = new javax.xml.bind.JAXBElement<>(
+//							new QName("http://schemas.openxmlformats.org/wordprocessingml/2006/main", "altChunk"),
+//							CTAltChunk.class, ac);
+//
+//					// Thêm AltChunk vào đúng vị trí
+//					content.add(indexInContent++, altChunkElement);
+//
+//					index++;
+//				}
+//
+//				break; // Chỉ thay thế placeholder đầu tiên tìm được
+//			}
+//		}
+//	}
+//
+//	private static String getTextFromParagraph(P paragraph) {
+//		StringBuilder sb = new StringBuilder();
+//		List<Object> texts = getAllElementFromObject(paragraph, Text.class);
+//		for (Object obj : texts) {
+//			Text textElement = (Text) obj;
+//			sb.append(textElement.getValue());
+//		}
+//		return sb.toString();
+//	}
 
 	public static void replaceTableRows(List<Object> rows, Tbl table, String keyField, List<String> fieldList,
 			List<Map<String, String>> dataList) {
@@ -555,24 +555,24 @@ public class FileUtils {
 		// B3: Loại bỏ ký tự đặc biệt, chỉ giữ chữ cái, số và dấu gạch dưới (_)
 		return normalized.replaceAll("[^a-zA-Z0-9_]", "").toLowerCase();
 	}
-	public static String generateNewPathQTD(String fullPath) {
-	    File file = new File(fullPath);
-	    String folderPath = file.getParent();
-	    String fileName = file.getName(); // VD: 1750913710553_Hợp đồng tín dụng_1.docx
-
-	    // Lấy phần tên sau dấu "_" đầu tiên (giữ lại đuôi)
-	    String baseFileName = fileName.substring(fileName.indexOf("_") + 1);
-
-	    // Đảm bảo có đuôi .doc hoặc .docx
-	    if (!baseFileName.toLowerCase().endsWith(".doc") && !baseFileName.toLowerCase().endsWith(".docx")) {
-	        baseFileName += ".docx";
-	    }
-
-	    String timestamp = convertDateToString(new Date(), "ddMMyyyy_HHmmssSS");
-	    String newFileName = timestamp + "_" + baseFileName;
-
-	    return folderPath + File.separator + newFileName;
-	}
+//	public static String generateNewPathQTD(String fullPath) {
+//	    File file = new File(fullPath);
+//	    String folderPath = file.getParent();
+//	    String fileName = file.getName(); // VD: 1750913710553_Hợp đồng tín dụng_1.docx
+//
+//	    // Lấy phần tên sau dấu "_" đầu tiên (giữ lại đuôi)
+//	    String baseFileName = fileName.substring(fileName.indexOf("_") + 1);
+//
+//	    // Đảm bảo có đuôi .doc hoặc .docx
+//	    if (!baseFileName.toLowerCase().endsWith(".doc") && !baseFileName.toLowerCase().endsWith(".docx")) {
+//	        baseFileName += ".docx";
+//	    }
+//
+//	    String timestamp = convertDateToString(new Date(), "ddMMyyyy_HHmmssSS");
+//	    String newFileName = timestamp + "_" + baseFileName;
+//
+//	    return folderPath + File.separator + newFileName;
+//	}
 	public static String getAllText(Object obj) {
 		StringBuilder result = new StringBuilder();
 		List<Object> texts = getAllElementFromObject(obj, Text.class);
@@ -602,65 +602,65 @@ public class FileUtils {
 	        }
 	    }
 	}
-	 public static void replaceMergeFieldsRecursive(List<Object> contents, Map<String, String> valuesMap) {
-	        for (Object obj : contents) {
-	            Object unwrapped = XmlUtils.unwrap(obj);
-
-	            if (unwrapped instanceof P) {
-	                P paragraph = (P) unwrapped;
-	                List<Object> runs = paragraph.getContent();
-
-	                for (int i = 0; i < runs.size(); i++) {
-	                    Object runObj = XmlUtils.unwrap(runs.get(i));
-	                    if (runObj instanceof R) {
-	                        R run = (R) runObj;
-	                        List<Object> texts = run.getContent();
-	                        for (Object t : texts) {
-	                            Object inner = XmlUtils.unwrap(t);
-	                            if (inner instanceof Text) {
-	                                Text text = (Text) inner;
-	                                String value = text.getValue();
-	                                if (value != null && value.contains("MERGEFIELD")) {
-	                                    Matcher matcher = MERGEFIELD_PATTERN.matcher(value);
-	                                    if (matcher.find()) {
-	                                        String fieldName = matcher.group(1);
-	                                        String replacement = valuesMap.getOrDefault(fieldName, "");
-
-	                                        // Tìm R tiếp theo chứa giá trị merge field để thay thế nội dung
-	                                        int nextIndex = i + 1;
-	                                        while (nextIndex < runs.size()) {
-	                                            Object nextObj = XmlUtils.unwrap(runs.get(nextIndex));
-	                                            if (nextObj instanceof R) {
-	                                                R nextRun = (R) nextObj;
-	                                                for (Object o : nextRun.getContent()) {
-	                                                    Object un = XmlUtils.unwrap(o);
-	                                                    if (un instanceof Text) {
-	                                                        ((Text) un).setValue(replacement);
-	                                                        break;
-	                                                    }
-	                                                }
-	                                                break;
-	                                            }
-	                                            nextIndex++;
-	                                        }
-	                                    }
-	                                }
-	                            }
-	                        }
-	                    }
-	                }
-	            } else if (unwrapped instanceof Tbl) {
-	                Tbl tbl = (Tbl) unwrapped;
-	                for (Object row : tbl.getContent()) {
-	                    Tr tr = (Tr) XmlUtils.unwrap(row);
-	                    for (Object cell : tr.getContent()) {
-	                        Tc tc = (Tc) XmlUtils.unwrap(cell);
-	                        replaceMergeFieldsRecursive(tc.getContent(), valuesMap);
-	                    }
-	                }
-	            }
-	        }
-	    }
+//	 public static void replaceMergeFieldsRecursive(List<Object> contents, Map<String, String> valuesMap) {
+//	        for (Object obj : contents) {
+//	            Object unwrapped = XmlUtils.unwrap(obj);
+//
+//	            if (unwrapped instanceof P) {
+//	                P paragraph = (P) unwrapped;
+//	                List<Object> runs = paragraph.getContent();
+//
+//	                for (int i = 0; i < runs.size(); i++) {
+//	                    Object runObj = XmlUtils.unwrap(runs.get(i));
+//	                    if (runObj instanceof R) {
+//	                        R run = (R) runObj;
+//	                        List<Object> texts = run.getContent();
+//	                        for (Object t : texts) {
+//	                            Object inner = XmlUtils.unwrap(t);
+//	                            if (inner instanceof Text) {
+//	                                Text text = (Text) inner;
+//	                                String value = text.getValue();
+//	                                if (value != null && value.contains("MERGEFIELD")) {
+//	                                    Matcher matcher = MERGEFIELD_PATTERN.matcher(value);
+//	                                    if (matcher.find()) {
+//	                                        String fieldName = matcher.group(1);
+//	                                        String replacement = valuesMap.getOrDefault(fieldName, "");
+//
+//	                                        // Tìm R tiếp theo chứa giá trị merge field để thay thế nội dung
+//	                                        int nextIndex = i + 1;
+//	                                        while (nextIndex < runs.size()) {
+//	                                            Object nextObj = XmlUtils.unwrap(runs.get(nextIndex));
+//	                                            if (nextObj instanceof R) {
+//	                                                R nextRun = (R) nextObj;
+//	                                                for (Object o : nextRun.getContent()) {
+//	                                                    Object un = XmlUtils.unwrap(o);
+//	                                                    if (un instanceof Text) {
+//	                                                        ((Text) un).setValue(replacement);
+//	                                                        break;
+//	                                                    }
+//	                                                }
+//	                                                break;
+//	                                            }
+//	                                            nextIndex++;
+//	                                        }
+//	                                    }
+//	                                }
+//	                            }
+//	                        }
+//	                    }
+//	                }
+//	            } else if (unwrapped instanceof Tbl) {
+//	                Tbl tbl = (Tbl) unwrapped;
+//	                for (Object row : tbl.getContent()) {
+//	                    Tr tr = (Tr) XmlUtils.unwrap(row);
+//	                    for (Object cell : tr.getContent()) {
+//	                        Tc tc = (Tc) XmlUtils.unwrap(cell);
+//	                        replaceMergeFieldsRecursive(tc.getContent(), valuesMap);
+//	                    }
+//	                }
+//	            }
+//	        }
+//	    }
 
 	public static List<Attachs> saveFile(MultipartFile[] files, User token) throws IOException {
 		if (files == null || files.length == 0) {
