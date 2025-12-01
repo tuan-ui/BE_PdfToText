@@ -78,7 +78,6 @@ public class UserServiceTest {
     @Mock
     private PartnerRepository partnerRepository;
     @Mock
-    private ConfigRepository configRepository;
     private User mockUser;
     private User sampleUser;
     private UUID userId;

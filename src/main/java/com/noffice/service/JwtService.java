@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.noffice.entity.User;
-import com.noffice.repository.ConfigRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -27,17 +26,12 @@ import jakarta.annotation.PostConstruct;
 public class JwtService {
 	@Value("${jwt.secret}")
 	private String secretKey;
-	private final ConfigRepository configRepository;
-	private static ConfigRepository configRepositoryInstance;
     private final RolePermissionsRepository rolePermissionsRepository;
 	private final long timeOutMS = TimeUnit.MINUTES.toMillis(30);
 	@PostConstruct
-	public void init() {
-		configRepositoryInstance = configRepository;
-	}
+	public void init() {}
 
 	public String generateToken(User user, String roleUserDeptId, List<String> roleUserDeptIds) {
-	    String expired = configRepositoryInstance.findByKey("expired").getValue();
 	    String role = user.getIsAdmin() == 1 ? "admin" : "user";
 		long now = System.currentTimeMillis();
 		long idleExp = now + timeOutMS;

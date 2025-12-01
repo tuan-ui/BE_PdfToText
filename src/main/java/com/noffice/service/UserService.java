@@ -39,7 +39,6 @@ import jakarta.transaction.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final ConfigRepository configRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserGroupsRepository userGroupsRepository;
     private final LogService logService;
