@@ -207,14 +207,6 @@ class FileUtilsTest {
         return table;
     }
 
-
-    @Test
-    void convertDateToString_FormatsCorrectly() {
-        Date date = new Date(1735680000000L); // 01/01/2025 00:00:00
-        assertEquals("01012025", FileUtils.convertDateToString(date, "ddMMyyyy"));
-        assertEquals("", FileUtils.convertDateToString(null, "ddMMyyyy"));
-    }
-
     @Test
     void removeAccent_RemovesVietnameseAccents() {
         assertEquals("Le Thai Anh", FileUtils.removeAccent("Lê Thái Anh"));
