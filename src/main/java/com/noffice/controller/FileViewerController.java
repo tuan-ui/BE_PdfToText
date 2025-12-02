@@ -77,11 +77,13 @@ public class FileViewerController {
                 return ResponseEntity.badRequest()
                         .body(Map.of("message", "Tên file không hợp lệ", "status", 400));
             }
+
             // Chặn ngay nếu tên file có ký tự nguy hiểm
             if (originalFilename.contains("..") || originalFilename.contains("/") || originalFilename.contains("\\")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body(Map.of("message", "Tên file không được chứa ký tự ../ hoặc /", "status", 403));
             }
+
             // 4. LẤY PHẦN MỞ RỘNG + WHITELIST (chỉ cho phép file văn phòng)
             String fileExtension = "";
             int lastDotIndex = originalFilename.lastIndexOf('.');
