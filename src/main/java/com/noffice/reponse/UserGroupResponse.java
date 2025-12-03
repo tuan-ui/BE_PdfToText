@@ -1,6 +1,5 @@
 package com.noffice.reponse;
 
-import com.noffice.dto.UserDetailDTO;
 import lombok.*;
 
 import java.util.List;

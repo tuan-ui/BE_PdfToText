@@ -1,7 +1,6 @@
 package com.noffice.config;
 
 import com.noffice.exception.EncryptionException;
-import com.noffice.ultils.AppConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
