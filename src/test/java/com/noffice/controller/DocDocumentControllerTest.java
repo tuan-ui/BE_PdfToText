@@ -128,7 +128,7 @@ class DocDocumentControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object.totalElements").value(1))
                 .andExpect(jsonPath("$.object.totalPages").value(1))
@@ -160,7 +160,7 @@ class DocDocumentControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SYSTEM_ERROR))
+                .andExpect(jsonPath("$.message").value("fail"))
                 .andExpect(jsonPath("$.status").value(500));
     }
 
@@ -173,7 +173,7 @@ class DocDocumentControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -204,7 +204,7 @@ class DocDocumentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -235,7 +235,7 @@ class DocDocumentControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -272,7 +272,7 @@ class DocDocumentControllerTest {
                             return request;
                         }))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.ADD_SUCCESS));
+                .andExpect(jsonPath("$.message").value("Thêm mới thành công"));
     }
 
     @Test
@@ -295,7 +295,7 @@ class DocDocumentControllerTest {
                             return request;
                         }))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value(Constants.message.SYSTEM_ERROR))
+                .andExpect(jsonPath("$.message").value("Thao tác thất bại"))
                 .andExpect(jsonPath("$.status").value(400));
     }
 
@@ -323,7 +323,7 @@ class DocDocumentControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/doc-document/LogDetailDocType")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 

@@ -98,6 +98,7 @@ class UUIDUtilTest {
         }
         long duration = System.nanoTime() - start;
 
+        System.out.println("100k checks in " + (duration / 1_000_000.0) + " ms");
         assertTrue(duration < 500_000_000L); // < 500ms là ổn
 
     }

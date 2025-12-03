@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
-public class Partners extends BaseEntity implements Cloneable  {
+public class Partners extends BaseEntity  {
 
     @Column(name = "partner_code", nullable = false, length = 50)
     private String partnerCode;

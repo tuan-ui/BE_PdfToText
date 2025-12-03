@@ -6,7 +6,6 @@ import com.noffice.entity.User;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.ContractTypeService;
-import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -49,9 +48,9 @@ public class ContractTypeController {
 			String searchStringStr = FileUtils.removeAccent(searchString);
 			String contractTypeDescriptionStr = FileUtils.removeAccent(contractTypeDescription);
 			Page<ContractType> contractTypes = contractTypeService.getListContractType(searchStringStr, contractTypeCode, docTypNameStr,contractTypeDescriptionStr, pageable, userDetails.getPartnerId());
-			return new ResponseAPI(contractTypes, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(contractTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -66,9 +65,9 @@ public class ContractTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 
@@ -81,9 +80,9 @@ public class ContractTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 
@@ -99,9 +98,9 @@ public class ContractTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 
@@ -114,9 +113,9 @@ public class ContractTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.ADD_SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
 		} catch (Exception e) {
-			
+			System.out.println(e.getMessage());
 			throw e;
 		}
 	}
@@ -132,10 +131,10 @@ public class ContractTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.UPDATE_SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));
 
 		} catch (Exception e) {
-			
+			System.out.println(e.getMessage());
 			throw e;
 		}
 	}
@@ -147,9 +146,9 @@ public class ContractTypeController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			List<ContractType> contractTypes = contractTypeService.getAllContractType(userDetails.getPartnerId());
-			return new ResponseAPI(contractTypes, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(contractTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -160,9 +159,9 @@ public class ContractTypeController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			contractTypeService.getLogDetailContractType(id, userDetails);
-			return new ResponseAPI(null, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -170,9 +169,9 @@ public class ContractTypeController {
 	public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
 		try {
 			ErrorListResponse message = contractTypeService.checkDeleteMulti(ids);
-			return new ResponseAPI(message, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(message, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 

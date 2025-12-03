@@ -13,7 +13,6 @@ import com.noffice.service.HolidayTypeService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
 import com.noffice.service.UserService;
-import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,7 +129,7 @@ public class HolidayTypeControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object.totalElements").value(1))
                 .andExpect(jsonPath("$.object.totalPages").value(1))
@@ -162,7 +161,7 @@ public class HolidayTypeControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SYSTEM_ERROR))
+                .andExpect(jsonPath("$.message").value("fail"))
                 .andExpect(jsonPath("$.status").value(500));
     }
 
@@ -175,7 +174,7 @@ public class HolidayTypeControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -206,7 +205,7 @@ public class HolidayTypeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -237,7 +236,7 @@ public class HolidayTypeControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -266,7 +265,7 @@ public class HolidayTypeControllerTest {
                                 .content(objectMapper.writeValueAsString(holidayType))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.ADD_SUCCESS))
+                .andExpect(jsonPath("$.message").value("Thêm mới thành công"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -299,7 +298,7 @@ public class HolidayTypeControllerTest {
                                 .content(objectMapper.writeValueAsString(holidayType))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.UPDATE_SUCCESS))
+                .andExpect(jsonPath("$.message").value("Cập nhật thành công"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -327,7 +326,7 @@ public class HolidayTypeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/holiday-type/LogDetailHolidayType")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -341,7 +340,7 @@ public class HolidayTypeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/holiday-type/getAllHolidayType"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].holidayTypeCode").value("HC"))
                 .andExpect(jsonPath("$.object[0].holidayTypeName").value("Hành chính"));

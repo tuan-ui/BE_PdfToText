@@ -21,23 +21,31 @@ public final class Constants {
 	}
 	
 	public static interface STATUS{
-		public Long ACTIVE= 1L;
-		public Long LOCKED = 0L;
+		public Long ACTIVE= 1L;//hoat dong
+		public Long INACTIVE =-1l;//da xoa
+		public Long LOCKED = 0L;//da khoa
 	}
 
 	public interface OBJECT_TYPE {
 		Integer ATTACHS_CONFIG = 1;
         Integer DOC_DOCUMENT = 2;
     }
+	
+    public static interface FOLDER_OBJECT {
+        public String CUSTOMER = "CUSTOMER";
+		public String UPLOADEVALFILE = "UPLOADEVALFILE";
+        public String AUTOGEN = "AUTOGEN";
+		public String PROPERTY = "PROPERTY";
+		public String TASK_FILE = "TASK_FILE";
+    }
+    public static interface CACLOUD {
+        public String CA_CLOUD_CLIENT_ID = "CA_CLOUD_CLIENT_ID";
+        public String CA_CLOUD_CLIENT_SECRET = "CA_CLOUD_CLIENT_SECRET";
+        public String CA_CLOUD_PROFILE_ID = "CA_CLOUD_PROFILE_ID";
+    }
 
-	public interface message {
-		String NO_TOKEN_INFO = "Không có token hoặc phiên đăng nhập hợp lệ";
-		String NO_USER_INFO = "Thông tin người dùng không hợp lệ";
-		String SUCCESS = "Thành công";
-		String SYSTEM_ERROR = "Lỗi hệ thống";
-		String SYSTEM_ERROR_2 = "Lỗi hệ thống: ";
-		String USER_NAME_MUST_NOT_NULL = "Username không được để trống";
-		String ADD_SUCCESS = "Thêm mới thành công";
-		String UPDATE_SUCCESS ="Cập nhật thành công";
+	public interface TYPE_APPROVE {
+		String PARALLEL = "parallel";//song song
+		String SEQUENTIAL = "sequential";//tuan tu
 	}
 }

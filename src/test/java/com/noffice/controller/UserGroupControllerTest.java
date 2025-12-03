@@ -15,7 +15,6 @@ import com.noffice.service.UserGroupService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
 import com.noffice.service.UserService;
-import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -163,7 +162,7 @@ public class UserGroupControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("User groups retrieved successfully")) // Đã sửa message theo Controller
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object.totals").value(1))
                 .andExpect(jsonPath("$.object.datas[0].groupCode").value("HC"))
@@ -205,7 +204,7 @@ public class UserGroupControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("User group deleted successfully"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -236,7 +235,7 @@ public class UserGroupControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Deleted multiple user group successfully"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -251,7 +250,7 @@ public class UserGroupControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("error.UserGroupDoesNotExist"))
+                .andExpect(jsonPath("$.message").value("No user groups to delete"))
                 .andExpect(jsonPath("$.status").value(400));
     }
 
@@ -264,7 +263,7 @@ public class UserGroupControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.UPDATE_SUCCESS))
+                .andExpect(jsonPath("$.message").value("User group status updated successfully"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -294,7 +293,7 @@ public class UserGroupControllerTest {
                                 .content(objectMapper.writeValueAsString(userGroup))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -325,7 +324,7 @@ public class UserGroupControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/userGroups/logDetail")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("Log details retrieved successfully"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 

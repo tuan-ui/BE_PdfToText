@@ -149,8 +149,8 @@ public class FileUtils {
 					obj = ((javax.xml.bind.JAXBElement<?>) obj).getValue();
 				}
 			} catch (Exception e) {
-
-				
+				System.out.println("Lỗi khi unwrap: " + e.getMessage());
+				System.out.println("Error : " + e.getMessage());
 			}
 		}
 		return obj;
@@ -319,23 +319,31 @@ public class FileUtils {
 
 	public static void replaceTableRows(List<Object> rows, Tbl table, String keyField, List<String> fieldList,
 			List<Map<String, String>> dataList) {
+// Kiểm tra đầu vào
 		if (rows == null || rows.isEmpty() || dataList == null || dataList.isEmpty()) {
-			return;
-		}
-		if (table.getContent() == null || table.getContent().isEmpty()) {
+			System.out.println("Rows hoặc dataList rỗng. Bỏ qua thay thế bảng cho keyField: " + keyField);
 			return;
 		}
 
+// Kiểm tra table.getContent()
+		if (table.getContent() == null || table.getContent().isEmpty()) {
+			System.out.println("Nội dung bảng rỗng cho keyField: " + keyField);
+			return;
+		}
+
+// Kiểm tra xem bảng có chứa keyField không
 		boolean isTargetTable = rows.stream().map(rowObj -> (Tr) rowObj)
 				.anyMatch(row -> FileUtils.rowContainsMergeField(row, keyField));
 
 		if (!isTargetTable) {
+			System.out.println("Bảng không chứa keyField: " + keyField);
 			return;
 		}
 
 		int templateStartIndex = -1;
 		int templateRowCount = 0;
 
+// Tìm dòng mẫu
 		for (int i = 0; i < rows.size(); i++) {
 			Tr row = (Tr) rows.get(i);
 			if (templateStartIndex == -1 && FileUtils.rowContainsMergeField(row, keyField)) {
@@ -350,7 +358,9 @@ public class FileUtils {
 			}
 		}
 
+// Kiểm tra templateStartIndex và templateRowCount
 		if (templateStartIndex < 0 || templateRowCount <= 0) {
+			System.out.println("Không tìm thấy dòng mẫu hợp lệ cho keyField: " + keyField);
 			return;
 		}
 
@@ -375,29 +385,48 @@ public class FileUtils {
 			}
 		}
 
+// Ghi log trạng thái
+		System.out.println("Rows size: " + rows.size());
+		System.out.println("Table content size: " + table.getContent().size());
+		System.out.println("templateStartIndex: " + templateStartIndex);
+		System.out.println("templateRowCount: " + templateRowCount);
+		System.out.println("newRows size: " + newRows.size());
+
+// Xóa dòng mẫu
 		for (int i = templateRowCount - 1; i >= 0; i--) {
 			int indexToRemove = templateStartIndex + i;
 			if (indexToRemove >= 0 && indexToRemove < table.getContent().size()) {
 				table.getContent().remove(indexToRemove);
+			} else {
+				System.out.println("Chỉ số không hợp lệ để xóa: " + indexToRemove + " cho keyField: " + keyField);
 			}
 		}
 
+// Nếu không có dòng mới nào -> Xóa toàn bộ bảng khỏi tài liệu
 		if (newRows.isEmpty()) {
+			System.out.println("Không có dòng mới được tạo. Tiến hành xóa toàn bộ bảng chứa keyField: " + keyField);
 			Object parent = table.getParent();
 			if (parent instanceof ContentAccessor) {
 				((ContentAccessor) parent).getContent().remove(table);
+			} else {
+				System.out.println("Không thể xóa bảng vì parent không phải ContentAccessor: " + parent);
 			}
 			return;
 		}
 
+// Chèn các dòng mới
 		if (templateStartIndex >= 0 && templateStartIndex <= table.getContent().size()) {
 			table.getContent().addAll(templateStartIndex, newRows);
+		} else {
+			System.out.println("Không thể chèn dòng mới. templateStartIndex: " + templateStartIndex
+					+ ", table content size: " + table.getContent().size() + ", newRows size: " + newRows.size());
 		}
 	}
 
 	public static void replaceTableColumns(List<Object> rows, Tbl table, String keyField, List<String> fieldList,
 			List<Map<String, String>> dataList) {
 		if (rows == null || rows.isEmpty() || dataList == null || dataList.isEmpty()) {
+			System.out.println("Dữ liệu rỗng, bỏ qua replace cột.");
 			return;
 		}
 
@@ -415,6 +444,7 @@ public class FileUtils {
 		}
 
 		if (templateRow == null) {
+			System.out.println("Không tìm thấy dòng chứa keyField: " + keyField);
 			return;
 		}
 
@@ -429,6 +459,7 @@ public class FileUtils {
 		}
 
 		if (templateCell == null) {
+			System.out.println("Không tìm thấy ô chứa keyField: " + keyField);
 			return;
 		}
 
@@ -445,6 +476,7 @@ public class FileUtils {
 		templateRow.getContent().clear();
 		templateRow.getContent().addAll(newCells);
 
+		System.out.println("Đã tạo " + newCells.size() + " cột từ dòng mẫu chứa keyField: " + keyField);
 	}
 
 	public static void replaceSingleFields(WordprocessingMLPackage wordMLPackage, Map<String, String> singleFields)

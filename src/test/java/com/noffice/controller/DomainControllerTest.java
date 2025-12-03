@@ -10,7 +10,6 @@ import com.noffice.entity.User;
 import com.noffice.filter.JwtAuthenticationFilter;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.service.*;
-import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +127,7 @@ public class DomainControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object.totalElements").value(1))
                 .andExpect(jsonPath("$.object.totalPages").value(1))
@@ -160,7 +159,7 @@ public class DomainControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SYSTEM_ERROR))
+                .andExpect(jsonPath("$.message").value("fail"))
                 .andExpect(jsonPath("$.status").value(500));
     }
 
@@ -173,7 +172,7 @@ public class DomainControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -204,7 +203,7 @@ public class DomainControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -235,7 +234,7 @@ public class DomainControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -265,7 +264,7 @@ public class DomainControllerTest {
                                 .content(objectMapper.writeValueAsString(domain))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.ADD_SUCCESS))
+                .andExpect(jsonPath("$.message").value("Thêm mới thành công"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -298,7 +297,7 @@ public class DomainControllerTest {
                                 .content(objectMapper.writeValueAsString(domain))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.UPDATE_SUCCESS))
+                .andExpect(jsonPath("$.message").value("Cập nhật thành công"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -326,7 +325,7 @@ public class DomainControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/domains/LogDetailDomain")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -340,7 +339,7 @@ public class DomainControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/domains/getAllDomain"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
+                .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].domainCode").value("HC"))
                 .andExpect(jsonPath("$.object[0].domainName").value("Hành chính"));

@@ -12,7 +12,6 @@ import java.io.OutputStream;
 
 import com.noffice.dto.*;
 import com.noffice.service.LogService;
-import com.noffice.ultils.Constants;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.httpclient.HttpClient;
 
@@ -82,13 +81,13 @@ public class AuthenticationController {
 			User userDetails = (User) authentication.getPrincipal();
 	        if (authentication instanceof AnonymousAuthenticationToken || !authentication.isAuthenticated() || authentication.getPrincipal() == null) {
 	            return ResponseEntity.status(HttpStatus.OK)
-	                    .body(new ResponseAPI(null, Constants.message.NO_TOKEN_INFO, 401));
+	                    .body(new ResponseAPI(null, "Không có token hoặc phiên đăng nhập hợp lệ", 401));
 	        }
 
 	        
 	        if (!(authentication.getPrincipal() instanceof User)) {
 	            return ResponseEntity.status(HttpStatus.OK)
-	                    .body(new ResponseAPI(null, Constants.message.NO_USER_INFO, 401));
+	                    .body(new ResponseAPI(null, "Thông tin người dùng không hợp lệ", 401));
 	        }
 
 //			logService.createLog(ActionType.LOGOUT.getAction(),
@@ -96,10 +95,10 @@ public class AuthenticationController {
 //					userDetails.getId(), null, userDetails.getPartnerId());
 
 	        return ResponseEntity.status(HttpStatus.OK)
-	                .body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+	                .body(new ResponseAPI(null, "Thành công", 200));
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.OK)
-	                .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR_2 + e.getMessage(), 500));
+	                .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
 	    }
 	}
 
@@ -132,23 +131,23 @@ public class AuthenticationController {
 	                    .body(new ResponseAPI(null, e.getMessage(), 400));
 	        } catch (Exception e) {
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR_2 + e.getMessage(), 500));
+	                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
 	        }
 	    }
 
 	
 	@GetMapping("/checkAPI")
 	public ResponseAPI checkapi() {
-		return new ResponseAPI(Constants.message.SUCCESS, Constants.message.SUCCESS, 200);
+		return new ResponseAPI("Thành công", "success", 200);
 	}
 	
 	@PostMapping("/signin")
 	public ResponseAPI signin(@RequestBody UserLoginDTO user) {
 		try {
 			AuthenticationResponse response = authenticationService.authenticate(user);
-			return new ResponseAPI(response, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(response, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400);
+			return new ResponseAPI(null, "fail", 400);
 		}
 	}
 
@@ -163,7 +162,7 @@ public class AuthenticationController {
 				User userOpt = userRepository.findByUsername(username)
 				            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 				String token = jwtService.generateToken(userOpt,null,null);
-				return ResponseEntity.ok(new ResponseAPI(new TokenResponse(token), Constants.message.SUCCESS, 200));
+				return ResponseEntity.ok(new ResponseAPI(new TokenResponse(token), "success", 200));
 			} catch (Exception e) {
 				return ResponseEntity
 						.status(HttpStatus.UNAUTHORIZED)
@@ -184,12 +183,12 @@ public class AuthenticationController {
 //                    !authentication.isAuthenticated() ||
 //                    authentication.getPrincipal() == null) {
 //                return ResponseEntity.status(HttpStatus.OK)
-//                        .body(new ResponseAPI(null, Constants.message.NO_TOKEN_INFO, 401));
+//                        .body(new ResponseAPI(null, "Không có token hoặc phiên đăng nhập hợp lệ", 401));
 //            }
 //
 //            if (!(authentication.getPrincipal() instanceof User)) {
 //                return ResponseEntity.status(HttpStatus.OK)
-//                        .body(new ResponseAPI(null, Constants.message.NO_USER_INFO, 401));
+//                        .body(new ResponseAPI(null, "Thông tin người dùng không hợp lệ", 401));
 //            }
 
             // Kiểm tra quyền
@@ -198,7 +197,7 @@ public class AuthenticationController {
             String username = request.get("username");
             if (username == null || username.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK)
-                        .body(new ResponseAPI(null, Constants.message.USER_NAME_MUST_NOT_NULL, 400));
+                        .body(new ResponseAPI(null, "Username không được để trống", 400));
             }
 //            if (!authenticatedUsername.equals(username)) {
 //                return ResponseEntity.status(HttpStatus.OK)
@@ -240,7 +239,7 @@ public class AuthenticationController {
                     .body(new ResponseAPI(null, e.getMessage(), 400));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR_2 + e.getMessage(), 500));
+                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
         }
     }
 	
@@ -253,11 +252,11 @@ public class AuthenticationController {
                 authentication instanceof AnonymousAuthenticationToken || 
                 !authentication.isAuthenticated() || 
                 authentication.getPrincipal() == null) {
-                return new ResponseAPI(null, Constants.message.NO_TOKEN_INFO, 401);
+                return new ResponseAPI(null, "Không có token hoặc phiên đăng nhập hợp lệ", 401);
             }
 
             if (!(authentication.getPrincipal() instanceof User)) {
-                return new ResponseAPI(null, Constants.message.NO_USER_INFO, 401);
+                return new ResponseAPI(null, "Thông tin người dùng không hợp lệ", 401);
             }
 
             // Kiểm tra quyền
@@ -265,7 +264,7 @@ public class AuthenticationController {
             String authenticatedUsername = user.getUsername();
             String username = (String) request.get("username");
             if (username == null || username.isEmpty()) {
-                return new ResponseAPI(null, Constants.message.USER_NAME_MUST_NOT_NULL, 400);
+                return new ResponseAPI(null, "Username không được để trống", 400);
             }
             if (!authenticatedUsername.equals(username)) {
                 return new ResponseAPI(null, "Không có quyền cập nhật 2FA cho người dùng này", 403);
@@ -284,9 +283,9 @@ public class AuthenticationController {
 
             // Cập nhật 2FA
             authenticationService.update2FA(username, twofaType);
-            return new ResponseAPI(Map.of("twoFAType", twofaType), Constants.message.SUCCESS, 200);
+            return new ResponseAPI(Map.of("twoFAType", twofaType), "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400);
+            return new ResponseAPI(null, "fail", 400);
         }
     }
 
@@ -296,9 +295,9 @@ public class AuthenticationController {
 			int type = authenticationService.check2FA(username);
 			Map<String, Integer> result = new HashMap<>();
 			result.put("twofaType", type);
-			return new ResponseAPI(result, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(result, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400);
+			return new ResponseAPI(null, "fail", 400);
 		}
 	}
 	
@@ -396,7 +395,7 @@ public class AuthenticationController {
 		try {
 		// Thực hiện đổi mật khẩu
 		authenticationService.changePassword(changePasswordDTO, currentUser);
-		return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+		return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thành công", 200));
 		} catch (IllegalArgumentException e) {
 		// Bắt lỗi từ service và trả về message cụ thể
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, e.getMessage(), 400));
@@ -415,16 +414,16 @@ public class AuthenticationController {
                 authentication instanceof AnonymousAuthenticationToken || 
                 !authentication.isAuthenticated() || 
                 authentication.getPrincipal() == null) {
-                return new ResponseAPI(null, Constants.message.NO_TOKEN_INFO, 401);
+                return new ResponseAPI(null, "Không có token hoặc phiên đăng nhập hợp lệ", 401);
             }
 
             if (!(authentication.getPrincipal() instanceof User)) {
-                return new ResponseAPI(null, Constants.message.NO_USER_INFO, 401);
+                return new ResponseAPI(null, "Thông tin người dùng không hợp lệ", 401);
             }
 
             // Kiểm tra đầu vào
             if (username == null || username.isEmpty()) {
-                return new ResponseAPI(null, Constants.message.USER_NAME_MUST_NOT_NULL, 400);
+                return new ResponseAPI(null, "Username không được để trống", 400);
             }
             if (secret == null || secret.isEmpty()) {
                 return new ResponseAPI(null, "Secret không được để trống", 400);
@@ -432,9 +431,9 @@ public class AuthenticationController {
 
             // Gọi service để tạo QR code
             String qrCode = authenticationService.createQR(username, secret);
-            return new ResponseAPI(qrCode, Constants.message.SUCCESS, 200);
+            return new ResponseAPI(qrCode, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400);
+            return new ResponseAPI(null, "fail", 400);
         }
     }
 
@@ -447,17 +446,17 @@ public class AuthenticationController {
                 authentication instanceof AnonymousAuthenticationToken || 
                 !authentication.isAuthenticated() || 
                 authentication.getPrincipal() == null) {
-                return new ResponseAPI(null, Constants.message.NO_TOKEN_INFO, 401);
+                return new ResponseAPI(null, "Không có token hoặc phiên đăng nhập hợp lệ", 401);
             }
 
             if (!(authentication.getPrincipal() instanceof User)) {
-                return new ResponseAPI(null, Constants.message.NO_USER_INFO, 401);
+                return new ResponseAPI(null, "Thông tin người dùng không hợp lệ", 401);
             }
 
             String secret = authenticationService.generateSecret();
-            return new ResponseAPI(secret, Constants.message.SUCCESS, 200);
+            return new ResponseAPI(secret, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400);
+            return new ResponseAPI(null, "fail", 400);
         }
     }
 
@@ -476,7 +475,7 @@ public class AuthenticationController {
             // Thực hiện đổi mật khẩu
             authenticationService.changePasswordCheckOldPwd(userDTO, username);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+                    .body(new ResponseAPI(null, "Thành công", 200));
         } catch (IllegalArgumentException e) {
             // Bắt lỗi từ service và trả về message cụ thể
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -484,7 +483,7 @@ public class AuthenticationController {
         } catch (Exception e) {
             // Bắt các lỗi khác (nếu có)
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR_2 + e.getMessage(), 500));
+                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
         }
     }
 	
@@ -496,7 +495,7 @@ public class AuthenticationController {
 	            // Thực hiện đổi mật khẩu
 	            authenticationService.changePasswordAfterLogin(userDTO);
 	            return ResponseEntity.status(HttpStatus.OK)
-	                    .body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+	                    .body(new ResponseAPI(null, "Thành công", 200));
 	        } catch (IllegalArgumentException e) {
 	            // Bắt lỗi từ service và trả về message cụ thể
 	            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -504,7 +503,7 @@ public class AuthenticationController {
 	        } catch (Exception e) {
 	            // Bắt các lỗi khác (nếu có)
 	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                    .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR_2 + e.getMessage(), 500));
+	                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
 	        }
 	    }
 
@@ -529,10 +528,10 @@ public class AuthenticationController {
 		try {
 			String response = authenticationService.processForgotPassword(request.getUsername(), request.getPhone());
 			return ResponseEntity.status(HttpStatus.OK)
-					.body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
+					.body(new ResponseAPI(response, "Thành công", 200));
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR_2 + e.getMessage(), 500));
+					.body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
 		}
 	}
 

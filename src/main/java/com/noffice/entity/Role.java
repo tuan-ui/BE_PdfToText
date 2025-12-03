@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "roles")
-public class Role extends BaseEntity implements Cloneable{
+public class Role extends BaseEntity{
 
 
     @Column(name = "role_name", nullable = false, length = 255)

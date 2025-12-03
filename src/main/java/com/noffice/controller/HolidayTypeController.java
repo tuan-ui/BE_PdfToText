@@ -6,7 +6,6 @@ import com.noffice.entity.User;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.HolidayTypeService;
-import com.noffice.ultils.Constants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -43,9 +42,9 @@ public class HolidayTypeController {
             User userDetails = (User) authentication.getPrincipal();
             Pageable pageable = PageRequest.of(page, size);
             Page<HolidayType> holidayTypePage = holidayTypeService.searchHolidayTypes(searchString, holidayTypeCode, holidayTypeName, description, pageable, userDetails.getPartnerId());
-            return new ResponseAPI(holidayTypePage, Constants.message.SUCCESS, 200);
+            return new ResponseAPI(holidayTypePage, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -59,9 +58,9 @@ public class HolidayTypeController {
             if(StringUtils.isNotBlank(message))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
         }
     }
 
@@ -74,9 +73,9 @@ public class HolidayTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
         }
     }
 
@@ -90,9 +89,9 @@ public class HolidayTypeController {
             if(StringUtils.isNotBlank(message))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
         }
     }
 
@@ -105,9 +104,9 @@ public class HolidayTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.ADD_SUCCESS, 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
         } catch (Exception e) {
-            
+            System.out.println(e.getMessage());
             throw e;
         }
     }
@@ -121,9 +120,9 @@ public class HolidayTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.UPDATE_SUCCESS, 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));
         } catch (Exception e) {
-            
+            System.out.println(e.getMessage());
             throw e;
         }
     }
@@ -135,9 +134,9 @@ public class HolidayTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             List<HolidayType> holidayTypes = holidayTypeService.getAllHolidayType(userDetails.getPartnerId());
-            return new ResponseAPI(holidayTypes, Constants.message.SUCCESS, 200);
+            return new ResponseAPI(holidayTypes, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -148,9 +147,9 @@ public class HolidayTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             holidayTypeService.getLogDetailHolidayType(id, userDetails);
-            return new ResponseAPI(null, Constants.message.SUCCESS, 200);
+            return new ResponseAPI(null, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 
@@ -158,9 +157,9 @@ public class HolidayTypeController {
     public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
         try {
             ErrorListResponse message = holidayTypeService.checkDeleteMulti(ids);
-            return new ResponseAPI(message, Constants.message.SUCCESS, 200);
+            return new ResponseAPI(message, "success", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+            return new ResponseAPI(null, "fail", 500);
         }
     }
 }

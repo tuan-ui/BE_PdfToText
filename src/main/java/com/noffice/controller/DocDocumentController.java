@@ -52,9 +52,9 @@ public class DocDocumentController {
 			String searchStringStr = FileUtils.removeAccent(searchString);
 			String docTypeDescriptionStr = FileUtils.removeAccent(docTypeDescription);
 			Page<DocDocumentDTO> docTypes = docDocumentService.getListDoc(searchStringStr, docTypeCode, docTypNameStr,docTypeDescriptionStr, pageable, userDetails.getPartnerId());
-			return new ResponseAPI(docTypes, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(docTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -68,9 +68,9 @@ public class DocDocumentController {
 			if(!result)
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "error", 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 
@@ -83,9 +83,9 @@ public class DocDocumentController {
 			if(result!=null && !result.isEmpty())
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 
@@ -101,9 +101,9 @@ public class DocDocumentController {
 			if(deptName == null || !deptName.trim().isEmpty())
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, deptName, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 
@@ -119,18 +119,19 @@ public class DocDocumentController {
 			try {
 				docDocument = objectMapper.readValue(docDocumentJson, DocDocumentDTO.class);
 			} catch (JsonProcessingException e) {
+				System.out.println(e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ResponseAPI(null, "Lỗi dữ liệu đầu vào", 400));
 			}
 			DocDocument result = docDocumentService.save(docDocument,files, userDetails);
 			if (result==null)
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400));
+						.body(new ResponseAPI(null, "Thao tác thất bại", 400));
 			else
 				return ResponseEntity.status(HttpStatus.OK)
-						.body(new ResponseAPI(result, Constants.message.ADD_SUCCESS, 200));
+						.body(new ResponseAPI(result, "Thêm mới thành công", 200));
 		} catch (Exception e) {
-			
+			System.out.println(e.getMessage());
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, "error", 500));
 		}
 	}
@@ -144,9 +145,9 @@ public class DocDocumentController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			List<DocType> docTypes = docDocumentService.getAllDocType(userDetails.getPartnerId());
-			return new ResponseAPI(docTypes, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(docTypes, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -157,9 +158,9 @@ public class DocDocumentController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			docDocumentService.getLogDetailDocType(id, userDetails);
-			return new ResponseAPI(null, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(null, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 
@@ -167,9 +168,9 @@ public class DocDocumentController {
 	public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
 		try {
 			ErrorListResponse message = docDocumentService.checkDeleteMulti(ids);
-			return new ResponseAPI(message, Constants.message.SUCCESS, 200);
+			return new ResponseAPI(message, "success", 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
+			return new ResponseAPI(null, "fail", 500);
 		}
 	}
 	@GetMapping("/attachs")
@@ -178,9 +179,9 @@ public class DocDocumentController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
 			List<Attachs> lstAttach = docDocumentService.getAttachsByDocument(id, Constants.OBJECT_TYPE.DOC_DOCUMENT);
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(lstAttach, Constants.message.SUCCESS, 200));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(lstAttach, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 
@@ -190,9 +191,9 @@ public class DocDocumentController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User token = (User) authentication.getPrincipal();
 			List<NodeDeptUser> lstAttach = docDocumentService.getByDocId(id);
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(lstAttach, Constants.message.SUCCESS, 200));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(lstAttach, "success", 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
 		}
 	}
 }

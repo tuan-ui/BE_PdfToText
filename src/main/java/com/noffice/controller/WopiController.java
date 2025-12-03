@@ -149,10 +149,12 @@ public class WopiController {
             // 4. GHI ĐÈ FILE GỐC
             Path originalPath = Paths.get(FILE_DIR, originalFile.getAttachName());
             Files.write(originalPath, content);
+            System.out.println("GHI ĐÈ FILE GỐC: " + originalPath);
 
             // 5. XÓA FILE TẠM + BẢN GHI
             documentFileRepository.delete(tempRecord);
             Files.deleteIfExists(tempFile.toPath());
+            System.out.println("ĐÃ XÓA FILE TẠM: " + tempFile.getPath());
         }
 
         return ResponseEntity.ok().build();
