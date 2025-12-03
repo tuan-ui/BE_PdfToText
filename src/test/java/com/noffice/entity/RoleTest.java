@@ -54,21 +54,4 @@ public class RoleTest {
         assertThat(str).contains("123 Street");
     }
 
-    @Test
-    void testClone_createsDeepCopyWithPartnerIdNull() {
-        Role original = new Role();
-        original.setRoleName("P001");
-        original.setRoleCode("Partner One");
-        original.setRoleDescription("123 Street");
-
-        Role cloned = original.clone();
-
-        assertThat(cloned).isNotSameAs(original);
-
-        assertThat(cloned.getRoleName()).isEqualTo(original.getRoleName());
-        assertThat(cloned.getRoleCode()).isEqualTo(original.getRoleCode());
-        assertThat(cloned.getRoleDescription()).isEqualTo(original.getRoleDescription());
-
-        assertThat(cloned.getPartnerId()).isNull();
-    }
 }

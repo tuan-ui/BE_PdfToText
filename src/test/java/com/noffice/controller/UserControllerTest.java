@@ -13,6 +13,7 @@ import com.noffice.repository.UserRepository;
 import com.noffice.service.UserService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,7 +142,7 @@ public class UserControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object.totalElements").value(1))
                 .andExpect(jsonPath("$.object.totalPages").value(1))
@@ -184,7 +185,7 @@ public class UserControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -215,7 +216,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -246,7 +247,7 @@ public class UserControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -286,7 +287,7 @@ public class UserControllerTest {
                                 .content(objectMapper.writeValueAsString(user))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -336,7 +337,7 @@ public class UserControllerTest {
                                 .content(objectMapper.writeValueAsString(user))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -373,7 +374,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/LogDetailUser")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -387,7 +388,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/users/getAllUser"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("Thành công"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].userCode").value("HC"))
                 .andExpect(jsonPath("$.object[0].fullName").value("Hành chính"));
@@ -420,7 +421,7 @@ public class UserControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -505,7 +506,7 @@ public class UserControllerTest {
 
         mockMvc.perform(multipart("/api/users/updateImage"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Cập nhật thành công"));
+                .andExpect(jsonPath("$.message").value(Constants.message.UPDATE_SUCCESS));
 
     }
 
@@ -592,7 +593,7 @@ public class UserControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.message").value(containsString("Lỗi hệ thống")));
+                .andExpect(jsonPath("$.message").value(containsString(Constants.message.SYSTEM_ERROR)));
     }
 
     @Test

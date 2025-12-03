@@ -5,6 +5,7 @@ import com.noffice.entity.FormSchema;
 import com.noffice.entity.User;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.DnDService;
+import com.noffice.ultils.Constants;
 import com.noffice.ultils.StringUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -34,10 +35,10 @@ public class DnDController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             String response = dndService.saveContent(dnDDTO, userDetails);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, "Thành công", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
     @PostMapping("/publishSchema")
@@ -47,10 +48,10 @@ public class DnDController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             String response = dndService.publishSchema(dnDDTO, userDetails);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, "Thành công", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
     @GetMapping("/getContent/{id}")
@@ -60,10 +61,10 @@ public class DnDController {
 //            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //            User userDetails = (User) authentication.getPrincipal();
             FormSchema response = dndService.getContent(id);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response != null ?response.getFormContent() : null, "Thành công", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response != null ?response.getFormContent() : null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
 
@@ -74,10 +75,10 @@ public class DnDController {
 //            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //            User userDetails = (User) authentication.getPrincipal();
             Map<String, List<String>> response = dndService.summarizeResponses(id);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, "Thành công", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
     @PostMapping("/searchFormSchemas")
@@ -102,10 +103,10 @@ public class DnDController {
                     userDetails.getPartnerId()
             );
 
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(result, "Thành công", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(result, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
     @GetMapping("/delete")
@@ -124,9 +125,9 @@ public class DnDController {
 
             return ResponseEntity.ok(new ResponseAPI(null, "Xóa thành công", 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+                    .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
     @GetMapping("/deleteMuti")
@@ -143,9 +144,9 @@ public class DnDController {
 
             return ResponseEntity.ok(new ResponseAPI(null, "Xóa thành công", 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+                    .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
     @GetMapping("/lock")
@@ -156,11 +157,11 @@ public class DnDController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             String response = dndService.lockUser(id,userDetails);
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, "success", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+                    .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
 }

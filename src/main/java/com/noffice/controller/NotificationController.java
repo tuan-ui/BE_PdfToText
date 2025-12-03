@@ -1,5 +1,6 @@
 package com.noffice.controller;
 
+import com.noffice.ultils.Constants;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -51,7 +52,7 @@ public class NotificationController {
 //            Page<Notification> notifications = notificationService.getNotificationsByRecipientId(user.getId(), pageable);
 //
 //            return ResponseEntity.status(HttpStatus.OK)
-//                    .body(new ResponseAPI(notifications, "Thành công", 200));
+//                    .body(new ResponseAPI(notifications, Constants.message.SUCCESS, 200));
 //        } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.OK)
 //                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
@@ -87,7 +88,7 @@ public class NotificationController {
 //            int notificationCount = notificationService.countNotificationsByRecipientId(recipientId);
 //
 //            return ResponseEntity.status(HttpStatus.OK)
-//                    .body(new ResponseAPI(notificationCount, "Thành công", 200));
+//                    .body(new ResponseAPI(notificationCount, Constants.message.SUCCESS, 200));
 //        } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.OK)
 //                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
@@ -115,7 +116,7 @@ public class NotificationController {
             }
             notificationService.updateReadNotification(notificationId);
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseAPI(null, "Thành công", 200));
+                    .body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK)
                     .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));

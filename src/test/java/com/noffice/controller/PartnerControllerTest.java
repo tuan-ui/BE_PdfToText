@@ -14,6 +14,7 @@ import com.noffice.service.PartnerService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
 import com.noffice.service.UserService;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +143,7 @@ public class PartnerControllerTest {
                         .content(objectMapper.writeValueAsString(partnerRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.data.totalElements").value(1))
                 .andExpect(jsonPath("$.data.totalPages").value(1))
@@ -160,7 +161,7 @@ public class PartnerControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -191,7 +192,7 @@ public class PartnerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -222,7 +223,7 @@ public class PartnerControllerTest {
                         .param("partner", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -252,7 +253,7 @@ public class PartnerControllerTest {
                                 .content(objectMapper.writeValueAsString(partner))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.ADD_SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -285,7 +286,7 @@ public class PartnerControllerTest {
                                 .content(objectMapper.writeValueAsString(partner))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.UPDATE_SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -313,7 +314,7 @@ public class PartnerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/partner/LogDetailPartner")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -346,7 +347,7 @@ public class PartnerControllerTest {
                         .content(objectMapper.writeValueAsString(partnerRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.message.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.data.partnerCode").value("HC"))
                 .andExpect(jsonPath("$.data.partnerName").value("Hành chính"));

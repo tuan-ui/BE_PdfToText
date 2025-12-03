@@ -6,6 +6,7 @@ import com.noffice.entity.User;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.DocTypeService;
+import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -50,9 +51,9 @@ public class DocTypeController {
 			String searchStringStr = FileUtils.removeAccent(searchString);
 			String docTypeDescriptionStr = FileUtils.removeAccent(docTypeDescription);
 			Page<DocType> docTypes = docTypeService.getListDocType(searchStringStr, docTypeCode, docTypNameStr,docTypeDescriptionStr, pageable, userDetails.getPartnerId());
-			return new ResponseAPI(docTypes, "success", 200);
+			return new ResponseAPI(docTypes, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 
@@ -67,9 +68,9 @@ public class DocTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 
@@ -82,9 +83,9 @@ public class DocTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 
@@ -100,9 +101,9 @@ public class DocTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 
@@ -115,7 +116,7 @@ public class DocTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.ADD_SUCCESS, 200));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw e;
@@ -133,7 +134,7 @@ public class DocTypeController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.UPDATE_SUCCESS, 200));
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -148,9 +149,9 @@ public class DocTypeController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			List<DocType> docTypes = docTypeService.getAllDocType(userDetails.getPartnerId());
-			return new ResponseAPI(docTypes, "success", 200);
+			return new ResponseAPI(docTypes, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 
@@ -161,9 +162,9 @@ public class DocTypeController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			docTypeService.getLogDetailDocType(id, userDetails);
-			return new ResponseAPI(null, "success", 200);
+			return new ResponseAPI(null, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 
@@ -171,9 +172,9 @@ public class DocTypeController {
 	public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
 		try {
 			ErrorListResponse message = docTypeService.checkDeleteMulti(ids);
-			return new ResponseAPI(message, "success", 200);
+			return new ResponseAPI(message, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 

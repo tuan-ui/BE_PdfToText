@@ -6,6 +6,7 @@ import com.noffice.entity.User;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.TaskTypeService;
+import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -49,9 +50,9 @@ public class TaskTypeController {
             String searchStringStr = FileUtils.removeAccent(searchString);
             String taskTypeDescriptionStr = FileUtils.removeAccent(taskTypeDescription);
             Page<TaskType> taskTypes = taskTypeService.getListTaskType(searchStringStr, taskTypeCode, taskTypNameStr,taskTypeDescriptionStr, pageable, userDetails.getPartnerId());
-            return new ResponseAPI(taskTypes, "success", 200);
+            return new ResponseAPI(taskTypes, Constants.message.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
         }
     }
 
@@ -66,9 +67,9 @@ public class TaskTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
 
@@ -81,9 +82,9 @@ public class TaskTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
 
@@ -99,9 +100,9 @@ public class TaskTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
 
@@ -114,7 +115,7 @@ public class TaskTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.ADD_SUCCESS, 200));
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw e;
@@ -132,7 +133,7 @@ public class TaskTypeController {
             if(StringUtils.isNotBlank(result))
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.UPDATE_SUCCESS, 200));
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -147,9 +148,9 @@ public class TaskTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             List<TaskType> taskTypes = taskTypeService.getAllTaskType(userDetails.getPartnerId());
-            return new ResponseAPI(taskTypes, "success", 200);
+            return new ResponseAPI(taskTypes, Constants.message.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
         }
     }
 
@@ -160,9 +161,9 @@ public class TaskTypeController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             taskTypeService.getLogDetailTaskType(id, userDetails);
-            return new ResponseAPI(null, "success", 200);
+            return new ResponseAPI(null, Constants.message.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
         }
     }
 
@@ -170,9 +171,9 @@ public class TaskTypeController {
     public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
         try {
             ErrorListResponse message = taskTypeService.checkDeleteMulti(ids);
-            return new ResponseAPI(message, "success", 200);
+            return new ResponseAPI(message, Constants.message.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
         }
     }
 }

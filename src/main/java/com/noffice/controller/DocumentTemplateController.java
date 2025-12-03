@@ -9,6 +9,7 @@ import com.noffice.entity.User;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.DocumentTemplateService;
+import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -52,9 +53,9 @@ public class DocumentTemplateController {
 			String searchStringStr = FileUtils.removeAccent(searchString);
 			String documentTemplateDescriptionStr = FileUtils.removeAccent(documentTemplateDescription);
 			Page<DocumentTemplateDTO> documentTemplates = documentTemplateService.getListDocumentTemplate(searchStringStr, documentTemplateCode, docTypNameStr,documentTemplateDescriptionStr, pageable, userDetails.getPartnerId());
-			return new ResponseAPI(documentTemplates, "success", 200);
+			return new ResponseAPI(documentTemplates, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 
@@ -69,9 +70,9 @@ public class DocumentTemplateController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 
@@ -84,9 +85,9 @@ public class DocumentTemplateController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 
@@ -102,9 +103,9 @@ public class DocumentTemplateController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, result, 400));
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 
@@ -117,7 +118,7 @@ public class DocumentTemplateController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Thêm mới thành công", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.ADD_SUCCESS, 200));
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw e;
@@ -135,7 +136,7 @@ public class DocumentTemplateController {
 			if(StringUtils.isNotBlank(result))
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, result, 400)); // Trả về 400
 			else
-				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "Cập nhật thành công", 200));
+				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.UPDATE_SUCCESS, 200));
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -150,9 +151,9 @@ public class DocumentTemplateController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			List<DocumentTemplate> documentTemplates = documentTemplateService.getAllDocumentTemplate(userDetails.getPartnerId());
-			return new ResponseAPI(documentTemplates, "success", 200);
+			return new ResponseAPI(documentTemplates, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 
@@ -162,9 +163,9 @@ public class DocumentTemplateController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			DocumentTemplateDetailDTO response = documentTemplateService.getDocumentDetail(id, userDetails);
-			return new ResponseAPI(response, "success", 200);
+			return new ResponseAPI(response, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 
@@ -172,9 +173,9 @@ public class DocumentTemplateController {
 	public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
 		try {
 			ErrorListResponse message = documentTemplateService.checkDeleteMulti(ids);
-			return new ResponseAPI(message, "success", 200);
+			return new ResponseAPI(message, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400);
 		}
 	}
 
@@ -182,9 +183,9 @@ public class DocumentTemplateController {
 	public ResponseAPI getAllowspermission(@RequestParam UUID id) {
 		try {
 			Map<String,Object> message = documentTemplateService.getAllowspermission(id);
-			return new ResponseAPI(message, "success", 200);
+			return new ResponseAPI(message, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "fail", 400);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 400);
 		}
 	}
 

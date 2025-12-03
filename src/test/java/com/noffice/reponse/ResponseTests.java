@@ -1,5 +1,6 @@
 package com.noffice.reponse;
 
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -10,11 +11,11 @@ class ResponseTests {
     void test_Response_NoArgsConstructor_And_Setters() {
         Response response = new Response();
         response.setData("test data");
-        response.setMessage("success");
+        response.setMessage(Constants.message.SUCCESS);
         response.setStatus(200);
 
         assertThat(response.getData()).isEqualTo("test data");
-        assertThat(response.getMessage()).isEqualTo("success");
+        assertThat(response.getMessage()).isEqualTo(Constants.message.SUCCESS);
         assertThat(response.getStatus()).isEqualTo(200);
     }
 

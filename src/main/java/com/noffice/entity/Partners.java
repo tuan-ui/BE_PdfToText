@@ -33,15 +33,4 @@ public class Partners extends BaseEntity implements Cloneable  {
     @Column(name = "tax_code", length = 50)
     private String taxCode;
 
-    @Override
-    public Partners clone() {
-        try {
-        	Partners cloned = (Partners) super.clone();
-            cloned.setPartnerId(null); 
-            return cloned;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Failed to clone Department", e);
-        }
-    }
-
 }

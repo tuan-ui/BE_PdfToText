@@ -25,14 +25,4 @@ public class Role extends BaseEntity implements Cloneable{
     @Column(name = "role_description", length = 2000)
     private String roleDescription;
 
-    @Override
-    public Role clone() {
-        try {
-        	Role cloned = (Role) super.clone();
-            cloned.setId(null);
-            return cloned;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Failed to clone Role", e);
-        }
-    }
 }

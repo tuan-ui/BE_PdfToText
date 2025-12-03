@@ -7,6 +7,7 @@ import com.noffice.entity.Logs;
 import com.noffice.entity.User;
 import com.noffice.enumtype.ActionType;
 import com.noffice.enumtype.FunctionType;
+import com.noffice.ultils.Constants;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,7 +39,7 @@ public class LogController {
 			@ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
 					content = @Content(mediaType = "application/json",
 							schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-			@ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
+			@ApiResponse(responseCode = "500", description = Constants.message.SYSTEM_ERROR,
 					content = @Content(mediaType = "application/json",
 							schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
 	})
@@ -57,10 +58,10 @@ public class LogController {
 			Pageable pageable = PageRequest.of(page, size);
 			Page<Logs> listLogs = logService.getLogs(userId, actionKey, functionKey,
 					fromDateStr, toDateStr, pageable, userDetails.getPartnerId());
-			return new ResponseAPI(listLogs, "Thành công", 200);
+			return new ResponseAPI(listLogs, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			return new ResponseAPI(null, "Lỗi hệ thống", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 
 	}
@@ -70,7 +71,7 @@ public class LogController {
 			@ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
 					content = @Content(mediaType = "application/json",
 							schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-			@ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
+			@ApiResponse(responseCode = "500", description = Constants.message.SYSTEM_ERROR,
 					content = @Content(mediaType = "application/json",
 							schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
 	})
@@ -78,9 +79,9 @@ public class LogController {
 	public ResponseAPI getListFunction() {
 		try {
 			List<String> listFunction = FunctionType.getAllFunction();
-			return new ResponseAPI(listFunction, "Thành công", 200);
+			return new ResponseAPI(listFunction, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "Lỗi hệ thống", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 
@@ -89,7 +90,7 @@ public class LogController {
 			@ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
 					content = @Content(mediaType = "application/json",
 							schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-			@ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
+			@ApiResponse(responseCode = "500", description = Constants.message.SYSTEM_ERROR,
 					content = @Content(mediaType = "application/json",
 							schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
 	})
@@ -97,9 +98,9 @@ public class LogController {
 	public ResponseAPI getListAction() {
 		try {
 			List<String> listAction = ActionType.getAllActions();
-			return new ResponseAPI(listAction, "Thành công", 200);
+			return new ResponseAPI(listAction, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "Lỗi hệ thống", 500);
+			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 	}
 

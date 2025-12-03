@@ -150,7 +150,7 @@ public class FileUtils {
 				}
 			} catch (Exception e) {
 				System.out.println("Lỗi khi unwrap: " + e.getMessage());
-				System.out.println("Error : " + e.getMessage());
+				System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
 			}
 		}
 		return obj;

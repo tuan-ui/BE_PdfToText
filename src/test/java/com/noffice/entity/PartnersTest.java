@@ -85,20 +85,4 @@ class PartnersTest {
         assertThat(str).contains("Partner One");
     }
 
-    @Test
-    void testClone_createsDeepCopyWithPartnerIdNull() {
-        Partners original = new Partners();
-        original.setPartnerCode("P001");
-        original.setPartnerName("Partner One");
-        original.setPartnerId(UUID.randomUUID());
-
-        Partners cloned = original.clone();
-
-        assertThat(cloned).isNotSameAs(original);
-
-        assertThat(cloned.getPartnerCode()).isEqualTo(original.getPartnerCode());
-        assertThat(cloned.getPartnerName()).isEqualTo(original.getPartnerName());
-
-        assertThat(cloned.getPartnerId()).isNull();
-    }
 }
