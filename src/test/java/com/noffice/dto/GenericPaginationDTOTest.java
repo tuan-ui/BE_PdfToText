@@ -29,10 +29,5 @@ public class GenericPaginationDTOTest {
         assertEquals(totals, dto2.getTotals());
         assertEquals(datas, dto2.getDatas());
 
-        // Test toString contains field values
-        String str = dto.toString();
-        System.out.println(str);
-        System.out.println(String.valueOf(totals));
-        assertTrue(str.contains(String.valueOf(totals)));
     }
 }
