@@ -124,7 +124,7 @@ public class DomainController {
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.ADD_SUCCESS, 200));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			
 			throw e;
 		}
 	}
@@ -142,7 +142,7 @@ public class DomainController {
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.UPDATE_SUCCESS, 200));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			
 			throw e;
 		}
 	}

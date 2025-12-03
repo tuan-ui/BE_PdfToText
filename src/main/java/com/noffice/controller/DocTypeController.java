@@ -118,8 +118,7 @@ public class DocTypeController {
 			else
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.ADD_SUCCESS, 200));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw e;
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 
@@ -137,8 +136,7 @@ public class DocTypeController {
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.UPDATE_SUCCESS, 200));
 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw e;
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
 		}
 	}
 	

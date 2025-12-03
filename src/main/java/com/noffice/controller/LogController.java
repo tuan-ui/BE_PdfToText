@@ -60,7 +60,6 @@ public class LogController {
 					fromDateStr, toDateStr, pageable, userDetails.getPartnerId());
 			return new ResponseAPI(listLogs, Constants.message.SUCCESS, 200);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			return new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500);
 		}
 

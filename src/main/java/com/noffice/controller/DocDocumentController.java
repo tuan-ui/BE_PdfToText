@@ -119,7 +119,6 @@ public class DocDocumentController {
 			try {
 				docDocument = objectMapper.readValue(docDocumentJson, DocDocumentDTO.class);
 			} catch (JsonProcessingException e) {
-				System.out.println(e.toString());
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body(new ResponseAPI(null, "Lỗi dữ liệu đầu vào", 400));
 			}
@@ -131,7 +130,7 @@ public class DocDocumentController {
 				return ResponseEntity.status(HttpStatus.OK)
 						.body(new ResponseAPI(result, Constants.message.ADD_SUCCESS, 200));
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseAPI(null, "error", 500));
 		}
 	}

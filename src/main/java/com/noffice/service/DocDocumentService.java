@@ -14,9 +14,7 @@ import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -45,7 +43,6 @@ public class DocDocumentService {
                    user.getId(), savedDocType.getId(), user.getPartnerId());
            return true;
        }catch (Exception e) {
-           System.out.println(e.toString());
            return false;
        }
 
@@ -192,7 +189,7 @@ public class DocDocumentService {
                     token.getId(), saveDocument.getId(), token.getPartnerId());
             return docDocument;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+
             return null;
         }
     }

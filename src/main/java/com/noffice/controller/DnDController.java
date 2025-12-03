@@ -37,7 +37,7 @@ public class DnDController {
             String response = dndService.saveContent(dnDDTO, userDetails);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
@@ -50,7 +50,7 @@ public class DnDController {
             String response = dndService.publishSchema(dnDDTO, userDetails);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
@@ -63,7 +63,7 @@ public class DnDController {
             FormSchema response = dndService.getContent(id);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response != null ?response.getFormContent() : null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
@@ -77,7 +77,7 @@ public class DnDController {
             Map<String, List<String>> response = dndService.summarizeResponses(id);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
@@ -105,7 +105,7 @@ public class DnDController {
 
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(result, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
     }
@@ -125,7 +125,7 @@ public class DnDController {
 
             return ResponseEntity.ok(new ResponseAPI(null, "Xóa thành công", 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
@@ -144,7 +144,7 @@ public class DnDController {
 
             return ResponseEntity.ok(new ResponseAPI(null, "Xóa thành công", 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
@@ -159,7 +159,7 @@ public class DnDController {
             String response = dndService.lockUser(id,userDetails);
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(response, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }

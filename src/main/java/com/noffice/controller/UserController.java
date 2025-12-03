@@ -110,7 +110,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
@@ -145,7 +145,7 @@ public class UserController {
             }
             return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.message.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println(Constants.message.SYSTEM_ERROR_2 + e.getMessage());
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseAPI(null, Constants.message.SYSTEM_ERROR, 500));
         }
