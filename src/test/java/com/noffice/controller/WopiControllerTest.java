@@ -8,10 +8,12 @@ import com.noffice.filter.JwtAuthenticationFilter;
 import com.noffice.repository.DocumentAllowedEditorsRepository;
 import com.noffice.repository.DocumentFileRepository;
 import com.noffice.service.*;
+import com.noffice.ultils.AppConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.MockedStatic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,6 +28,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -106,8 +109,6 @@ class WopiControllerTest {
     }
 
     @Test
-    @Order(1)
-    @DisplayName("checkFile - Success - Edit mode + is creator")
     void checkFile_Success_Edit_Creator() throws Exception {
         Claims claims = mock(Claims.class);
         when(claims.get("user_id", String.class)).thenReturn(USER_ID.toString());
@@ -134,8 +135,6 @@ class WopiControllerTest {
     }
 
     @Test
-    @Order(2)
-    @DisplayName("checkFile - Success - View mode")
     void checkFile_Success_ViewMode() throws Exception {
         Claims claims = mock(Claims.class);
         when(claims.get("user_id", String.class)).thenReturn(USER_ID.toString());
@@ -157,8 +156,6 @@ class WopiControllerTest {
     }
 
     @Test
-    @Order(3)
-    @DisplayName("checkFile - Fail - File not found")
     void checkFile_FileNotFound() throws Exception {
         when(jwtService.extractAllClaims(anyString())).thenReturn(mock(Claims.class));
         when(documentFileRepository.findByAttachName(TEST_FILENAME)).thenReturn(null);
@@ -170,8 +167,6 @@ class WopiControllerTest {
     }
 
     @Test
-    @Order(4)
-    @DisplayName("checkFile - Fail - Token expired")
     void checkFile_TokenExpired() throws Exception {
         when(jwtService.extractAllClaims(anyString())).thenThrow(new ExpiredJwtException(null, null, "Expired"));
 
@@ -182,43 +177,53 @@ class WopiControllerTest {
     }
 
     @Test
-    @Order(5)
-    @DisplayName("getFileContents - Success - File exists → 200 OK")
     void getFileContents_Success() throws Exception {
         mockMvc.perform(get("/wopi/files/{filename}/contents", TEST_FILENAME))
                 .andExpect(status().isNotFound());
         }
 
     @Test
-    @Order(6)
-    @DisplayName("getFileContents - File not found → 404")
     void getFileContents_NotFound() throws Exception {
         mockMvc.perform(get("/wopi/files/non_existent.docx/contents"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    @Order(7)
-    @DisplayName("saveFileContents - Normal file (not temp)")
     void saveFileContents_NormalFile() throws Exception {
-        when(documentFileRepository.findByAttachName(TEST_FILENAME)).thenReturn(mockFile);
+        DocumentFiles normalFile = new DocumentFiles();
+        normalFile.setAttachName(TEST_FILENAME);
+        normalFile.setIsTemp(false);
 
-        mockMvc.perform(put("/wopi/files/{filename}/contents", TEST_FILENAME)
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .content("updated content".getBytes()))
-                .andExpect(status().isOk());
+        when(documentFileRepository.findByAttachName(TEST_FILENAME)).thenReturn(normalFile);
 
-        verify(documentFileRepository, never()).delete(any());
+        try (MockedStatic<AppConfig> mockedAppConfig = mockStatic(AppConfig.class);
+             MockedStatic<Files> mockedFiles = mockStatic(Files.class);
+             MockedStatic<Paths> mockedPaths = mockStatic(Paths.class)) {
+
+            mockedAppConfig.when(() -> AppConfig.get("save_path")).thenReturn("/any/path");
+
+            // Không cần mock Path cụ thể → để controller tự tạo Path thật
+            // Chỉ cần mock Files.write() để bắt mọi call
+            mockedFiles.when(() -> Files.write(any(Path.class), any(byte[].class)))
+                    .thenAnswer(invocation -> null);
+
+            mockMvc.perform(put("/wopi/files/{filename}/contents", TEST_FILENAME)
+                            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                            .content("updated content".getBytes()))
+                    .andExpect(status().isOk());
+
+            // Verify: Files.write được gọi đúng 1 lần với đúng nội dung
+            mockedFiles.verify(() -> Files.write(
+                    any(Path.class),
+                    eq("updated content".getBytes())
+            ), times(1));
+
+            verify(documentFileRepository, never()).delete(any());
+        }
     }
 
     @Test
-    @Order(8)
-    @DisplayName("saveFileContents - Temp file → overwrite original + delete temp")
     void saveFileContents_TempFile_OverwriteOriginal() throws Exception {
-        // Tạo file gốc
-        Path originalPath = tempDir.resolve("original.docx");
-        Files.write(originalPath, "original content".getBytes());
-
         DocumentFiles tempRecord = new DocumentFiles();
         tempRecord.setAttachName(TEST_FILENAME);
         tempRecord.setIsTemp(true);
@@ -230,17 +235,38 @@ class WopiControllerTest {
         when(documentFileRepository.findByAttachName(TEST_FILENAME)).thenReturn(tempRecord);
         when(documentFileRepository.findById(ORIGINAL_FILE_ID)).thenReturn(Optional.of(originalFile));
 
-        mockMvc.perform(post("/wopi/files/{filename}/contents", TEST_FILENAME)
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .content("FINAL CONTENT".getBytes()))
-                .andExpect(status().isOk());
+        try (MockedStatic<AppConfig> mockedAppConfig = mockStatic(AppConfig.class);
+             MockedStatic<Files> mockedFiles = mockStatic(Files.class);
+             MockedStatic<Paths> mockedPaths = mockStatic(Paths.class)) {
 
-        verify(documentFileRepository, times(1)).delete(tempRecord);
+            mockedAppConfig.when(() -> AppConfig.get("save_path")).thenReturn("/storage");
+
+            // Mock write và delete
+            mockedFiles.when(() -> Files.write(any(Path.class), any(byte[].class)))
+                    .thenAnswer(i -> null);
+            mockedFiles.when(() -> Files.deleteIfExists(any(Path.class)))
+                    .thenReturn(true);
+
+            mockMvc.perform(post("/wopi/files/{filename}/contents", TEST_FILENAME)
+                            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                            .content("FINAL CONTENT".getBytes()))
+                    .andExpect(status().isOk());
+
+            // Verify đúng hành vi
+            verify(documentFileRepository, times(1)).delete(tempRecord);
+
+            // Verify: ghi đè file gốc với đúng nội dung
+            mockedFiles.verify(() -> Files.write(
+                    any(Path.class),  // Không quan tâm Path là gì
+                    eq("FINAL CONTENT".getBytes())
+            ), times(1));
+
+            // Verify: xóa file tạm
+            mockedFiles.verify(() -> Files.deleteIfExists(any(Path.class)), times(1));
+        }
     }
 
     @Test
-    @Order(9)
-    @DisplayName("handlePost - LOCK/UNLOCK/GETLOCK → 200 OK")
     void handlePost_LockOperations() throws Exception {
         mockMvc.perform(post("/wopi/files/{filename}", TEST_FILENAME)
                         .header("X-WOPI-Override", "LOCK"))
