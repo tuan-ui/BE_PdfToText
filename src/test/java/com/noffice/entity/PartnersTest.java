@@ -84,5 +84,5 @@ class PartnersTest {
         assertThat(str).contains("P001");
         assertThat(str).contains("Partner One");
     }
-    
+
 }
