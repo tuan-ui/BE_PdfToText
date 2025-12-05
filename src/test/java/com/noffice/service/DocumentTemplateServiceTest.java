@@ -125,7 +125,7 @@ class DocumentTemplateServiceTest {
 
         String result = documentTemplateService.deleteDocumentTemplate(documentTemplateId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -177,7 +177,7 @@ class DocumentTemplateServiceTest {
 
         String result = documentTemplateService.deleteMultiDocumentTemplate(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -229,12 +229,11 @@ class DocumentTemplateServiceTest {
 
         String result = documentTemplateService.lockUnlockDocumentTemplate(documentTemplateId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
     void saveDocumentTemplate_Success() {
-        UUID attachFileId = UUID.randomUUID();
 
         // Thay thế @Builder cho DocumentTemplateCreateDTO
         DocumentTemplateCreateDTO createDTO = new DocumentTemplateCreateDTO();
@@ -248,10 +247,9 @@ class DocumentTemplateServiceTest {
 
         when(documentTemplateRepository.findByCode(any(), any())).thenReturn(null);
         when(documentTemplateRepository.save(any(DocumentTemplate.class))).thenReturn(mockTemplate);
-        when(authentication.getPrincipal()).thenReturn(mockUser);
 
         // Act
-        String result = documentTemplateService.saveDocumentTemplate(createDTO, authentication);
+        String result = documentTemplateService.saveDocumentTemplate(createDTO, mockUser);
 
         // Assert
         assertEquals("", result);
@@ -267,10 +265,9 @@ class DocumentTemplateServiceTest {
         createDTO.setDocumentTemplateCode("EXISTING_CODE");
 
         when(documentTemplateRepository.findByCode(any(),any())).thenReturn(mockTemplate);
-        when(authentication.getPrincipal()).thenReturn(mockUser);
 
         // Act
-        String result = documentTemplateService.saveDocumentTemplate(createDTO, authentication);
+        String result = documentTemplateService.saveDocumentTemplate(createDTO, mockUser);
 
         // Assert
         assertEquals("error.DocumentTemplateExists", result);
@@ -296,9 +293,8 @@ class DocumentTemplateServiceTest {
 
         when(documentTemplateRepository.findByDocumentTemplateIdIncludeDeleted(eq(testDocTemplateId))).thenReturn(mockTemplate);
         when(documentTemplateRepository.save(any(DocumentTemplate.class))).thenReturn(mockTemplate);
-        when(authentication.getPrincipal()).thenReturn(mockUser);
 
-        String result = documentTemplateService.updateDocumentTemplate(updateDTO, authentication);
+        String result = documentTemplateService.updateDocumentTemplate(updateDTO, mockUser);
 
         assertEquals("", result);
 
@@ -314,11 +310,10 @@ class DocumentTemplateServiceTest {
         updateDTO.setVersion(testVersion + 1);
 
         when(documentTemplateRepository.findByDocumentTemplateIdIncludeDeleted(testDocTemplateId)).thenReturn(mockTemplate);
-        when(authentication.getPrincipal()).thenReturn(mockUser);
 
-        String result = documentTemplateService.updateDocumentTemplate(updateDTO, authentication);
+        String result = documentTemplateService.updateDocumentTemplate(updateDTO, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verify(documentTemplateRepository, never()).save(any(DocumentTemplate.class));
         verify(logService, never()).createLog(any(), any(), any(), any(), any());
     }
@@ -416,7 +411,7 @@ class DocumentTemplateServiceTest {
         ErrorListResponse result = documentTemplateService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

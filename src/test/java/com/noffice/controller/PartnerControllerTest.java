@@ -14,6 +14,7 @@ import com.noffice.service.PartnerService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
 import com.noffice.service.UserService;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class PartnerControllerTest {
+class PartnerControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -66,13 +67,12 @@ public class PartnerControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    private UUID partnerId;
     private UUID testId;
     private Partners partner;
     private PartnerRequest partnerRequest;
     @BeforeEach
     void setUp() {
-        partnerId = UUID.fromString("411f2d97-96ed-4bd2-a480-cec1afba65e8");
+        UUID partnerId = UUID.fromString("411f2d97-96ed-4bd2-a480-cec1afba65e8");
         testId = UUID.randomUUID();
         User mockUser = new User();
         mockUser.setId(UUID.randomUUID());
@@ -142,7 +142,7 @@ public class PartnerControllerTest {
                         .content(objectMapper.writeValueAsString(partnerRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.data.totalElements").value(1))
                 .andExpect(jsonPath("$.data.totalPages").value(1))
@@ -160,7 +160,7 @@ public class PartnerControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -191,7 +191,7 @@ public class PartnerControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -222,7 +222,7 @@ public class PartnerControllerTest {
                         .param("partner", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -252,7 +252,7 @@ public class PartnerControllerTest {
                                 .content(objectMapper.writeValueAsString(partner))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -285,7 +285,7 @@ public class PartnerControllerTest {
                                 .content(objectMapper.writeValueAsString(partner))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -313,7 +313,7 @@ public class PartnerControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/partner/LogDetailPartner")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -346,7 +346,7 @@ public class PartnerControllerTest {
                         .content(objectMapper.writeValueAsString(partnerRequest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.data.partnerCode").value("HC"))
                 .andExpect(jsonPath("$.data.partnerName").value("Hành chính"));

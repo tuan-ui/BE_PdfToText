@@ -63,7 +63,7 @@ public class DnDService {
             formSchemaRepository.save(formSchema);
             return dnDDTO.getId();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -74,7 +74,7 @@ public class DnDService {
             else
                 return formSchemaRepository.getFormSchema(id);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -93,7 +93,7 @@ public class DnDService {
             formDataRepository.save(formData);
             return dnDDTO.getId();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
     }
 
@@ -153,7 +153,7 @@ public class DnDService {
         List<FormData> dataList = formDataRepository.getFormSchema(formSchemaId);
         return dataList.stream()
                 .map(data -> FormParser.parseFormContent(data.getFormContent()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Map<String, List<String>> summarizeResponses(String formSchemaId) {

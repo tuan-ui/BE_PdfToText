@@ -51,7 +51,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class UserServiceTest {
+class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
@@ -145,7 +145,7 @@ public class UserServiceTest {
 
         String result = userService.deleteUser(userId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -208,7 +208,7 @@ public class UserServiceTest {
 
         String result = userService.deleteMultiUser(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -273,7 +273,7 @@ public class UserServiceTest {
 
         String result = userService.lockUser(userId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -319,7 +319,7 @@ public class UserServiceTest {
         ErrorListResponse result = userService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test
@@ -379,7 +379,7 @@ public class UserServiceTest {
 
         String result = userService.createUser(dto, partnerId, null, null, mockUser, List.of());
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verify(userRepository, never()).save(any());
     }
 
@@ -449,7 +449,7 @@ public class UserServiceTest {
 
         String result = userService.updateUser(dto, partnerId, null, null, mockUser, List.of(), 88L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verify(userRepository, never()).save(any());
     }
 
@@ -473,8 +473,8 @@ public class UserServiceTest {
         when(userRepository.getUserByUserId(userId)).thenReturn(mockUser);
         when(partnerRepository.getPartnerById(any())).thenReturn(null);
 
-        UserDetailDTO dto = new UserDetailDTO();
-        when(mapper.map(any(), eq(UserDetailDTO.class))).thenReturn(dto);
+        UserDetailDTO userDetailDTO = new UserDetailDTO();
+        when(mapper.map(any(), eq(UserDetailDTO.class))).thenReturn(userDetailDTO);
 
         UserDetailDTO result = userService.getByUserId(userId);
 

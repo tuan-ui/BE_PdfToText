@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class PartnerServiceTest {
+class PartnerServiceTest {
     @Mock
     private PartnerRepository partnerRepository;
 
@@ -112,7 +112,7 @@ public class PartnerServiceTest {
 
         String result = partnerService.deletePartner(partnerId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
     @Test
@@ -162,7 +162,7 @@ public class PartnerServiceTest {
 
         String result = partnerService.deleteMultiPartner(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -212,7 +212,7 @@ public class PartnerServiceTest {
 
         String result = partnerService.lockPartner(partnerId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -258,7 +258,7 @@ public class PartnerServiceTest {
 
         String result = partnerService.updatePartner(partnerRequest, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -294,7 +294,7 @@ public class PartnerServiceTest {
         ErrorListResponse result = partnerService.checkDeleteMulti(ids, mockUser);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

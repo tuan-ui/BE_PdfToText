@@ -13,6 +13,7 @@ import com.noffice.service.ContractTypeService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
 import com.noffice.service.UserService;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ContractTypeControllerTest {
+class ContractTypeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -129,7 +130,7 @@ public class ContractTypeControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object.totalElements").value(1))
                 .andExpect(jsonPath("$.object.totalPages").value(1))
@@ -174,7 +175,7 @@ public class ContractTypeControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -205,7 +206,7 @@ public class ContractTypeControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -236,7 +237,7 @@ public class ContractTypeControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -327,7 +328,7 @@ public class ContractTypeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/contractType/LogDetailContractType")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -341,7 +342,7 @@ public class ContractTypeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/contractType/getAllContractType"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].contractTypeCode").value("HC"))
                 .andExpect(jsonPath("$.object[0].contractTypeName").value("Hành chính"));

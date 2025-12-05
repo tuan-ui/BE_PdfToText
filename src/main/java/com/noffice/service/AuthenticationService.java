@@ -91,9 +91,9 @@ public class AuthenticationService {
 
         List<String> roleUserDeptIds = userRoles.stream()
                 .map(AuthenticationResponse.UserRoleDTO::getRole_user_dept_id)
-                .collect(Collectors.toList());
+                .toList();
 
-        String token = jwtService.generateToken(userOpt, null, roleUserDeptIds);
+        String token = jwtService.generateToken(userOpt);
         String refreshToken = refreshTokenService.createRefreshToken(user.getUsername()).getRefreshToken();
 		long absoluteExp = jwtService.getClaim(token, "absoluteExp", Long.class);
 
@@ -252,12 +252,7 @@ public class AuthenticationService {
 			userRoles = List.of(superAdminRole);;
 	    }
 
-	    String roleUserDeptId = null;
-	    List<String> roleUserDeptIds = userRoles.stream()
-	            .map(AuthenticationResponse.UserRoleDTO::getRole_user_dept_id)
-	            .collect(Collectors.toList());
-
-	    String token = jwtService.generateToken(userOpt, roleUserDeptId, roleUserDeptIds);
+	    String token = jwtService.generateToken(userOpt);
 	    String refreshToken = refreshTokenService.createRefreshToken(username).getRefreshToken();
 		long absoluteExp = jwtService.getClaim(token, "absoluteExp", Long.class);
 	    return new AuthenticationResponse(

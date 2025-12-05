@@ -24,15 +24,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 			throw new UsernameNotFoundException("User is locked");
 		}
 		return user;
-//		if (username.toLowerCase().equals("admin")) {
-////			throw new UsernameNotFoundException("User not found");
-//		}
-//
-//		User userTest = new User();
-//		userTest.setUsername("admin");
-//		userTest.setPassword("123");
-//		return userTest;
-		
 		
 	}
 

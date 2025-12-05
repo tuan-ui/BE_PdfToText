@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DocTypeTest {
+class DocTypeTest {
     @Test
     void dataAnnotation_Works() {
         DocType docType = new DocType();

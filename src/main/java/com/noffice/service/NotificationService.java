@@ -17,16 +17,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
 
     public Page<Notification> getNotificationsByRecipientId(Long recipientId, Pageable pageable) {
-        Page<Notification> notiPage =notificationRepository.findByRecipientId(recipientId, pageable);
-//        for(Notification noti : notiPage.getContent()) {
-//            String encodedCredit = org.bouncycastle.util.encoders.Base64.toBase64String(String.valueOf(noti.getTargetId() + "QTD" + noti.getTargetName()).getBytes());
-//            if(noti.getType().contains("Task") || noti.getType().contains("TASK"))
-//            {
-//                encodedCredit = org.bouncycastle.util.encoders.Base64.toBase64String(String.valueOf(noti.getTargetId() + "QTD").getBytes());
-//            }
-//            noti.setTargetIdEncode(encodedCredit);
-//        }
-        return notiPage;
+        return notificationRepository.findByRecipientId(recipientId, pageable);
     }
 
     public  String decodeAttachId(String attachIdEncode) {

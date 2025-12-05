@@ -1,7 +1,6 @@
 package com.noffice.controller;
 
 import com.noffice.config.TestSecurityConfig;
-import com.noffice.entity.DocumentAllowedEditors;
 import com.noffice.entity.DocumentAllowedViewers;
 import com.noffice.entity.DocumentFiles;
 import com.noffice.entity.User;
@@ -134,12 +133,6 @@ class FileViewerControllerTest {
                 anyString(),
                 eq("Lê Thái Anh")
         )).thenReturn(WOPI_TOKEN);
-    }
-
-    private MockHttpServletRequestBuilder withBearer() {
-        return MockMvcRequestBuilders
-                .request(HttpMethod.POST, "/dummy") // dummy, sẽ bị override
-                .header("Authorization", "Bearer " + VALID_ACCESS_TOKEN);
     }
 
     // Helper để tái sử dụng

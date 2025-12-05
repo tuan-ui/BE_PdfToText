@@ -1,6 +1,5 @@
 package com.noffice.ultils;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -98,7 +97,6 @@ class UUIDUtilTest {
         }
         long duration = System.nanoTime() - start;
 
-        System.out.println("100k checks in " + (duration / 1_000_000.0) + " ms");
         assertTrue(duration < 500_000_000L); // < 500ms là ổn
 
     }

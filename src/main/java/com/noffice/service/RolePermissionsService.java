@@ -3,6 +3,7 @@ package com.noffice.service;
 import com.noffice.entity.*;
 import com.noffice.repository.RoleRepository;
 
+import com.noffice.ultils.Constants;
 import jakarta.transaction.Transactional;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class RolePermissionsService {
 
 		Role role = roleRepository.findByRoleIdIncluideDeleted(roleId);
 		if (role == null) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			// 1. Xóa tất cả quyền cũ của role
 			rolePermissionsRepository.deleteByRoleId(roleId);
@@ -45,11 +46,11 @@ public class RolePermissionsService {
 			// 2. Thêm các quyền mới bằng cách tạo entity với @EmbeddedId
 			List<PermissionRole> newPermissions = checkedKeys.stream()
 					.map(permissionId -> new PermissionRole(new PermissionRoleId(permissionId, roleId, false)))
-					.collect(Collectors.toList());
+					.toList();
 
 			List<PermissionRole> newHalfPermissions = checkedHalfKeys.stream()
 					.map(permissionId -> new PermissionRole(new PermissionRoleId(permissionId, roleId, true)))
-					.collect(Collectors.toList());
+					.toList();
 
 			rolePermissionsRepository.saveAll(newPermissions);
 			rolePermissionsRepository.saveAll(newHalfPermissions);

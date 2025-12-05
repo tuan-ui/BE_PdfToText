@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,14 +29,14 @@ public class DomainService {
 	public String deleteDomain(UUID id, User user, Long version) {
 		Domain domain = domainRepository.findByDomainIdIncludeDeleted(id);
 		if (domain == null || !Objects.equals(domain.getVersion(), version)) {
-			return "error.DataChangedReload";
+			return Constants.errorResponse.DATA_CHANGED;
 		} else {
 			//			Long countChild = domainRepository.countChildDomains(domain.getDomainId(), domain.getPartnerId());
 //			if (countChild > 0) {
 //				return "error.UnableToDeleteExistingUnitOfSubordinateDomain";
 //			}
 			domainRepository.deleteDomainByDomainId(id);
-			logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOMAIN.getFunction(), "object", domain.getDomainName()),
+			logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_DOMAIN.getFunction(), Constants.logResponse.OBJECT, domain.getDomainName()),
 					user.getId(), domain.getId(), user.getPartnerId());
 		}
 		return"";
@@ -48,7 +47,7 @@ public class DomainService {
 		for(DeleteMultiDTO id :ids) {
 			Domain domain = domainRepository.findByDomainIdIncludeDeleted(id.getId());
 			if (domain == null || !Objects.equals(domain.getVersion(), id.getVersion())) {
-				return "error.DataChangedReload";
+				return Constants.errorResponse.DATA_CHANGED;
 			} else {
 				//				Long countChild = domainRepository.countChildDomains(domain.getDomainId(), domain.getPartnerId());
 //				if (countChild > 0) {
@@ -56,7 +55,7 @@ public class DomainService {
 //				}
 
 				domainRepository.deleteDomainByDomainId(id.getId());
-				logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOMAIN.getFunction(), "object", domain.getDomainName()),
+				logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_DOMAIN.getFunction(), Constants.logResponse.OBJECT, domain.getDomainName()),
 						user.getId(), domain.getId(), user.getPartnerId());
 			}
 		}
@@ -67,7 +66,7 @@ public class DomainService {
 	public String lockUnlockDomain(UUID id, User user, Long version) {
 		Domain domain = domainRepository.findByDomainIdIncludeDeleted(id);
 		if (domain == null || !Objects.equals(domain.getVersion(), version)) {
-			return "error.DataChangedReload";
+			return Constants.errorResponse.DATA_CHANGED;
 		} else {
 			Boolean newStatus = !domain.getIsActive();
 			domain.setIsActive(newStatus);
@@ -75,16 +74,15 @@ public class DomainService {
 			domain.setUpdateBy(user.getId());
 			domain.setUpdateAt(LocalDateTime.now());
 			Domain savedDomain = domainRepository.save(domain);
-			logService.createLog(savedDomain.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-					Map.of("actor", user.getFullName(), "action", savedDomain.getIsActive() ? FunctionType.UNLOCK_DOMAIN.getFunction() : FunctionType.LOCK_DOMAIN.getFunction(), "object", savedDomain.getDomainName()),
+			logService.createLog(Boolean.TRUE.equals(savedDomain.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+					Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(savedDomain.getIsActive()) ? FunctionType.UNLOCK_DOMAIN.getFunction() : FunctionType.LOCK_DOMAIN.getFunction(), Constants.logResponse.OBJECT, savedDomain.getDomainName()),
 					user.getId(), savedDomain.getId(), user.getPartnerId());
 		}
 		return "";
 	}
 
 	@Transactional
-	public String saveDomain(Domain domainDTO, Authentication authentication) {
-		User token = (User) authentication.getPrincipal();
+	public String saveDomain(Domain domainDTO, User token) {
 		if(domainRepository.findByCode(domainDTO.getDomainCode(), token.getPartnerId())==null){
 			Domain domain = new Domain();
 			domain.setDomainName(domainDTO.getDomainName());
@@ -96,7 +94,7 @@ public class DomainService {
 			domain.setIsDeleted(Constants.isDeleted.ACTIVE);
 			domain.setPartnerId(token.getPartnerId());
 			Domain savedDomain = domainRepository.save(domain);
-			logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(),"action", FunctionType.CREATE_DOMAIN.getFunction(), "object", savedDomain.getDomainName()),
+			logService.createLog(ActionType.CREATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(),Constants.logResponse.ACTION, FunctionType.CREATE_DOMAIN.getFunction(), Constants.logResponse.OBJECT, savedDomain.getDomainName()),
 					token.getId(), savedDomain.getId(),token.getPartnerId());
 
 			return "";
@@ -106,11 +104,10 @@ public class DomainService {
 	}
 
 	@Transactional
-	public String updateDomain(Domain domainDTO, Authentication authentication) {
-		User token = (User) authentication.getPrincipal();
+	public String updateDomain(Domain domainDTO, User token) {
 		Domain domain = domainRepository.findByDomainIdIncludeDeleted(domainDTO.getId());
 		if (domain == null || !Objects.equals(domain.getVersion(), domainDTO.getVersion())) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			domain.setDomainName(domainDTO.getDomainName());
 			domain.setDomainCode(domainDTO.getDomainCode());
@@ -120,7 +117,7 @@ public class DomainService {
 			domain.setUpdateAt(LocalDateTime.now());
 			domain.setUpdateBy(token.getId());
 			Domain savedDomain = domainRepository.save(domain);
-			logService.createLog(ActionType.UPDATE.getAction(), Map.of("actor", token.getFullName(),"action", FunctionType.EDIT_DOMAIN.getFunction(), "object", savedDomain.getDomainName()),
+			logService.createLog(ActionType.UPDATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(),Constants.logResponse.ACTION, FunctionType.EDIT_DOMAIN.getFunction(), Constants.logResponse.OBJECT, savedDomain.getDomainName()),
 					token.getId(), savedDomain.getId(),token.getPartnerId());
 		}
 		return "";
@@ -137,7 +134,7 @@ public class DomainService {
 
 	public void getLogDetailDomain(String id, User user) {
 		Domain domain = domainRepository.findByDomainCode(id);
-		logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(),"action", FunctionType.VIEW_DETAIL_DOMAIN.getFunction(), "object", domain.getDomainName()),
+		logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(),Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_DOMAIN.getFunction(), Constants.logResponse.OBJECT, domain.getDomainName()),
 				user.getId(), domain.getId(),user.getPartnerId());
 	}
 
@@ -150,12 +147,12 @@ public class DomainService {
 			object.setId(id.getId());
 			Domain domain = domainRepository.findByDomainIdIncludeDeleted(id.getId());
 			if(domain == null) {
-				object.setErrorMessage("error.DataChangedReload");
+				object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
 				object.setCode(id.getCode());
 				object.setName(id.getName());
 			}   else {
 				object.setCode(domain.getDomainCode());
-				object.setName(domain.getDomainName());;
+				object.setName(domain.getDomainName());
 			}
 			lstObject.add(object);
 		}
@@ -165,7 +162,7 @@ public class DomainService {
 				.filter(item -> item.getErrorMessage()!=null)
 				.count();
 		response.setHasError(countNum != 0);
-		if(!response.getHasError())
+		if(Boolean.FALSE.equals(response.getHasError()))
 		{
 			return null;
 		}

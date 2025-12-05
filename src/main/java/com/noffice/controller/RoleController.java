@@ -11,6 +11,7 @@ import com.noffice.entity.Permission;
 import com.noffice.entity.Role;
 import com.noffice.service.RolePermissionsService;
 import com.noffice.reponse.ErrorListResponse;
+import com.noffice.ultils.Constants;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -27,13 +28,8 @@ import com.noffice.reponse.ResponseAPI;
 import com.noffice.service.RoleService;
 import com.noffice.ultils.StringUtils;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Content;
 import jakarta.validation.Valid;
 
 @RestController
@@ -43,16 +39,7 @@ import jakarta.validation.Valid;
 public class RoleController {
 	private final RoleService roleService;
     private final RolePermissionsService rolePermissionsService;
-
-	@Operation(summary = "Lấy danh sách vai trò", description = "Trả về danh sách các vai trò dựa trên tiêu chí tìm kiếm")
-	@ApiResponses({
-	    @ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-	    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
+	
 	@PostMapping("/searchRoles")
 	public ResponseEntity<ResponseAPI> searchRoles(@RequestBody @Parameter(description = "Thông tin tìm kiếm vai trò") RoleSearchDTO request) {
 	    try {
@@ -91,22 +78,13 @@ public class RoleController {
         	    request.getSize()
         	);
 
-	        return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(result, "Thành công", 200));
+	        return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(result, Constants.messageResponse.SUCCESS, 200));
 	    } catch (Exception e) {
-	    	System.out.println("Error : " + e.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+	    	
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
 	    }
 	}
 	
-	@Operation(summary = "Thêm vai trò mới", description = "API này dùng để thêm một vai trò mới vào hệ thống")
-	@ApiResponses({
-	    @ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-	    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
     @PostMapping("/add")
 	public ResponseEntity<ResponseAPI> save(@RequestBody @Valid @Parameter(description = "Dữ liệu vai trò cần thêm") RoleDTO roleDTO) {
 		try {
@@ -116,22 +94,13 @@ public class RoleController {
 			String message = roleService.save(roleDTO, userDetails);
 			if(org.apache.commons.lang3.StringUtils.isNotBlank(message))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200));
 		} catch (Exception e) {
-			System.out.println("Error : " + e.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
 		}
 	}
-
-	@Operation(summary = "Cập nhật vai trò", description = "Cập nhật thông tin của vai trò trong hệ thống")
-	@ApiResponses({
-	    @ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-	    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
+	
     @PostMapping("/update")
 	public ResponseEntity<ResponseAPI> update(@RequestBody @Parameter(description = "Thông tin vai trò cần cập nhật") RoleDTO roleDTO) {
 		try {
@@ -141,22 +110,13 @@ public class RoleController {
 			String message = roleService.update(roleDTO, userDetails);
 			if(org.apache.commons.lang3.StringUtils.isNotBlank(message))
 				return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
-			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+			return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200));
 		} catch (Exception e) {
-			System.out.println("Error : " + e.getMessage());
-	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+			
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
 		}
 	}
-
-	@Operation(summary = "Xóa vai trò", description = "Xóa một vai trò dựa trên ID và role_user_dept_id")
-	@ApiResponses({
-	    @ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-	    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
+	
 	@GetMapping("/delete")
 	public ResponseEntity<ResponseAPI> delete(
 	        @RequestParam(value = "id") UUID id,
@@ -174,21 +134,12 @@ public class RoleController {
 
 	        return ResponseEntity.ok(new ResponseAPI(null, "Xóa thành công", 200));
 	    } catch (Exception e) {
-	        System.out.println("Error : " + e.getMessage());
+	        
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+	                .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
 	    }
 	}
 	
-	@Operation(summary = "Khóa vai trò", description = "Vô hiệu hóa một vai trò trong hệ thống dựa trên ID vai trò và ID của role_user_dept.")
-	@ApiResponses({
-	    @ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-	    @ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-	        content = @Content(mediaType = "application/json",
-	            schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
 	@GetMapping("/lock")
 	public ResponseEntity<ResponseAPI> lock(
 	        @RequestParam(value = "id") UUID id,
@@ -203,10 +154,10 @@ public class RoleController {
 	                    .body(new ResponseAPI(null, message, 400));
 	        }
 
-	        return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+	        return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200));
 	    } catch (Exception e) {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+	                .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
 	    }
 	}
 
@@ -225,9 +176,9 @@ public class RoleController {
 
 			return ResponseEntity.ok(new ResponseAPI(null, "Xóa thành công", 200));
 		} catch (Exception e) {
-			System.out.println("Error : " + e.getMessage());
+			
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+					.body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
 		}
 	}
 
@@ -239,7 +190,7 @@ public class RoleController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			List<Role> roles = roleService.getAllRole(userDetails.getPartnerId());
-			return new ResponseAPI(roles, "success", 200);
+			return new ResponseAPI(roles, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 500);
 		}
@@ -251,7 +202,7 @@ public class RoleController {
 			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			User userDetails = (User) authentication.getPrincipal();
 			roleService.getLogDetailRole(id, userDetails);
-			return new ResponseAPI(null, "success", 200);
+			return new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 500);
 		}
@@ -260,7 +211,7 @@ public class RoleController {
 	public ResponseAPI getALlPermisstion() {
 		try {
 			List<Permission> response = roleService.getALlPermisstion();
-			return new ResponseAPI(response, "success", 200);
+			return new ResponseAPI(response, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 500);
 		}
@@ -269,13 +220,13 @@ public class RoleController {
 	@GetMapping("/getRolePermisstion")
 	public ResponseAPI getRolePermissions(@RequestParam UUID roleId) {
 		List<Permission> response = rolePermissionsService.getRolePermissions(roleId);
-		return new ResponseAPI(response, "success", 200);
+		return new ResponseAPI(response, Constants.messageResponse.SUCCESS, 200);
 	}
 
 	@GetMapping("/getRolePermissionsHalf")
 	public ResponseAPI getRolePermissionsHalf(@RequestParam UUID roleId) {
 		List<Permission> response = rolePermissionsService.getRolePermissionsHalf(roleId);
-		return new ResponseAPI(response, "success", 200);
+		return new ResponseAPI(response, Constants.messageResponse.SUCCESS, 200);
 	}
 
 	// Gán lại danh sách permission cho role
@@ -287,7 +238,7 @@ public class RoleController {
 			if(org.apache.commons.lang3.StringUtils.isNotBlank(message)) {
 				return new ResponseAPI(null, message, 400);
 			}
-			return new ResponseAPI(null, "success", 200);
+			return new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 500);
 		}
@@ -298,7 +249,7 @@ public class RoleController {
 	public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
 		try {
 			ErrorListResponse message = roleService.checkDeleteMulti(ids);
-			return new ResponseAPI(message, "success", 200);
+			return new ResponseAPI(message, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
 			return new ResponseAPI(null, "fail", 500);
 		}
@@ -309,7 +260,7 @@ public class RoleController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User userDetails = (User) authentication.getPrincipal();
 		List<Permission> response = rolePermissionsService.getUserPermissions(userDetails);
-		return new ResponseAPI(response, "success", 200);
+		return new ResponseAPI(response, Constants.messageResponse.SUCCESS, 200);
 	}
 
 	@GetMapping("/getUserOriginDataPermissions")
@@ -317,7 +268,7 @@ public class RoleController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		User userDetails = (User) authentication.getPrincipal();
 		List<Permission> response = rolePermissionsService.getUserOriginDataPermissions("ORIGINDATA",userDetails);
-		return new ResponseAPI(response, "success", 200);
+		return new ResponseAPI(response, Constants.messageResponse.SUCCESS, 200);
 	}
 	@GetMapping("/getPermissionsCurrent")
 	public ResponseEntity<?> getPermissionsCurrent(@RequestParam String menuCode) {

@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,10 +28,10 @@ public class TaskTypeService {
     public String deleteTaskType(UUID id, User user, Long version) {
         TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id);
         if (taskType == null || !Objects.equals(taskType.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             taskTypeRepository.deleteTaskTypeByTaskTypeId(id);
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_TASKTYPE.getFunction(), "object", taskType.getTaskTypeName()),
+            logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_TASKTYPE.getFunction(), Constants.logResponse.OBJECT, taskType.getTaskTypeName()),
                     user.getId(), taskType.getId(), user.getPartnerId());
         }
         return "";
@@ -44,10 +43,10 @@ public class TaskTypeService {
         for (DeleteMultiDTO id : ids) {
             TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id.getId());
             if (taskType == null || !Objects.equals(taskType.getVersion(), id.getVersion())) {
-                return "error.DataChangedReload";
+                return Constants.errorResponse.DATA_CHANGED;
             } else {
                 taskTypeRepository.deleteTaskTypeByTaskTypeId(id.getId());
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_TASKTYPE.getFunction(), "object", taskType.getTaskTypeName()),
+                logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_TASKTYPE.getFunction(), Constants.logResponse.OBJECT, taskType.getTaskTypeName()),
                         user.getId(), taskType.getId(), user.getPartnerId());
             }
         }
@@ -58,7 +57,7 @@ public class TaskTypeService {
     public String lockUnlockTaskType(UUID id, User user, Long version) {
         TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id);
         if (taskType == null || !Objects.equals(taskType.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             Boolean newStatus = !taskType.getIsActive();
             taskType.setIsActive(newStatus);
@@ -66,16 +65,15 @@ public class TaskTypeService {
             taskType.setUpdateBy(user.getId());
             taskType.setUpdateAt(LocalDateTime.now());
             TaskType savedTaskType = taskTypeRepository.save(taskType);
-            logService.createLog(savedTaskType.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-                    Map.of("actor", user.getFullName(), "action", savedTaskType.getIsActive() ? FunctionType.UNLOCK_TASKTYPE.getFunction() : FunctionType.LOCK_TASKTYPE.getFunction(), "object", savedTaskType.getTaskTypeName()),
+            logService.createLog(Boolean.TRUE.equals(savedTaskType.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+                    Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(savedTaskType.getIsActive()) ? FunctionType.UNLOCK_TASKTYPE.getFunction() : FunctionType.LOCK_TASKTYPE.getFunction(), Constants.logResponse.OBJECT, savedTaskType.getTaskTypeName()),
                     user.getId(), savedTaskType.getId(), user.getPartnerId());
         }
         return "";
     }
 
     @Transactional
-    public String saveTaskType(TaskType taskTypeDTO, Authentication authentication) {
-        User token = (User) authentication.getPrincipal();
+    public String saveTaskType(TaskType taskTypeDTO, User token) {
         if (taskTypeRepository.findByCode(taskTypeDTO.getTaskTypeCode(), token.getPartnerId()) == null) {
             TaskType taskType = new TaskType();
             taskType.setTaskTypeName(taskTypeDTO.getTaskTypeName());
@@ -88,7 +86,7 @@ public class TaskTypeService {
             taskType.setIsDeleted(Constants.isDeleted.ACTIVE);
             taskType.setPartnerId(token.getPartnerId());
             TaskType savedTaskType = taskTypeRepository.save(taskType);
-            logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_TASKTYPE.getFunction(), "object", savedTaskType.getTaskTypeName()),
+            logService.createLog(ActionType.CREATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.CREATE_TASKTYPE.getFunction(), Constants.logResponse.OBJECT, savedTaskType.getTaskTypeName()),
                     token.getId(), savedTaskType.getId(), token.getPartnerId());
 
             return "";
@@ -98,11 +96,10 @@ public class TaskTypeService {
     }
 
     @Transactional
-    public String updateTaskType(TaskType taskTypeDTO, Authentication authentication) {
-        User token = (User) authentication.getPrincipal();
+    public String updateTaskType(TaskType taskTypeDTO, User token) {
         TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(taskTypeDTO.getId());
         if (taskType == null || !Objects.equals(taskType.getVersion(), taskTypeDTO.getVersion())) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             taskType.setTaskTypeName(taskTypeDTO.getTaskTypeName());
             taskType.setTaskTypeCode(taskTypeDTO.getTaskTypeCode());
@@ -113,7 +110,7 @@ public class TaskTypeService {
             taskType.setUpdateAt(LocalDateTime.now());
             taskType.setUpdateBy(token.getId());
             TaskType savedTaskType = taskTypeRepository.save(taskType);
-            logService.createLog(ActionType.UPDATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.EDIT_TASKTYPE.getFunction(), "object", savedTaskType.getTaskTypeName()),
+            logService.createLog(ActionType.UPDATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.EDIT_TASKTYPE.getFunction(), Constants.logResponse.OBJECT, savedTaskType.getTaskTypeName()),
                     token.getId(), savedTaskType.getId(), token.getPartnerId());
         }
         return "";
@@ -130,7 +127,7 @@ public class TaskTypeService {
 
     public void getLogDetailTaskType(String id, User user) {
         TaskType taskType = taskTypeRepository.findByTaskTypeCode(id);
-        logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_TASKTYPE.getFunction(), "object", taskType.getTaskTypeName()),
+        logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_TASKTYPE.getFunction(), Constants.logResponse.OBJECT, taskType.getTaskTypeName()),
                 user.getId(), taskType.getId(), user.getPartnerId());
     }
 
@@ -144,7 +141,7 @@ public class TaskTypeService {
             object.setId(id.getId());
             TaskType taskType = taskTypeRepository.findByTaskTypeIdIncludeDeleted(id.getId());
             if(taskType == null) {
-                object.setErrorMessage("error.DataChangedReload");
+                object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
                 object.setCode(id.getCode());
                 object.setName(id.getName());
             }   else {
@@ -159,7 +156,7 @@ public class TaskTypeService {
                 .filter(item -> item.getErrorMessage() != null)
                 .count();
         response.setHasError(countNum != 0);
-        if (!response.getHasError()) {
+        if (Boolean.FALSE.equals(response.getHasError())) {
             return null;
         }
         return response;

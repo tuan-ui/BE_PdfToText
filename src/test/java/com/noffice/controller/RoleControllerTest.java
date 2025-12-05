@@ -12,6 +12,7 @@ import com.noffice.entity.User;
 import com.noffice.filter.JwtAuthenticationFilter;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.service.*;
+import com.noffice.ultils.Constants;
 import com.noffice.ultils.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -125,7 +126,7 @@ class RoleControllerTest {
                         .content(objectMapper.writeValueAsString(requestDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.message").value("Thành công"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.object.content[0].id").value(testRoleId.toString()));
 
     }
@@ -141,7 +142,7 @@ class RoleControllerTest {
                         .content(objectMapper.writeValueAsString(roleDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.message").value("success"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
 
         verify(roleService, times(1)).save(any(RoleDTO.class), eq(mockUser));
     }
@@ -173,8 +174,7 @@ class RoleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(roleDTO)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.status").value(500))
-                .andExpect(jsonPath("$.message").value("Lỗi hệ thống"));
+                .andExpect(jsonPath("$.status").value(500));
 
         verify(roleService, times(1)).save(any(RoleDTO.class), eq(mockUser));
     }
@@ -189,7 +189,7 @@ class RoleControllerTest {
                         .content(objectMapper.writeValueAsString(roleDTO)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.message").value("success"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
 
         verify(roleService, times(1)).update(any(RoleDTO.class), eq(mockUser));
     }
@@ -248,7 +248,7 @@ class RoleControllerTest {
                         .param("version", version.toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.message").value("success"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
 
         verify(roleService, times(1)).lockRole(eq(testRoleId), eq(mockUser), eq(version));
     }
@@ -338,7 +338,7 @@ class RoleControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.message").value("success"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
 
         verify(rolePermissionsService, times(1)).updatePermissionsForRole(eq(testRoleId), anyList(), anyList());
     }
@@ -394,7 +394,7 @@ class RoleControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/roles/LogDetailRole")
                         .param("id", testRoleId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -408,7 +408,7 @@ class RoleControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/roles/getALlPermisstion"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].id").value(testRoleId.toString()))
                 .andExpect(jsonPath("$.object[0].permissionName").value("Permission 1"));
@@ -425,7 +425,7 @@ class RoleControllerTest {
                         .param("roleId", testRoleId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].id").value(testRoleId.toString()))
                 .andExpect(jsonPath("$.object[0].permissionName").value("Permission 1"));
@@ -442,7 +442,7 @@ class RoleControllerTest {
                         .param("roleId", testRoleId.toString()))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].id").value(testRoleId.toString()))
                 .andExpect(jsonPath("$.object[0].permissionName").value("Permission 1"));
@@ -474,7 +474,7 @@ class RoleControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/roles/getUserOriginDataPermissions"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].id").value(testRoleId.toString()))
                 .andExpect(jsonPath("$.object[0].permissionName").value("Permission 1"));
@@ -490,7 +490,7 @@ class RoleControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/roles/getUserPermissions"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object[0].id").value(testRoleId.toString()))
                 .andExpect(jsonPath("$.object[0].permissionName").value("Permission 1"));

@@ -28,7 +28,7 @@ public enum ActionType {
     public static List<String> getAllActions() {
         return Arrays.stream(values())
                 .map(ActionType::getAction)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public static ActionType fromAction(String action) {

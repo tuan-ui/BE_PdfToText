@@ -128,7 +128,7 @@ class DocDocumentControllerTest {
                         .param("searchString", ""))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object.totalElements").value(1))
                 .andExpect(jsonPath("$.object.totalPages").value(1))
@@ -173,7 +173,7 @@ class DocDocumentControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -204,7 +204,7 @@ class DocDocumentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(ids)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -235,7 +235,7 @@ class DocDocumentControllerTest {
                         .param("id", testId.toString())
                         .param("version", "1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -323,7 +323,7 @@ class DocDocumentControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/api/doc-document/LogDetailDocType")
                         .param("id", testId.toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 

@@ -7,6 +7,7 @@ import com.noffice.entity.User;
 import com.noffice.filter.JwtAuthenticationFilter;
 import com.noffice.reponse.AuthenticationResponse;
 import com.noffice.service.*;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -56,8 +57,6 @@ class NotificationControllerTest {
     private UserService userService;
     @MockBean
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    private AuthenticationResponse authenticationResponse;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -113,7 +112,7 @@ class NotificationControllerTest {
                         .param("notificationId", String.valueOf(notificationId))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Thành công"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200))
                 .andExpect(jsonPath("$.object").isEmpty());
 

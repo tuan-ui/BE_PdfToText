@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AttachsTest {
+class AttachsTest {
     private final UUID tempId = UUID.randomUUID();
     private final LocalDateTime date = LocalDateTime.now();
     @Test

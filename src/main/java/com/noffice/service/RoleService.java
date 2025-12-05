@@ -12,6 +12,7 @@ import com.noffice.repository.PermissionsRepository;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.repository.UserRolesRepository;
 
+import com.noffice.ultils.Constants;
 import jakarta.persistence.EntityNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -66,7 +67,7 @@ public class RoleService {
 		role.setUpdateAt(LocalDateTime.now());
 		role.setUpdateBy(token.getId());
 		Role savedRole = roleRepository.save(role);
-		logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(),"action", FunctionType.CREATE_ROLE.getFunction(), "object", savedRole.getRoleName()),
+		logService.createLog(ActionType.CREATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(),Constants.logResponse.ACTION, FunctionType.CREATE_ROLE.getFunction(), Constants.logResponse.OBJECT, savedRole.getRoleName()),
 				token.getId(), savedRole.getId(),token.getPartnerId());
 		return "";
 	}
@@ -75,7 +76,7 @@ public class RoleService {
 	public String update(RoleDTO roleDTO, User token) {
 		Role role = roleRepository.findByRoleIdIncluideDeleted(roleDTO.getId());
 		if (role == null || !Objects.equals(role.getVersion(), roleDTO.getVersion())) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			if (roleDTO.getRoleCode() != null && roleRepository.existsByRoleCodeIgnoreCaseNotId(roleDTO.getRoleCode(), role.getId(), token.getPartnerId())) {
 	            return "error.SameRoleCode";
@@ -87,7 +88,7 @@ public class RoleService {
 			role.setUpdateAt(LocalDateTime.now());
 			role.setUpdateBy(token.getId());
 			Role savedRole = roleRepository.save(role);
-			logService.createLog(ActionType.UPDATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.EDIT_ROLE.getFunction(), "object", savedRole.getRoleName()),
+			logService.createLog(ActionType.UPDATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.EDIT_ROLE.getFunction(), Constants.logResponse.OBJECT, savedRole.getRoleName()),
 					token.getId(), savedRole.getId(), token.getPartnerId());
 		}
         return "";
@@ -97,12 +98,12 @@ public class RoleService {
 	public String delete(UUID id, User user, Long version) {
 		Role role = roleRepository.findByRoleIdIncluideDeleted(id);
 		if (role == null || !Objects.equals(role.getVersion(), version)) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			if (userRolesRepository.existsUserByRoleId(role.getId())) {
 				return "error.RoleAlreadyUseOnUser";
 			}roleRepository.deleteRoleByRoleId(id);
-			logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_ROLE.getFunction(), "object", role.getRoleName()),
+			logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_ROLE.getFunction(), Constants.logResponse.OBJECT, role.getRoleName()),
 					user.getId(), role.getId(), user.getPartnerId());
 		}
         return "";
@@ -112,17 +113,17 @@ public class RoleService {
 	public String lockRole(UUID id, User userDetails, Long version) {
 		Role role = roleRepository.findByRoleIdIncluideDeleted(id);
 		if (role == null || !Objects.equals(role.getVersion(), version)) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			role.setIsActive(!role.getIsActive());
 			role.setUpdateBy(userDetails.getId());
 			roleRepository.save(role);
 			logService.createLog(
-					role.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+					Boolean.TRUE.equals(role.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
 					Map.of(
-							"actor", userDetails.getFullName(),
-							"action", role.getIsActive() ? FunctionType.UNLOCK_ROLE.getFunction() : FunctionType.LOCK_ROLE.getFunction(),
-							"object", role.getRoleName()
+							Constants.logResponse.ACTOR, userDetails.getFullName(),
+							Constants.logResponse.ACTION, Boolean.TRUE.equals(role.getIsActive()) ? FunctionType.UNLOCK_ROLE.getFunction() : FunctionType.LOCK_ROLE.getFunction(),
+							Constants.logResponse.OBJECT, role.getRoleName()
 					),
 					userDetails.getId(),
 					role.getId(),
@@ -138,13 +139,13 @@ public class RoleService {
 		for(DeleteMultiDTO id :ids){
 			Role role = roleRepository.findByRoleIdIncluideDeleted(id.getId());
 			if (role == null || !Objects.equals(role.getVersion(), id.getVersion())) {
-				return  "error.DataChangedReload";
+				return  Constants.errorResponse.DATA_CHANGED;
 			} else {
 				if (userRolesRepository.existsUserByRoleId(role.getId())) {
 					return "error.RoleAlreadyUseOnUser";
 				}
 				roleRepository.deleteRoleByRoleId(id.getId());
-				logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_ROLE.getFunction(), "object", role.getRoleName()),
+				logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_ROLE.getFunction(), Constants.logResponse.OBJECT, role.getRoleName()),
 						user.getId(), role.getId(), user.getPartnerId());
 			}
         }
@@ -161,9 +162,9 @@ public class RoleService {
 		logService.createLog(
 				ActionType.VIEW.getAction(),
 				Map.of(
-						"actor", user.getFullName(),
-						"action", FunctionType.VIEW_DETAIL_ROLE.getFunction(),
-						"object", role != null ? role.getRoleName() : ""
+						Constants.logResponse.ACTOR, user.getFullName(),
+						Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_ROLE.getFunction(),
+						Constants.logResponse.OBJECT, role != null ? role.getRoleName() : ""
 				),
 				user.getId(),
 				role != null ? role.getId() : null,
@@ -184,7 +185,7 @@ public class RoleService {
 			object.setId(id.getId());
 			Role role = roleRepository.findByRoleIdIncluideDeleted(id.getId());
 			if(role == null) {
-				object.setErrorMessage("error.DataChangedReload");
+				object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
 				object.setCode(id.getCode());
 				object.setName(id.getName());
 			} else if (userRolesRepository.existsUserByRoleId(role.getId())) {
@@ -203,7 +204,7 @@ public class RoleService {
 				.filter(item -> item.getErrorMessage()!=null)
 				.count();
 		response.setHasError(countNum != 0);
-		if(!response.getHasError())
+		if(Boolean.FALSE.equals(response.getHasError()))
 		{
 			return null;
 		}

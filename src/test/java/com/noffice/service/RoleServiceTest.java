@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class RoleServiceTest {
+class RoleServiceTest {
 
     @Mock
     private RoleRepository roleRepository;
@@ -119,7 +119,7 @@ public class RoleServiceTest {
 
         String result = roleService.delete(roleId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -184,7 +184,7 @@ public class RoleServiceTest {
 
         String result = roleService.deleteMuti(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -220,7 +220,7 @@ public class RoleServiceTest {
 
         String result = roleService.lockRole(roleId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -301,7 +301,7 @@ public class RoleServiceTest {
 
         String result = roleService.update(sampleRoleDTO, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -346,7 +346,7 @@ public class RoleServiceTest {
         ErrorListResponse result = roleService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

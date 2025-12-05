@@ -7,11 +7,7 @@ import com.noffice.entity.Logs;
 import com.noffice.entity.User;
 import com.noffice.enumtype.ActionType;
 import com.noffice.enumtype.FunctionType;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.noffice.ultils.Constants;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
@@ -33,15 +29,6 @@ import com.noffice.service.LogService;
 public class LogController {
 	private final LogService logService;
 
-	@Operation(summary = "Lấy danh sách log người dùng theo tìm kiếm nâng cao", description = "Trả về danh sách log dựa trên tiêu chí tìm kiếm")
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-			@ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
 	@GetMapping("/list")
 	public ResponseAPI getLogs(
 			@RequestParam(value = "page", required = false, defaultValue = "0") int page,
@@ -57,49 +44,31 @@ public class LogController {
 			Pageable pageable = PageRequest.of(page, size);
 			Page<Logs> listLogs = logService.getLogs(userId, actionKey, functionKey,
 					fromDateStr, toDateStr, pageable, userDetails.getPartnerId());
-			return new ResponseAPI(listLogs, "Thành công", 200);
+			return new ResponseAPI(listLogs, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
-			return new ResponseAPI(null, "Lỗi hệ thống", 500);
+
+			return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
 		}
 
 	}
 
-	@Operation(summary = "Lấy danh sách chức năng", description = "Trả về danh sách chức năng")
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-			@ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
 	@GetMapping("/getListFunction")
 	public ResponseAPI getListFunction() {
 		try {
 			List<String> listFunction = FunctionType.getAllFunction();
-			return new ResponseAPI(listFunction, "Thành công", 200);
+			return new ResponseAPI(listFunction, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "Lỗi hệ thống", 500);
+			return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
 		}
 	}
 
-	@Operation(summary = "Lấy danh sách thao tác", description = "Trả về danh sách thao tác")
-	@ApiResponses({
-			@ApiResponse(responseCode = "200", description = "Kết quả trả về(200: Thành công, >= 400: Dữ liệu không hợp lệ)",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(example = "{\"object\": {}, \"message\": \"Thành công\", \"status\": 200}"))),
-			@ApiResponse(responseCode = "500", description = "Lỗi hệ thống",
-					content = @Content(mediaType = "application/json",
-							schema = @Schema(example = "{\"object\": null, \"message\": \"Lỗi hệ thống\", \"status\": 500}")))
-	})
 	@GetMapping("/getListAction")
 	public ResponseAPI getListAction() {
 		try {
 			List<String> listAction = ActionType.getAllActions();
-			return new ResponseAPI(listAction, "Thành công", 200);
+			return new ResponseAPI(listAction, Constants.messageResponse.SUCCESS, 200);
 		} catch (Exception e) {
-			return new ResponseAPI(null, "Lỗi hệ thống", 500);
+			return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
 		}
 	}
 

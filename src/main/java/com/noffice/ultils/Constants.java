@@ -44,8 +44,21 @@ public final class Constants {
         public String CA_CLOUD_PROFILE_ID = "CA_CLOUD_PROFILE_ID";
     }
 
-	public interface TYPE_APPROVE {
-		String PARALLEL = "parallel";//song song
-		String SEQUENTIAL = "sequential";//tuan tu
+	public interface messageResponse {
+		String SUCCESS = "Thành công";
+		String ERROR = "Lỗi hệ thống: ";
+		String NO_TOKEN = "Không có token hoặc phiên đăng nhập hợp lệ";
+		String NO_USER_INFO = "Thông tin người dùng không hợp lệ";
 	}
+	
+	public interface errorResponse {
+		String DATA_CHANGED = "error.DataChangedReload";
+	}
+	
+	public interface logResponse {
+		String ACTOR = "actor";
+		String ACTION = "action";
+		String OBJECT = "object";
+	}
+	
 }

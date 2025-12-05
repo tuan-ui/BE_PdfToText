@@ -31,7 +31,7 @@ public class JwtService {
 	@PostConstruct
 	public void init() {}
 
-	public String generateToken(User user, String roleUserDeptId, List<String> roleUserDeptIds) {
+	public String generateToken(User user) {
 	    String role = user.getIsAdmin() == 1 ? "admin" : "user";
 		long now = System.currentTimeMillis();
 		long idleExp = now + timeOutMS;

@@ -41,7 +41,7 @@ class AuthenticationResponseTests {
         assertThat(response.getTwofaType()).isEqualTo(1);
         assertThat(response.getPartnerId()).isEqualTo(id);
         assertThat(response.getUserId()).isEqualTo(id);
-        assertThat(response.getIsChangePassword()).isEqualTo(0);
+        assertThat(response.getIsChangePassword()).isZero();
         assertThat(response.getIsActive()).isTrue();
         assertThat(response.getRoles()).hasSize(1);
         assertThat(response.getRoles().get(0).getRole_name()).isEqualTo("Admin");

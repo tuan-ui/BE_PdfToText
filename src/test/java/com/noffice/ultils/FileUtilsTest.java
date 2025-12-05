@@ -50,7 +50,7 @@ class FileUtilsTest {
     }
 
     @Test
-    void replaceMergeFieldsInDocument_ReplacesAllFields() throws Exception {
+    void replaceMergeFieldsInDocument_ReplacesAllFields() {
 
         mainDocumentPart.getContent().add(createParagraph("Họ tên: «ho_ten»"));
         mainDocumentPart.getContent().add(createParagraph("Địa chỉ: «dia_chi»"));
@@ -114,7 +114,7 @@ class FileUtilsTest {
     }
 
     @Test
-    void replaceTableRows_ReplacesWithMultipleRowsAndSkipEmptyCMND() throws Exception {
+    void replaceTableRows_ReplacesWithMultipleRowsAndSkipEmptyCMND() {
         Tbl table = createSampleTableWithTemplateRow();
         mainDocumentPart.getContent().add(table);
         List<Object> rows = table.getContent();

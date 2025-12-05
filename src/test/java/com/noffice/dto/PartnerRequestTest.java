@@ -78,7 +78,7 @@ class PartnerRequestTest {
         assertThat(dto.getBase64Image()).isEqualTo("img");
         assertThat(dto.getPage()).isEqualTo(1);
         assertThat(dto.getSize()).isEqualTo(20);
-        assertThat(dto.getOffset()).isEqualTo(0);
+        assertThat(dto.getOffset()).isZero();
         assertThat(dto.getSearchString()).isEqualTo("keyword");
         assertThat(dto.getVersion()).isEqualTo(99L);
     }
@@ -111,7 +111,7 @@ class PartnerRequestTest {
         dto2.setPartnerName("ABC");
 
         assertThat(dto1).isEqualTo(dto2);
-        assertThat(dto1.hashCode()).isEqualTo(dto2.hashCode());
+        assertThat(dto1.hashCode()).hasSameHashCodeAs(dto2.hashCode());
     }
 
     @Test

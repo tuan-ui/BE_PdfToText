@@ -167,7 +167,7 @@ class DocDocumentServiceTest {
 
         String result = docDocumentService.deleteMulti(List.of(dto), user);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verify(docDocumentRepository, never()).save(any());
     }
 
@@ -213,7 +213,7 @@ class DocDocumentServiceTest {
         when(docDocumentRepository.findByDocumentId(any())).thenReturn(docDocument);
         String result = docDocumentService.lockUnlock(docId, user, 2L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -293,7 +293,7 @@ class DocDocumentServiceTest {
         when(docDocumentRepository.findByDocumentId(docId)).thenReturn(docDocument);
         String result = docDocumentService.update(docDocumentRequest, authentication);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verify(docDocumentRepository, never()).save(any());
     }
 
@@ -346,7 +346,7 @@ class DocDocumentServiceTest {
 
         assertNotNull(response);
         assertTrue(response.getHasError());
-        assertEquals("error.DataChangedReload", response.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, response.getErrors().get(0).getErrorMessage());
     }
 
     @Test

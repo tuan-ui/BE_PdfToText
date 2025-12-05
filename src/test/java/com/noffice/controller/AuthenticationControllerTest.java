@@ -7,6 +7,7 @@ import com.noffice.entity.RefreshToken;
 import com.noffice.reponse.AuthenticationResponse;
 import com.noffice.repository.UserRepository;
 import com.noffice.service.*;
+import com.noffice.ultils.Constants;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -40,7 +41,7 @@ import com.github.cage.Cage;
 @Import(TestSecurityConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class AuthenticationControllerTest {
+class AuthenticationControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -158,7 +159,7 @@ public class AuthenticationControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/logout"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(200))
-                .andExpect(jsonPath("$.message").value("Thành công"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
     }
 
     @Test
@@ -179,7 +180,7 @@ public class AuthenticationControllerTest {
         Mockito.when(userRepository.findByUsername("testuser"))
                 .thenReturn(Optional.of(mockUser));
 
-        Mockito.when(jwtService.generateToken(any(User.class), any(), any()))
+        Mockito.when(jwtService.generateToken(any(User.class)))
                 .thenReturn("jwt-token");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/refreshToken")
@@ -325,7 +326,7 @@ public class AuthenticationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(body))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.object.twoFAType").value(1));
     }
 
@@ -420,7 +421,7 @@ public class AuthenticationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Thành công"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
     }
 
     @Test
@@ -446,7 +447,7 @@ public class AuthenticationControllerTest {
                         .content(new ObjectMapper().writeValueAsString(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Thành công"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
     }
 
     @Test
@@ -457,7 +458,7 @@ public class AuthenticationControllerTest {
                         .content(new ObjectMapper().writeValueAsString(dto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Thành công"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
     }
 
     @Test

@@ -8,7 +8,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DocumentFilesTest {
+class DocumentFilesTest {
     private final UUID tempId = UUID.randomUUID();
     private final LocalDateTime date = LocalDateTime.now();
     @Test
@@ -83,7 +83,7 @@ public class DocumentFilesTest {
         df2.setOriginalFileId(id);
 
         assertThat(df1).isEqualTo(df2);
-        assertThat(df1.hashCode()).isEqualTo(df2.hashCode());
+        assertThat(df1.hashCode()).hasSameHashCodeAs(df2.hashCode());
     }
 
     @Test

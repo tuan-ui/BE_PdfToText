@@ -4,11 +4,11 @@ import com.noffice.dto.CreateUserGroupDTO;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.dto.GenericPaginationDTO;
 import com.noffice.entity.User;
-import com.noffice.entity.UserGroup;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.reponse.UserGroupResponse;
 import com.noffice.service.UserGroupService;
+import com.noffice.ultils.Constants;
 import lombok.RequiredArgsConstructor;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,9 +39,9 @@ public class UserGroupController {
             if(org.apache.commons.lang3.StringUtils.isNotBlank(userGroup)) {
                 return new ResponseAPI(null, userGroup, 400);
             }
-            return new ResponseAPI(userGroup, "success", 200);
+            return new ResponseAPI(userGroup, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error creating user group: " + e.getMessage(), 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -64,7 +64,7 @@ public class UserGroupController {
             GenericPaginationDTO paginationDTO = new GenericPaginationDTO(userGroups.getTotalElements(), userGroups.getContent());
             return new ResponseAPI(paginationDTO, "User groups retrieved successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error retrieving user groups: " + e.getMessage(), 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -77,7 +77,7 @@ public class UserGroupController {
             }
             return new ResponseAPI(null, "User group status updated successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error updating user group status: " + e.getMessage(), 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -90,7 +90,7 @@ public class UserGroupController {
             }
             return new ResponseAPI(null, "User group deleted successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error deleting user group: " + e.getMessage(), 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -105,7 +105,7 @@ public class UserGroupController {
             }
             return new ResponseAPI(null, "Deleted multiple user group successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error deleting user groups: " + e.getMessage(), 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -117,7 +117,7 @@ public class UserGroupController {
             userGroupService.saveLogDetail(groupId, userDetails);
             return new ResponseAPI(null, "Log details retrieved successfully", 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Error retrieving log details: " + e.getMessage(), 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -125,9 +125,9 @@ public class UserGroupController {
     public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
         try {
             ErrorListResponse message = userGroupService.checkDeleteMulti(ids);
-            return new ResponseAPI(message, "success", 200);
+            return new ResponseAPI(message, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 }

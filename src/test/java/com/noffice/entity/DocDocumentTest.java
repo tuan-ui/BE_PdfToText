@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DocDocumentTest {
+class DocDocumentTest {
     private final UUID tempId = UUID.randomUUID();
     @Test
     void dataAnnotation_Works() {

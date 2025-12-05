@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-public class DocumentTemplateTest {
+class DocumentTemplateTest {
     private final UUID tempId = UUID.randomUUID();
     @Test
     void dataAnnotation() {
@@ -68,7 +68,7 @@ public class DocumentTemplateTest {
         df2.setDocumentTemplateDescription("description");
 
         assertThat(df1).isEqualTo(df2);
-        assertThat(df1.hashCode()).isEqualTo(df2.hashCode());
+        assertThat(df1.hashCode()).hasSameHashCodeAs(df2.hashCode());
     }
 
     @Test

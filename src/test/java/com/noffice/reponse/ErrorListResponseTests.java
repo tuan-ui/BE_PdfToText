@@ -65,7 +65,7 @@ class ErrorListResponseTests {
 
         // equals & hashCode (từ @Data)
         assertThat(r1).isEqualTo(r2);
-        assertThat(r1.hashCode()).isEqualTo(r2.hashCode());
+        assertThat(r1.hashCode()).hasSameHashCodeAs(r2.hashCode());
 
         // toString (từ @Data)
         assertThat(r1.toString())
@@ -118,7 +118,7 @@ class ErrorListResponseTests {
         );
 
         assertThat(e1).isEqualTo(e2);
-        assertThat(e1.hashCode()).isEqualTo(e2.hashCode());
+        assertThat(e1.hashCode()).hasSameHashCodeAs(e2.hashCode());
         assertThat(e1.toString())
                 .contains("E001")
                 .contains("Bad Request")

@@ -11,7 +11,7 @@ class RoleSearchDTOTest {
 
         // Default values
         assertThat(dto.getPartnerId()).isEqualTo(-1L);
-        assertThat(dto.getPage()).isEqualTo(0);
+        assertThat(dto.getPage()).isZero();
         assertThat(dto.getSize()).isEqualTo(10);
 
         // Other fields should be null
@@ -81,7 +81,7 @@ class RoleSearchDTOTest {
         );
 
         assertThat(dto1).isEqualTo(dto2);
-        assertThat(dto1.hashCode()).isEqualTo(dto2.hashCode());
+        assertThat(dto1.hashCode()).hasSameHashCodeAs(dto2.hashCode());
     }
 
     @Test

@@ -4,6 +4,7 @@ package com.noffice.service;
 import com.noffice.entity.*;
 import com.noffice.repository.RolePermissionsRepository;
 import com.noffice.repository.RoleRepository;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,7 +55,7 @@ class RolePermissionsServiceTest {
 
         String result = service.updatePermissionsForRole(roleId, List.of(perm1), List.of());
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verify(rolePermissionsRepository, never()).saveAll(any());
     }
 

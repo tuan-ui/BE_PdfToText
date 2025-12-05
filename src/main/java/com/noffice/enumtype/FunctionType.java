@@ -213,7 +213,7 @@ public enum FunctionType {
     public static List<String> getAllFunction() {
         return Arrays.stream(values())
                 .map(FunctionType::getFunction)
-                .collect(Collectors.toList());
+                .toList();
     }
     public static FunctionType fromFunction(String function) {
         return Arrays.stream(values())

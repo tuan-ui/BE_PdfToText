@@ -14,9 +14,7 @@ import com.noffice.ultils.Constants;
 import com.noffice.ultils.FileUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -41,11 +39,11 @@ public class DocDocumentService {
            docDocument.setDeletedBy(user.getId());
            docDocument.setDeletedAt(LocalDateTime.now());
            DocDocument savedDocType = docDocumentRepository.save(docDocument);
-           logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOCUMENT.getFunction(), "object", savedDocType.getDocumentTitle()),
+           logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_DOCUMENT.getFunction(), Constants.logResponse.OBJECT, savedDocType.getDocumentTitle()),
                    user.getId(), savedDocType.getId(), user.getPartnerId());
            return true;
        }catch (Exception e) {
-           System.out.println(e.toString());
+           
            return false;
        }
 
@@ -58,16 +56,16 @@ public class DocDocumentService {
         for (DeleteMultiDTO id : ids) {
             DocDocument docDocument = docDocumentRepository.findByDocumentId(id.getId());
             if (!Objects.equals(docDocument.getVersion(), id.getVersion())) {
-                return "error.DataChangedReload";
+                return Constants.errorResponse.DATA_CHANGED;
             }
-            if (docDocument.getIsDeleted()) {
+            if (Boolean.TRUE.equals(docDocument.getIsDeleted())) {
                 return "error.DocTypeNotExists";
             } else {
                 docDocument.setIsDeleted(Constants.isDeleted.DELETED);
                 docDocument.setDeletedBy(user.getId());
                 docDocument.setDeletedAt(LocalDateTime.now());
                 DocDocument savedDocType = docDocumentRepository.save(docDocument);
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOCUMENT.getFunction(), "object", savedDocType.getDocumentTitle()),
+                logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_DOCUMENT.getFunction(), Constants.logResponse.OBJECT, savedDocType.getDocumentTitle()),
                         user.getId(), savedDocType.getId(), user.getPartnerId());
             }
         }
@@ -78,9 +76,9 @@ public class DocDocumentService {
     public String lockUnlock(UUID id, User user, Long version) {
         DocDocument docDocument = docDocumentRepository.findByDocumentId(id);
         if (!Objects.equals(docDocument.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         }
-        if (docDocument.getIsDeleted())
+        if (Boolean.TRUE.equals(docDocument.getIsDeleted()))
             return "error.DocTypeNotExists";
         else {
             Boolean newStatus = !docDocument.getIsActive();
@@ -89,8 +87,8 @@ public class DocDocumentService {
             docDocument.setUpdateBy(user.getId());
             docDocument.setUpdateAt(LocalDateTime.now());
             DocDocument savedDoc = docDocumentRepository.save(docDocument);
-            logService.createLog(savedDoc.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-                    Map.of("actor", user.getFullName(), "action", savedDoc.getIsActive() ? FunctionType.UNLOCK_DOCUMENT.getFunction() : FunctionType.LOCK_DOCTYPE.getFunction(), "object", savedDoc.getDocumentTitle()),
+            logService.createLog(Boolean.TRUE.equals(savedDoc.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+                    Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(savedDoc.getIsActive()) ? FunctionType.UNLOCK_DOCUMENT.getFunction() : FunctionType.LOCK_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, savedDoc.getDocumentTitle()),
                     user.getId(), savedDoc.getId(), user.getPartnerId());
         }
         return "";
@@ -188,11 +186,11 @@ public class DocDocumentService {
                 }
             }
 
-            logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_DOCUMENT.getFunction(), "object", saveDocument.getDocumentTitle()),
+            logService.createLog(ActionType.CREATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.CREATE_DOCUMENT.getFunction(), Constants.logResponse.OBJECT, saveDocument.getDocumentTitle()),
                     token.getId(), saveDocument.getId(), token.getPartnerId());
             return docDocument;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            
             return null;
         }
     }
@@ -202,9 +200,9 @@ public class DocDocumentService {
         User token = (User) authentication.getPrincipal();
         DocDocument document = docDocumentRepository.findByDocumentId(docDocumentDTO.getId());
         if (!Objects.equals(docDocumentDTO.getVersion(), document.getVersion())) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         }
-        if (document.getIsDeleted())
+        if (Boolean.TRUE.equals(document.getIsDeleted()))
             return "error.DocTypeNotExists";
         else {
             document.setDocumentTitle(docDocumentDTO.getDocumentTitle());
@@ -213,16 +211,16 @@ public class DocDocumentService {
             document.setUpdateAt(LocalDateTime.now());
             document.setUpdateBy(token.getId());
             DocDocument savedDocDocument = docDocumentRepository.save(document);
-            logService.createLog(ActionType.UPDATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.EDIT_DOCUMENT.getFunction(), "object", savedDocDocument.getDocumentTitle()),
+            logService.createLog(ActionType.UPDATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.EDIT_DOCUMENT.getFunction(), Constants.logResponse.OBJECT, savedDocDocument.getDocumentTitle()),
                     token.getId(), savedDocDocument.getId(), token.getPartnerId());
         }
         return "";
     }
 
-    public Page<DocDocumentDTO> getListDoc(String searchString, String DocTypeCode, String DocTypeName, String DocTypeDescription,
+    public Page<DocDocumentDTO> getListDoc(String searchString, String docTypeCode, String docTypeName, String docTypeDescription,
                                         Pageable pageable, UUID partnerId) {
 
-        return docDocumentRepository.getDocWithPagination(searchString, DocTypeCode, DocTypeName, partnerId, pageable);
+        return docDocumentRepository.getDocWithPagination(searchString, docTypeCode, docTypeName, partnerId, pageable);
     }
 
     public List<DocType> getAllDocType(UUID partnerId) {
@@ -231,7 +229,7 @@ public class DocDocumentService {
 
     public void getLogDetailDocType(String id, User user) {
         DocType docType = docDocumentRepository.findByDocTypeCode(id);
-        logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_DOCTYPE.getFunction(), "object", docType.getDocTypeName()),
+        logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, docType.getDocTypeName()),
                 user.getId(), docType.getId(), user.getPartnerId());
     }
 
@@ -245,8 +243,8 @@ public class DocDocumentService {
             object.setId(id.getId());
             DocDocument document = docDocumentRepository.findByDocumentId(id.getId());
             if (!Objects.equals(document.getVersion(), id.getVersion())) {
-                object.setErrorMessage("error.DataChangedReload");
-            } else if (document.getIsDeleted()) {
+                object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
+            } else if (Boolean.TRUE.equals(document.getIsDeleted())) {
                 object.setErrorMessage("error.DocTypeNotExists");
             }
             object.setCode(document.getDocumentTitle());
@@ -258,7 +256,7 @@ public class DocDocumentService {
                 .filter(item -> item.getErrorMessage() != null)
                 .count();
         response.setHasError(countNum != 0);
-        if (!response.getHasError()) {
+        if (Boolean.FALSE.equals(response.getHasError())) {
             return null;
         }
         return response;

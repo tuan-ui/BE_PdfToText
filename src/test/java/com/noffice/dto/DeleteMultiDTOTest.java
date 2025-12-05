@@ -7,7 +7,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DeleteMultiDTOTest {
+class DeleteMultiDTOTest {
     @Test
     void testGetterSetterEqualsHashCodeToString() {
         UUID id = UUID.randomUUID();

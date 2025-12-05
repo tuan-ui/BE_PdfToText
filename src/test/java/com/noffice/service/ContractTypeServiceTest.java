@@ -20,8 +20,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.UUID;
@@ -39,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class ContractTypeServiceTest {
+class ContractTypeServiceTest {
     @Mock
     private ContractTypeRepository contractTypeRepository;
 
@@ -92,7 +90,7 @@ public class ContractTypeServiceTest {
 
         String result = contractTypeService.deleteContractType(contractTypeId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -132,7 +130,7 @@ public class ContractTypeServiceTest {
 
         String result = contractTypeService.deleteMultiContractType(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -168,7 +166,7 @@ public class ContractTypeServiceTest {
 
         String result = contractTypeService.lockUnlockContractType(contractTypeId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -178,12 +176,10 @@ public class ContractTypeServiceTest {
         contractTypeDTO.setContractTypeCode("NEW001");
         contractTypeDTO.setIsActive(true);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(contractTypeRepository.findByCode(eq("NEW001"), eq(partnerId))).thenReturn(null);
         when(contractTypeRepository.save(any(ContractType.class))).thenAnswer(i -> i.getArgument(0));
 
-        String result = contractTypeService.saveContractType(contractTypeDTO, auth);
+        String result = contractTypeService.saveContractType(contractTypeDTO, mockUser);
 
         assertEquals("", result);
         verify(logService).createLog(eq(ActionType.CREATE.getAction()), anyMap(), any(), any(), any());
@@ -194,11 +190,9 @@ public class ContractTypeServiceTest {
         ContractType contractTypeDTO = new ContractType();
         contractTypeDTO.setContractTypeCode("TEST001");
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(contractTypeRepository.findByCode(eq("TEST001"), eq(partnerId))).thenReturn(sampleContractType);
 
-        String result = contractTypeService.saveContractType(contractTypeDTO, auth);
+        String result = contractTypeService.saveContractType(contractTypeDTO, mockUser);
 
         assertEquals("error.ContractTypeExists", result);
         verifyNoInteractions(logService);
@@ -213,12 +207,10 @@ public class ContractTypeServiceTest {
         contractTypeDTO.setVersion(1L);
         contractTypeDTO.setIsActive(false);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(contractTypeRepository.findByContractTypeIdIncludeDeleted(eq(contractTypeId))).thenReturn(sampleContractType);
         when(contractTypeRepository.save(any(ContractType.class))).thenReturn(sampleContractType);
 
-        String result = contractTypeService.updateContractType(contractTypeDTO, auth);
+        String result = contractTypeService.updateContractType(contractTypeDTO, mockUser);
 
         assertEquals("", result);
         assertEquals("Updated Name", sampleContractType.getContractTypeName());
@@ -229,13 +221,12 @@ public class ContractTypeServiceTest {
     void updateContractType_Error() {
         ContractType contractTypeDTO = new ContractType();
         contractTypeDTO.setId(contractTypeId);
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
 
         when(contractTypeRepository.findByContractTypeIdIncludeDeleted(eq(contractTypeId))).thenReturn(null);
 
-        String result = contractTypeService.updateContractType(contractTypeDTO, auth);
+        String result = contractTypeService.updateContractType(contractTypeDTO, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -280,7 +271,7 @@ public class ContractTypeServiceTest {
         ErrorListResponse result = contractTypeService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

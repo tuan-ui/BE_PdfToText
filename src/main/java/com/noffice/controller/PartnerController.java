@@ -3,6 +3,7 @@ package com.noffice.controller;
 import com.noffice.dto.DeleteMultiDTO;
 import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.Response;
+import com.noffice.ultils.Constants;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -43,9 +44,9 @@ public class PartnerController {
             request.setOffset(offset);
             Pageable pageable = PageRequest.of( request.getPage(), request.getSize());
             Page<Partners> partnersPage = partnerService.searchPartners(request, pageable);
-            return new Response(partnersPage, "success", 200);
+            return new Response(partnersPage, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new Response(e.toString(), "fail", 500);
+            return new Response(e.toString(), Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
     
@@ -57,11 +58,11 @@ public class PartnerController {
             User token = (User) authentication.getPrincipal();
             String partnerSave = partnerService.createPartner(partner, token);
             if(StringUtils.isNotBlank(partnerSave))
-                return new Response(partnerSave, "fail", 400);
+                return new Response(partnerSave, partnerSave, 400);
             else
-                return new Response(partnerSave, "success", 200);
+                return new Response(partnerSave, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new Response("error", "fail", 500);
+            return new Response(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -72,11 +73,11 @@ public class PartnerController {
             User token = (User) authentication.getPrincipal();
             String partnerSave = partnerService.updatePartner(partner, token);
             if(StringUtils.isNotBlank(partnerSave))
-                return new Response(partnerSave, "fail", 400);
+                return new Response(partnerSave, partnerSave, 400);
             else
-                return new Response(partnerSave, "success", 200);
+                return new Response(partnerSave, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new Response("error", "fail", 500);
+            return new Response(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -88,11 +89,11 @@ public class PartnerController {
             User userDetails = (User) authentication.getPrincipal();
             String message = partnerService.deletePartner(id,userDetails, version);
             if(StringUtils.isNotBlank(message))
-                return new ResponseAPI(message, "fail", 400);
+                return new ResponseAPI(message, message, 400);
             else
-                return new ResponseAPI(message, "success", 200);
+                return new ResponseAPI(message, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -102,9 +103,9 @@ public class PartnerController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             ErrorListResponse message = partnerService.checkDeleteMulti(items, userDetails);
-            return new ResponseAPI(message, "success", 200);
+            return new ResponseAPI(message, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -118,10 +119,10 @@ public class PartnerController {
             if(StringUtils.isNotBlank(message))
                 return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, message, 400));
             else
-                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+                return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+                    .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
         }
     }
 
@@ -133,11 +134,11 @@ public class PartnerController {
             User userDetails = (User) authentication.getPrincipal();
             String message = partnerService.lockPartner(partner,userDetails, version);
             if(StringUtils.isNotBlank(message))
-                return new Response(message, "fail", 400);
+                return new Response(message, message, 400);
             else
-                return new Response(message, "success", 200);
+                return new Response(message, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new Response("error", "Thao tác thất bại", 500);
+            return new Response(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -149,9 +150,9 @@ public class PartnerController {
             User userDetails = (User) authentication.getPrincipal();
 
             Partners partnerSave = partnerService.updatePartnerImage(partner, userDetails);
-            return new Response(partnerSave, "success", 200);
+            return new Response(partnerSave, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new Response("error", "Thao tác thất bại", 500);
+            return new Response(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -162,9 +163,9 @@ public class PartnerController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             partnerService.getLogDetailPartner(id, userDetails);
-            return new ResponseAPI(null, "success", 200);
+            return new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 }

@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -29,15 +28,11 @@ public class ContractTypeService {
     public String deleteContractType(UUID id, User user, Long version) {
         ContractType contractType = contractTypeRepository.findByContractTypeIdIncludeDeleted(id);
         if (contractType == null || !Objects.equals(contractType.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         }else {
-//			Long countChild = contractTypeRepository.countChildContractTypes(ContractType.getContractTypeId(), ContractType.getPartnerId());
-//			if (countChild > 0) {
-//				return "error.UnableToDeleteExistingUnitOfSubordinateContractType";
-//			}
 
             contractTypeRepository.deleteContractTypeByContractTypeId(id);
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_CONTRACTTYPE.getFunction(), "object", contractType.getContractTypeName()),
+            logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_CONTRACTTYPE.getFunction(), Constants.logResponse.OBJECT, contractType.getContractTypeName()),
                     user.getId(), contractType.getId(), user.getPartnerId());
         }
         return "";
@@ -49,10 +44,10 @@ public class ContractTypeService {
         for (DeleteMultiDTO id : ids) {
             ContractType contractType = contractTypeRepository.findByContractTypeIdIncludeDeleted(id.getId());
             if (contractType == null || !Objects.equals(contractType.getVersion(), id.getVersion())) {
-                return "error.DataChangedReload";
+                return Constants.errorResponse.DATA_CHANGED;
             } else {
                 contractTypeRepository.deleteContractTypeByContractTypeId(id.getId());
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_CONTRACTTYPE.getFunction(), "object", contractType.getContractTypeName()),
+                logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_CONTRACTTYPE.getFunction(), Constants.logResponse.OBJECT, contractType.getContractTypeName()),
                         user.getId(), contractType.getId(), user.getPartnerId());
             }
         }
@@ -63,7 +58,7 @@ public class ContractTypeService {
     public String lockUnlockContractType(UUID id, User user, Long version) {
         ContractType contractType = contractTypeRepository.findByContractTypeIdIncludeDeleted(id);
         if (contractType == null || !Objects.equals(contractType.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             Boolean newStatus = !contractType.getIsActive();
             contractType.setIsActive(newStatus);
@@ -71,28 +66,27 @@ public class ContractTypeService {
             contractType.setUpdateBy(user.getId());
             contractType.setUpdateAt(LocalDateTime.now());
             ContractType savedContractType = contractTypeRepository.save(contractType);
-            logService.createLog(savedContractType.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-                    Map.of("actor", user.getFullName(), "action", savedContractType.getIsActive() ? FunctionType.UNLOCK_CONTRACTTYPE.getFunction() : FunctionType.LOCK_CONTRACTTYPE.getFunction(), "object", savedContractType.getContractTypeName()),
+            logService.createLog(Boolean.TRUE.equals(savedContractType.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+                    Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(savedContractType.getIsActive()) ? FunctionType.UNLOCK_CONTRACTTYPE.getFunction() : FunctionType.LOCK_CONTRACTTYPE.getFunction(), Constants.logResponse.OBJECT, savedContractType.getContractTypeName()),
                     user.getId(), savedContractType.getId(), user.getPartnerId());
         }
         return "";
     }
 
     @Transactional
-    public String saveContractType(ContractType contractTypeDTO, Authentication authentication) {
-        User token = (User) authentication.getPrincipal();
+    public String saveContractType(ContractType contractTypeDTO, User token) {
         if (contractTypeRepository.findByCode(contractTypeDTO.getContractTypeCode(), token.getPartnerId()) == null) {
-            ContractType ContractType = new ContractType();
-            ContractType.setContractTypeName(contractTypeDTO.getContractTypeName());
-            ContractType.setContractTypeCode(contractTypeDTO.getContractTypeCode());
-            ContractType.setContractTypeDescription(contractTypeDTO.getContractTypeDescription());
-            ContractType.setCreateAt(LocalDateTime.now());
-            ContractType.setCreateBy(token.getId());
-            ContractType.setIsActive(contractTypeDTO.getIsActive());
-            ContractType.setIsDeleted(Constants.isDeleted.ACTIVE);
-            ContractType.setPartnerId(token.getPartnerId());
-            ContractType savedContractType = contractTypeRepository.save(ContractType);
-            logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_CONTRACTTYPE.getFunction(), "object", savedContractType.getContractTypeName()),
+            ContractType contractType = new ContractType();
+            contractType.setContractTypeName(contractTypeDTO.getContractTypeName());
+            contractType.setContractTypeCode(contractTypeDTO.getContractTypeCode());
+            contractType.setContractTypeDescription(contractTypeDTO.getContractTypeDescription());
+            contractType.setCreateAt(LocalDateTime.now());
+            contractType.setCreateBy(token.getId());
+            contractType.setIsActive(contractTypeDTO.getIsActive());
+            contractType.setIsDeleted(Constants.isDeleted.ACTIVE);
+            contractType.setPartnerId(token.getPartnerId());
+            ContractType savedContractType = contractTypeRepository.save(contractType);
+            logService.createLog(ActionType.CREATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.CREATE_CONTRACTTYPE.getFunction(), Constants.logResponse.OBJECT, savedContractType.getContractTypeName()),
                     token.getId(), savedContractType.getId(), token.getPartnerId());
 
             return "";
@@ -102,11 +96,10 @@ public class ContractTypeService {
     }
 
     @Transactional
-    public String updateContractType(ContractType contractTypeDTO, Authentication authentication) {
-        User token = (User) authentication.getPrincipal();
+    public String updateContractType(ContractType contractTypeDTO, User token) {
         ContractType contractType = contractTypeRepository.findByContractTypeIdIncludeDeleted(contractTypeDTO.getId());
         if (contractType == null || !Objects.equals(contractType.getVersion(), contractTypeDTO.getVersion())) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             contractType.setContractTypeName(contractTypeDTO.getContractTypeName());
             contractType.setContractTypeCode(contractTypeDTO.getContractTypeCode());
@@ -116,7 +109,7 @@ public class ContractTypeService {
             contractType.setUpdateAt(LocalDateTime.now());
             contractType.setUpdateBy(token.getId());
             ContractType savedContractType = contractTypeRepository.save(contractType);
-            logService.createLog(ActionType.UPDATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.EDIT_CONTRACTTYPE.getFunction(), "object", savedContractType.getContractTypeName()),
+            logService.createLog(ActionType.UPDATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.EDIT_CONTRACTTYPE.getFunction(), Constants.logResponse.OBJECT, savedContractType.getContractTypeName()),
                     token.getId(), savedContractType.getId(), token.getPartnerId());
         }
         return "";
@@ -133,7 +126,7 @@ public class ContractTypeService {
 
     public void getLogDetailContractType(String id, User user) {
         ContractType contractType = contractTypeRepository.findByContractTypeCode(id);
-        logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_CONTRACTTYPE.getFunction(), "object", contractType.getContractTypeName()),
+        logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_CONTRACTTYPE.getFunction(), Constants.logResponse.OBJECT, contractType.getContractTypeName()),
                 user.getId(), contractType.getId(), user.getPartnerId());
     }
 
@@ -147,7 +140,7 @@ public class ContractTypeService {
             object.setId(id.getId());
             ContractType contractType = contractTypeRepository.findByContractTypeIdIncludeDeleted(id.getId());
             if(contractType == null) {
-                object.setErrorMessage("error.DataChangedReload");
+                object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
                 object.setCode(id.getCode());
                 object.setName(id.getName());
             }   else {
@@ -163,7 +156,7 @@ public class ContractTypeService {
                 .filter(item -> item.getErrorMessage() != null)
                 .count();
         response.setHasError(countNum != 0);
-        if (!response.getHasError()) {
+        if (Boolean.FALSE.equals(response.getHasError())) {
             return null;
         }
         return response;

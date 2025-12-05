@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class DocTypeServiceTest {
+class DocTypeServiceTest {
     @Mock
     private DocTypeRepository docTypeRepository;
 
@@ -96,7 +96,7 @@ public class DocTypeServiceTest {
 
         String result = docTypeService.deleteDocType(docTypeId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -148,7 +148,7 @@ public class DocTypeServiceTest {
 
         String result = docTypeService.deleteMultiDocType(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -200,7 +200,7 @@ public class DocTypeServiceTest {
 
         String result = docTypeService.lockUnlockDocType(docTypeId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -210,12 +210,11 @@ public class DocTypeServiceTest {
         docTypeDTO.setDocTypeCode("NEW001");
         docTypeDTO.setIsActive(true);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
 
         when(docTypeRepository.findByCode(eq("NEW001"), eq(partnerId))).thenReturn(null);
         when(docTypeRepository.save(any(DocType.class))).thenAnswer(i -> i.getArgument(0));
 
-        String result = docTypeService.saveDocType(docTypeDTO, auth);
+        String result = docTypeService.saveDocType(docTypeDTO, mockUser);
 
         assertEquals("", result);
         verify(logService).createLog(eq(ActionType.CREATE.getAction()), anyMap(), any(), any(), any());
@@ -226,11 +225,10 @@ public class DocTypeServiceTest {
         DocType docTypeDTO = new DocType();
         docTypeDTO.setDocTypeCode("TEST001");
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
 
         when(docTypeRepository.findByCode(eq("TEST001"), eq(partnerId))).thenReturn(sampleDocType);
 
-        String result = docTypeService.saveDocType(docTypeDTO, auth);
+        String result = docTypeService.saveDocType(docTypeDTO, mockUser);
 
         assertEquals("error.DocTypeExists", result);
         verifyNoInteractions(logService);
@@ -245,12 +243,10 @@ public class DocTypeServiceTest {
         docTypeDTO.setVersion(1L);
         docTypeDTO.setIsActive(false);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(docTypeRepository.findByDocTypeIdIncludeDeleted(eq(docTypeId))).thenReturn(sampleDocType);
         when(docTypeRepository.save(any(DocType.class))).thenReturn(sampleDocType);
 
-        String result = docTypeService.updateDocType(docTypeDTO, auth);
+        String result = docTypeService.updateDocType(docTypeDTO, mockUser);
 
         assertEquals("", result);
         assertEquals("Updated Name", sampleDocType.getDocTypeName());
@@ -261,13 +257,12 @@ public class DocTypeServiceTest {
     void updateDocType_Error() {
         DocType docTypeDTO = new DocType();
         docTypeDTO.setId(docTypeId);
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
 
         when(docTypeRepository.findByDocTypeIdIncludeDeleted(eq(docTypeId))).thenReturn(null);
 
-        String result = docTypeService.updateDocType(docTypeDTO, auth);
+        String result = docTypeService.updateDocType(docTypeDTO, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -312,7 +307,7 @@ public class DocTypeServiceTest {
         ErrorListResponse result = docTypeService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

@@ -29,12 +29,12 @@ public class HolidayTypeService {
             // find and update is del
             HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id);
             if (holidayType == null || !Objects.equals(holidayType.getVersion(), version)) {
-                return "error.DataChangedReload";
+                return Constants.errorResponse.DATA_CHANGED;
             } else {
                 holidayTypeRepository.deleteHolidayTypeByHolidayTypeId(id);
                 logService.createLog(ActionType.DELETE.getAction(),
-                        Map.of("actor", user.getFullName(),"action", FunctionType.DELETE_HOLIDAYTYPE.getFunction(),
-                                "object", holidayType.getHolidayTypeName()), user.getId(), holidayType.getId(),
+                        Map.of(Constants.logResponse.ACTOR, user.getFullName(),Constants.logResponse.ACTION, FunctionType.DELETE_HOLIDAYTYPE.getFunction(),
+                                Constants.logResponse.OBJECT, holidayType.getHolidayTypeName()), user.getId(), holidayType.getId(),
                         user.getPartnerId());
             }
             return "";
@@ -45,12 +45,12 @@ public class HolidayTypeService {
         for(DeleteMultiDTO id : ids) {
             HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id.getId());
             if (holidayType == null || !Objects.equals(holidayType.getVersion(), id.getVersion())) {
-                return "error.DataChangedReload";
+                return Constants.errorResponse.DATA_CHANGED;
             } else {
                 holidayTypeRepository.deleteHolidayTypeByHolidayTypeId(id.getId());
                 logService.createLog(ActionType.DELETE.getAction(),
-                        Map.of("actor", user.getFullName(),"action", FunctionType.DELETE_HOLIDAYTYPE.getFunction(),
-                                "object", holidayType.getHolidayTypeName()),
+                        Map.of(Constants.logResponse.ACTOR, user.getFullName(),Constants.logResponse.ACTION, FunctionType.DELETE_HOLIDAYTYPE.getFunction(),
+                                Constants.logResponse.OBJECT, holidayType.getHolidayTypeName()),
                         user.getId(), holidayType.getId(),user.getPartnerId());
             }
         }
@@ -61,15 +61,15 @@ public class HolidayTypeService {
     public String lockHolidayType(UUID id, User user, Long version) {
         HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id);
         if (holidayType == null || !Objects.equals(holidayType.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             holidayType.setIsActive(!holidayType.getIsActive());
             holidayType.setUpdateAt(LocalDateTime.now());
             holidayType.setUpdateBy(user.getId());
             holidayTypeRepository.save(holidayType);
-            logService.createLog(holidayType.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-                    Map.of("actor", user.getFullName(), "action", holidayType.getIsActive() ? FunctionType.UNLOCK_HOLIDAYTYPE.getFunction() : FunctionType.LOCK_HOLIDAYTYPE.getFunction(),
-                            "object", holidayType.getHolidayTypeName()),
+            logService.createLog(Boolean.TRUE.equals(holidayType.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+                    Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(holidayType.getIsActive()) ? FunctionType.UNLOCK_HOLIDAYTYPE.getFunction() : FunctionType.LOCK_HOLIDAYTYPE.getFunction(),
+                            Constants.logResponse.OBJECT, holidayType.getHolidayTypeName()),
                     user.getId(), holidayType.getId(), user.getPartnerId());
         }
         return "";
@@ -90,8 +90,8 @@ public class HolidayTypeService {
             holidayType.setPartnerId(token.getPartnerId());
             holidayTypeRepository.save(holidayType);
             logService.createLog(ActionType.CREATE.getAction(),
-                    Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_HOLIDAYTYPE.getFunction(),
-                            "object", holidayType.getHolidayTypeName()),
+                    Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.CREATE_HOLIDAYTYPE.getFunction(),
+                            Constants.logResponse.OBJECT, holidayType.getHolidayTypeName()),
                     token.getId(), holidayType.getId(), token.getPartnerId());
             return "";
         } else {
@@ -103,7 +103,7 @@ public class HolidayTypeService {
     public String updateHolidayType(HolidayType holidayTypeRequest, User token) {
         HolidayType holiday = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(holidayTypeRequest.getId());
         if (holiday == null || !Objects.equals(holiday.getVersion(), holidayTypeRequest.getVersion())) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         }else {
             holiday.setHolidayTypeCode(holidayTypeRequest.getHolidayTypeCode());
             holiday.setHolidayTypeName(holidayTypeRequest.getHolidayTypeName());
@@ -114,8 +114,8 @@ public class HolidayTypeService {
             holiday.setPartnerId(token.getPartnerId());
             holidayTypeRepository.save(holiday);
             logService.createLog(ActionType.UPDATE.getAction(),
-                    Map.of("actor", token.getFullName(), "action",FunctionType.EDIT_HOLIDAYTYPE.getFunction(),
-                            "object", holiday.getHolidayTypeName()),
+                    Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION,FunctionType.EDIT_HOLIDAYTYPE.getFunction(),
+                            Constants.logResponse.OBJECT, holiday.getHolidayTypeName()),
                     token.getId(), holiday.getId(), token.getPartnerId());
         }
         return "";
@@ -134,8 +134,8 @@ public class HolidayTypeService {
 
     public void getLogDetailHolidayType(String holidayTypeCode, User user) {
         HolidayType domain = holidayTypeRepository.getHolidayTypeByCode(holidayTypeCode);
-        logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(),"action",
-                        FunctionType.VIEW_DETAIL_HOLIDAYTYPE.getFunction(), "object", domain.getHolidayTypeName()),
+        logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(),Constants.logResponse.ACTION,
+                        FunctionType.VIEW_DETAIL_HOLIDAYTYPE.getFunction(), Constants.logResponse.OBJECT, domain.getHolidayTypeName()),
                 user.getId(), domain.getId(),user.getPartnerId());
     }
 
@@ -148,7 +148,7 @@ public class HolidayTypeService {
             object.setId(id.getId());
             HolidayType holidayType = holidayTypeRepository.findByHolidayTypeIdIncludeDeleted(id.getId());
             if(holidayType == null) {
-                object.setErrorMessage("error.DataChangedReload");
+                object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
                 object.setCode(id.getCode());
                 object.setName(id.getName());
             }   else {
@@ -163,7 +163,7 @@ public class HolidayTypeService {
                 .filter(item -> item.getErrorMessage() != null)
                 .count();
         response.setHasError(countNum != 0);
-        if (!response.getHasError()) {
+        if (Boolean.FALSE.equals(response.getHasError())) {
             return null;
         }
         return response;

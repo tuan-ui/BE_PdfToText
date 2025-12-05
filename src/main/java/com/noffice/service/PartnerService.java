@@ -53,8 +53,8 @@ public class PartnerService {
 			save.setIsDeleted(Constants.isDeleted.ACTIVE);
 			 partnerRepository.save(save);
 			 logService.createLog(ActionType.CREATE.getAction(),
-					 Map.of("actor", token.getFullName(), "action",FunctionType.CREATE_PARTNER.getFunction(),
-							 "object", save.getPartnerName()),
+					 Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION,FunctionType.CREATE_PARTNER.getFunction(),
+							 Constants.logResponse.OBJECT, save.getPartnerName()),
 					 token.getId(), save.getId(), token.getPartnerId());
 			return "";
 		} else {
@@ -66,14 +66,14 @@ public class PartnerService {
 	public String deletePartner(UUID partnerId,User userDetails, Long version) {
 		Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(partnerId);
 		if (partner == null || !Objects.equals(partner.getVersion(), version)) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			if (userRepository.existsUserByPartnerId(partnerId) != 0) {
 				return "error.PartnerAlreadyUseOnUser";
 			}
 			partnerRepository.deletePartnersByPartnersId(partnerId);
 			logService.createLog(ActionType.DELETE.getAction(),
-					Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_PARTNER.getFunction(), "object", partner.getPartnerName()),
+					Map.of(Constants.logResponse.ACTOR, userDetails.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_PARTNER.getFunction(), Constants.logResponse.OBJECT, partner.getPartnerName()),
 					userDetails.getId(), partner.getId(), userDetails.getPartnerId());
 		}
 		return "";
@@ -82,14 +82,14 @@ public class PartnerService {
 	public String lockPartner(UUID partnerId,User userDetails,  Long version) {
 		Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(partnerId);
 		if (partner == null || !Objects.equals(partner.getVersion(), version)) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			partner.setIsActive(!partner.getIsActive());
 			partner.setUpdateAt(LocalDateTime.now());
 			partner.setUpdateBy(userDetails.getId());
 			partnerRepository.save(partner);
-			logService.createLog(partner.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-					Map.of("actor", userDetails.getFullName(), "action", partner.getIsActive() ? FunctionType.UNLOCK_PARTNER.getFunction() : FunctionType.LOCK_PARTNER.getFunction(), "object", partner.getPartnerName()),
+			logService.createLog(Boolean.TRUE.equals(partner.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+					Map.of(Constants.logResponse.ACTOR, userDetails.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(partner.getIsActive()) ? FunctionType.UNLOCK_PARTNER.getFunction() : FunctionType.LOCK_PARTNER.getFunction(), Constants.logResponse.OBJECT, partner.getPartnerName()),
 					userDetails.getId(), partner.getId(), userDetails.getPartnerId());
 		}
 			return "";
@@ -99,7 +99,7 @@ public class PartnerService {
 	public String updatePartner(PartnerRequest partner, User token) {
 		Partners save = partnerRepository.getPartnerByCode(partner.getPartnerCode());
 		if (save == null || !Objects.equals(save.getVersion(), partner.getVersion())) {
-			return  "error.DataChangedReload";
+			return  Constants.errorResponse.DATA_CHANGED;
 		} else {
 			save.setAddress(partner.getAddress());
 			save.setPartnerName(partner.getPartnerName());
@@ -115,8 +115,8 @@ public class PartnerService {
 			save.setUpdateBy(token.getId());
 			partnerRepository.save(save);
 			logService.createLog(ActionType.UPDATE.getAction(),
-				Map.of("actor", token.getFullName(), "action",FunctionType.UPDATE_PARTNER.getFunction(),
-						"object", save.getPartnerName()),
+				Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION,FunctionType.UPDATE_PARTNER.getFunction(),
+						Constants.logResponse.OBJECT, save.getPartnerName()),
 				token.getId(), save.getId(), token.getPartnerId());
 		}
 		return "";
@@ -132,7 +132,7 @@ public class PartnerService {
 
 	public void getLogDetailPartner(UUID id, User user) {
 		Partners domain = partnerRepository.getPartnerById(id);
-		logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(),"action", FunctionType.VIEW_DETAIL_PARTNER.getFunction(), "object", domain.getPartnerName()),
+		logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(),Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_PARTNER.getFunction(), Constants.logResponse.OBJECT, domain.getPartnerName()),
 				user.getId(), domain.getId(),user.getPartnerId());
 	}
 
@@ -145,7 +145,7 @@ public class PartnerService {
 			object.setId(id.getId());
 			Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(id.getId());
 			if(partner == null) {
-				object.setErrorMessage("error.DataChangedReload");
+				object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
 				object.setCode(id.getCode());
 				object.setName(id.getName());
 			} else if (userRepository.existsUserByPartnerId(id.getId()) != 0) {
@@ -164,7 +164,7 @@ public class PartnerService {
 				.filter(item -> item.getErrorMessage()!=null)
 				.count();
 		response.setHasError(countNum != 0);
-		if(!response.getHasError())
+		if(Boolean.FALSE.equals(response.getHasError()))
 		{
 			return null;
 		}
@@ -176,14 +176,14 @@ public class PartnerService {
 		for(DeleteMultiDTO id : ids) {
 			Partners partner = partnerRepository.getPartnerByIdIncluideDeleted(id.getId());
 			if (partner == null || !Objects.equals(partner.getVersion(), id.getVersion())) {
-				return  "error.DataChangedReload";
+				return  Constants.errorResponse.DATA_CHANGED;
 			} else {
 				if (userRepository.existsUserByPartnerId(id.getId()) != 0) {
 					return "error.PartnerAlreadyUseOnUser";
 				}
 				partnerRepository.deletePartnersByPartnersId(id.getId());
 				logService.createLog(ActionType.DELETE.getAction(),
-						Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_PARTNER.getFunction(), "object", partner.getPartnerName()),
+						Map.of(Constants.logResponse.ACTOR, userDetails.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_PARTNER.getFunction(), Constants.logResponse.OBJECT, partner.getPartnerName()),
 						userDetails.getId(), partner.getId(), userDetails.getPartnerId());
 			}
 		}

@@ -91,7 +91,7 @@ class AuthenticationServiceTest {
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(mockUser));
         when(partnerRepository.getPartnerById(eq(partnerId))).thenReturn(mockPartner);
         when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
-        when(jwtService.generateToken(any(User.class), isNull(), anyList())).thenReturn("mock-jwt-token");
+        when(jwtService.generateToken(any(User.class))).thenReturn("mock-jwt-token");
         when(refreshTokenService.createRefreshToken("admin")).thenReturn(new RefreshToken(1, "refreshToken", new Date(), "admin"));
         when(jwtService.getClaim(anyString(), eq("absoluteExp"), eq(Long.class))).thenReturn(1738000000000L);
 
@@ -192,7 +192,6 @@ class AuthenticationServiceTest {
     @Test
     void validateOtpAuthenticator_InitialSetup_Success() {
         String secret = "JBSWY3DPEHPK3PXP";
-        String code = "123456";
 
         when(userRepository.findByUsername("admin")).thenReturn(Optional.of(mockUser));
 
@@ -219,7 +218,7 @@ class AuthenticationServiceTest {
 
 
     @Test
-    void createQR_Success_ReturnsDataUri() throws Exception {
+    void createQR_Success_ReturnsDataUri() {
         String username = "admin123";
         String secret = "JBSWY3DPEHPK3PXP";
 

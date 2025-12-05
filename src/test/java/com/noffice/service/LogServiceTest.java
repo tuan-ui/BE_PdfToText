@@ -4,7 +4,6 @@ import com.noffice.entity.Logs;
 import com.noffice.enumtype.ActionType;
 import com.noffice.enumtype.FunctionType;
 import com.noffice.repository.LogRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 

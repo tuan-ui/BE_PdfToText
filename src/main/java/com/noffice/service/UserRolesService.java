@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +21,7 @@ public class UserRolesService {
 
 	    List<UserRoles> newPermissions = roleIds.stream()
 	        .map(roleId -> new UserRoles(new UserRolesId( userId ,roleId)))
-	        .collect(Collectors.toList());
+	        .toList();
 
 		userRolesRepository.saveAll(newPermissions);
 	}

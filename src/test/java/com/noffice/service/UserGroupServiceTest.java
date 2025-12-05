@@ -9,6 +9,7 @@ import com.noffice.reponse.UserGroupResponse;
 import com.noffice.repository.UserGroupRepository;
 import com.noffice.repository.UserGroupsRepository;
 import com.noffice.repository.UserRepository;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,17 +52,16 @@ class UserGroupServiceTest {
     @InjectMocks
     private UserGroupService userGroupService;
 
-    private User mockUser;
-    private UUID mockUserId = UUID.randomUUID();
-    private UUID mockPartnerId = UUID.randomUUID();
-    private UUID mockGroupId = UUID.randomUUID();
+    private final UUID mockUserId = UUID.randomUUID();
+    private final UUID mockPartnerId = UUID.randomUUID();
+    private final UUID mockGroupId = UUID.randomUUID();
     private UserGroup sampleUserGroup;
-    private Long mockVersion = 1L;
+    private final Long mockVersion = 1L;
 
     @BeforeEach
     void setUp() {
         // Thiết lập người dùng giả mạo trong Security Context
-        mockUser = new User();
+        User mockUser = new User();
         mockUser.setId(mockUserId);
         mockUser.setPartnerId(mockPartnerId);
         mockUser.setFullName("Test User");
@@ -178,7 +178,7 @@ class UserGroupServiceTest {
         String result = userGroupService.saveUserGroup(groupId, "Updated Name", "NEW_CODE", Collections.emptyList(), staleVersion);
 
         // Assert
-        assertEquals("error.DataChangedReload", result, "Nên trả về lỗi thay đổi dữ liệu");
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
 
         // Verify: Không có thao tác lưu hoặc ghi log nào xảy ra
         verify(userGroupRepository, never()).save(any(UserGroup.class));
@@ -279,7 +279,7 @@ class UserGroupServiceTest {
         String result = userGroupService.updateUserGroupStatus(mockGroupId, wrongVersion);
 
         // Assert
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
 
         // Verify: Không có thao tác lưu hoặc ghi log nào xảy ra
         verify(userGroupRepository, never()).save(any(UserGroup.class));
@@ -387,7 +387,7 @@ class UserGroupServiceTest {
         assertEquals("error.UserGroupAlreadyUseOnUser", response.getErrors().get(0).getErrorMessage());
 
         // Kiểm tra lỗi 2 (Not Found)
-        assertEquals("error.DataChangedReload", response.getErrors().get(1).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, response.getErrors().get(1).getErrorMessage());
 
         // Kiểm tra lỗi 3 (Valid)
         assertNull(response.getErrors().get(2).getErrorMessage());

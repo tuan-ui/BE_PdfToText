@@ -81,7 +81,7 @@ class DomainServiceTest {
 
         String result = domainService.deleteDomain(domainId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -121,7 +121,7 @@ class DomainServiceTest {
 
         String result = domainService.deleteMultiDomain(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -157,7 +157,7 @@ class DomainServiceTest {
 
         String result = domainService.lockUnlockDomain(domainId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -167,12 +167,10 @@ class DomainServiceTest {
         domainDTO.setDomainCode("NEW001");
         domainDTO.setIsActive(true);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(domainRepository.findByCode(eq("NEW001"), eq(partnerId))).thenReturn(null);
         when(domainRepository.save(any(Domain.class))).thenAnswer(i -> i.getArgument(0));
 
-        String result = domainService.saveDomain(domainDTO, auth);
+        String result = domainService.saveDomain(domainDTO, mockUser);
 
         assertEquals("", result);
         verify(logService).createLog(eq(ActionType.CREATE.getAction()), anyMap(), any(), any(), any());
@@ -183,11 +181,9 @@ class DomainServiceTest {
         Domain domainDTO = new Domain();
         domainDTO.setDomainCode("TEST001");
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(domainRepository.findByCode(eq("TEST001"), eq(partnerId))).thenReturn(sampleDomain);
 
-        String result = domainService.saveDomain(domainDTO, auth);
+        String result = domainService.saveDomain(domainDTO, mockUser);
 
         assertEquals("error.DomainExists", result);
         verifyNoInteractions(logService);
@@ -202,12 +198,10 @@ class DomainServiceTest {
         domainDTO.setVersion(1L);
         domainDTO.setIsActive(false);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(sampleDomain);
         when(domainRepository.save(any(Domain.class))).thenReturn(sampleDomain);
 
-        String result = domainService.updateDomain(domainDTO, auth);
+        String result = domainService.updateDomain(domainDTO, mockUser);
 
         assertEquals("", result);
         assertEquals("Updated Name", sampleDomain.getDomainName());
@@ -218,13 +212,12 @@ class DomainServiceTest {
     void updateDomain_Error() {
         Domain domainDTO = new Domain();
         domainDTO.setId(domainId);
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
 
         when(domainRepository.findByDomainIdIncludeDeleted(eq(domainId))).thenReturn(null);
 
-        String result = domainService.updateDomain(domainDTO, auth);
+        String result = domainService.updateDomain(domainDTO, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -269,7 +262,7 @@ class DomainServiceTest {
         ErrorListResponse result = domainService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

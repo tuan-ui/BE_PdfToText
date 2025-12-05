@@ -26,9 +26,6 @@ public class DataSourceConfig {
     @Value("${spring.datasource.password}")
     private String encryptedPassword;
 
-//    private static final String AES_KEY = AppConfig.get("AES_KEY");
-//    private static final byte[] KEY_BYTES = AES_KEY.getBytes(StandardCharsets.UTF_8);
-
     private static final int GCM_IV_LENGTH = 12;
     private static final int GCM_TAG_LENGTH = 128;
 
@@ -37,10 +34,10 @@ public class DataSourceConfig {
         if (aesKey == null || aesKey.isEmpty()) {
             throw new EncryptionException("AES_KEY chưa được set trong môi trường container");
         }
-        byte[] KEY_BYTES = aesKey.getBytes(StandardCharsets.UTF_8);
-        String url = decrypt(encryptedUrl,KEY_BYTES);
-        String username = decrypt(encryptedUsername,KEY_BYTES);
-        String password = decrypt(encryptedPassword,KEY_BYTES);
+        byte[] keyByte = aesKey.getBytes(StandardCharsets.UTF_8);
+        String url = decrypt(encryptedUrl,keyByte);
+        String username = decrypt(encryptedUsername,keyByte);
+        String password = decrypt(encryptedPassword,keyByte);
 
         return DataSourceBuilder.create()
                 .driverClassName("org.postgresql.Driver")
@@ -54,7 +51,7 @@ public class DataSourceConfig {
      * Giải mã bằng AES/GCM/NoPadding – chuẩn bảo mật 2025
      * Chỉ dùng cho dữ liệu được mã hóa bằng hàm encrypt() dưới đây
      */
-    public static String decrypt(String encryptedData, byte[] KEY_BYTES) throws EncryptionException {
+    public static String decrypt(String encryptedData, byte[] keyByte) throws EncryptionException {
         if (encryptedData == null || encryptedData.isEmpty()) {
             throw new EncryptionException("Dữ liệu mã hóa không được để trống");
         }
@@ -73,7 +70,7 @@ public class DataSourceConfig {
             System.arraycopy(data, GCM_IV_LENGTH, cipherText, 0, cipherText.length);
 
             Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-            SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
+            SecretKeySpec keySpec = new SecretKeySpec(keyByte, "AES");
             GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
 
             cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec);
@@ -86,7 +83,7 @@ public class DataSourceConfig {
         }
     }
 
-    public static String encrypt(String plainText, byte[] KEY_BYTES) throws EncryptionException {
+    public static String encrypt(String plainText, byte[] keyByte) throws EncryptionException {
         if (plainText == null || plainText.isEmpty()) {
             throw new EncryptionException("Dữ liệu cần mã hóa không được để trống");
         }
@@ -98,7 +95,7 @@ public class DataSourceConfig {
             new SecureRandom().nextBytes(iv);
 
             GCMParameterSpec gcmSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
-            SecretKeySpec keySpec = new SecretKeySpec(KEY_BYTES, "AES");
+            SecretKeySpec keySpec = new SecretKeySpec(keyByte, "AES");
 
             cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec);
             byte[] cipherText = cipher.doFinal(plainText.getBytes(StandardCharsets.UTF_8));

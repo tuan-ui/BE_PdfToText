@@ -21,7 +21,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +38,7 @@ public class UserGroupService {
         if (id != null) {
             userGroup = userGroupRepository.findById(id).orElse(new UserGroup());
             if (!Objects.equals(userGroup.getVersion(), version)) {
-                return  "error.DataChangedReload";
+                return  Constants.errorResponse.DATA_CHANGED;
             }
             userGroup.setUpdateBy(userCreate.getId());
         } else {
@@ -58,9 +57,9 @@ public class UserGroupService {
         logService.createLog(
                 id != null ? ActionType.UPDATE.getAction() : ActionType.CREATE.getAction(),
                 Map.of(
-                        "actor", userCreate.getFullName(),
-                        "action", id != null ? FunctionType.EDIT_USER_GROUP.getFunction() : FunctionType.CREATE_USER_GROUP.getFunction(),
-                        "object", newGroup.getGroupName()
+                        Constants.logResponse.ACTOR, userCreate.getFullName(),
+                        Constants.logResponse.ACTION, id != null ? FunctionType.EDIT_USER_GROUP.getFunction() : FunctionType.CREATE_USER_GROUP.getFunction(),
+                        Constants.logResponse.OBJECT, newGroup.getGroupName()
                 ),
                 userCreate.getId(),
                 newGroup.getId(),
@@ -91,7 +90,7 @@ public class UserGroupService {
                     ur.setUserCode(user.getUserCode());
                     ur.setFullName(user.getFullName());
                     return ur;
-                }).collect(Collectors.toList()));
+                }).toList());
             } else {
                 response.setUsers(Collections.emptyList());
             }
@@ -105,7 +104,7 @@ public class UserGroupService {
 
         List<UserGroups> newUserGroups = userIds.stream()
                 .map(userIdStr -> new UserGroups(new UserGroupsId(userIdStr, id)))
-                .collect(Collectors.toList());
+                .toList();
         userGroupsRepository.saveAll(newUserGroups);
     }
 
@@ -114,17 +113,17 @@ public class UserGroupService {
         User userDetails = (User) authentication.getPrincipal();
         UserGroup userGroup = userGroupRepository.findByIdIncludeDeleted(id);
         if (userGroup == null || !Objects.equals(userGroup.getVersion(), version)) {
-            return  "error.DataChangedReload";
+            return  Constants.errorResponse.DATA_CHANGED;
         } else {
             userGroup.setIsActive(!userGroup.getIsActive());
             userGroup.setUpdateBy(userDetails.getId());
             userGroupRepository.save(userGroup);
             logService.createLog(
-                    userGroup.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+                    Boolean.TRUE.equals(userGroup.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
                     Map.of(
-                            "actor", userDetails.getFullName(),
-                            "action", userGroup.getIsActive() ? FunctionType.UNLOCK_USER_GROUP.getFunction() : FunctionType.LOCK_USER_GROUP.getFunction(),
-                            "object", userGroup.getGroupName()
+                            Constants.logResponse.ACTOR, userDetails.getFullName(),
+                            Constants.logResponse.ACTION, Boolean.TRUE.equals(userGroup.getIsActive()) ? FunctionType.UNLOCK_USER_GROUP.getFunction() : FunctionType.LOCK_USER_GROUP.getFunction(),
+                            Constants.logResponse.OBJECT, userGroup.getGroupName()
                     ),
                     userDetails.getId(),
                     userGroup.getId(),
@@ -140,7 +139,7 @@ public class UserGroupService {
         User userDetails = (User) authentication.getPrincipal();
         UserGroup userGroup = userGroupRepository.findByIdIncludeDeleted(id);
         if (userGroup == null || !Objects.equals(userGroup.getVersion(), version)) {
-            return  "error.DataChangedReload";
+            return  Constants.errorResponse.DATA_CHANGED;
         } else {
             if (userGroupsRepository.existsUserByGroupId(id)) {
                 return "error.UserGroupsUsed";
@@ -149,9 +148,9 @@ public class UserGroupService {
             logService.createLog(
                     ActionType.DELETE.getAction(),
                     Map.of(
-                            "actor", userDetails.getFullName(),
-                            "action", FunctionType.DELETE_USER_GROUP.getFunction(),
-                            "object", userGroup.getGroupName()
+                            Constants.logResponse.ACTOR, userDetails.getFullName(),
+                            Constants.logResponse.ACTION, FunctionType.DELETE_USER_GROUP.getFunction(),
+                            Constants.logResponse.OBJECT, userGroup.getGroupName()
                     ),
                     userDetails.getId(),
                     userGroup.getId(),
@@ -166,9 +165,9 @@ public class UserGroupService {
         logService.createLog(
                 ActionType.VIEW.getAction(),
                 Map.of(
-                        "actor", user.getFullName(),
-                        "action", FunctionType.VIEW_DETAIL_USER_GROUP.getFunction(),
-                        "object", userGroup != null ? userGroup.getGroupName() : ""
+                        Constants.logResponse.ACTOR, user.getFullName(),
+                        Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_USER_GROUP.getFunction(),
+                        Constants.logResponse.OBJECT, userGroup != null ? userGroup.getGroupName() : ""
                 ),
                 user.getId(),
                 userGroup != null ? userGroup.getId() : null,
@@ -185,7 +184,7 @@ public class UserGroupService {
             object.setId(id.getId());
             UserGroup userGroup = userGroupRepository.findByIdIncludeDeleted(id.getId());
             if(userGroup == null) {
-                object.setErrorMessage("error.DataChangedReload");
+                object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
                 object.setCode(id.getCode());
                 object.setName(id.getName());
             }
@@ -206,7 +205,7 @@ public class UserGroupService {
                 .filter(item -> item.getErrorMessage()!=null)
                 .count();
         response.setHasError(countNum != 0);
-        if(!response.getHasError())
+        if(Boolean.FALSE.equals(response.getHasError()))
         {
             return null;
         }

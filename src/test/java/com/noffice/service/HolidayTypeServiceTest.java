@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class HolidayTypeServiceTest {
+class HolidayTypeServiceTest {
     @Mock
     private HolidayTypeRepository holidayTypeRepository;
 
@@ -92,7 +92,7 @@ public class HolidayTypeServiceTest {
 
         String result = holidayTypeService.deleteHolidayType(holidayTypeId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -132,7 +132,7 @@ public class HolidayTypeServiceTest {
 
         String result = holidayTypeService.deleteMultiHolidayType(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -168,7 +168,7 @@ public class HolidayTypeServiceTest {
 
         String result = holidayTypeService.lockHolidayType(holidayTypeId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -235,7 +235,7 @@ public class HolidayTypeServiceTest {
 
         String result = holidayTypeService.updateHolidayType(holidayTypeDTO, (User) auth.getPrincipal());
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -280,7 +280,7 @@ public class HolidayTypeServiceTest {
         ErrorListResponse result = holidayTypeService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

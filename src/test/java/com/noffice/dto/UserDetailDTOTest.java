@@ -46,7 +46,7 @@ class UserDetailDTOTest {
         assertThat(dto.getPhone()).isEqualTo("0999");
         assertThat(dto.getGender()).isEqualTo("Male");
         assertThat(dto.getRole()).isEqualTo("ADMIN");
-        assertThat(dto.getStatus()).isEqualTo(0);
+        assertThat(dto.getStatus()).isZero();
     }
 
     @Test
@@ -74,7 +74,7 @@ class UserDetailDTOTest {
         UserDetailDTO dto2 = new UserDetailDTO("1","A","a","b","c","d","p","i","id","pl","g","pn","pi","si",1,"r",1);
 
         assertThat(dto1).isEqualTo(dto2);
-        assertThat(dto1.hashCode()).isEqualTo(dto2.hashCode());
+        assertThat(dto1.hashCode()).hasSameHashCodeAs(dto2.hashCode());
     }
 
     @Test

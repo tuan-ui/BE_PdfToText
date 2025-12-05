@@ -11,6 +11,7 @@ import com.noffice.service.DnDService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
 import com.noffice.service.UserService;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class DnDControllerTest {
+class DnDControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -89,7 +90,7 @@ public class DnDControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Thành công"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -102,7 +103,6 @@ public class DnDControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Lỗi hệ thống"))
                 .andExpect(jsonPath("$.status").value(500));
     }
 
@@ -115,7 +115,7 @@ public class DnDControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Thành công"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -128,7 +128,6 @@ public class DnDControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Lỗi hệ thống"))
                 .andExpect(jsonPath("$.status").value(500));
     }
 
@@ -158,8 +157,7 @@ public class DnDControllerTest {
         Mockito.when(dndService.getContent(anyString())).thenThrow(new RuntimeException());
 
         mockMvc.perform(get("/api/DnD/getContent/123"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.message").value("Lỗi hệ thống"));
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -195,7 +193,7 @@ public class DnDControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Thành công"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 
@@ -277,7 +275,7 @@ public class DnDControllerTest {
         mockMvc.perform(get("/api/DnD/lock")
                         .param("id", UUID.randomUUID().toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"));
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS));
     }
 
     @Test

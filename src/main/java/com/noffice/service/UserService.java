@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,10 +70,7 @@ public class UserService {
                 List<Role>lstRole=new ArrayList<>();
                 for (UUID roleId:lstRoles) {
                     Optional<Role> optional=roleRepository.findByRoleId(roleId);
-                    if (optional.isPresent()) {
-                        Role role=optional.get();
-                        lstRole.add(role);
-                    }
+                    optional.ifPresent(lstRole::add);
                 }
                 u.setLstRole(lstRole);
             }
@@ -91,7 +87,6 @@ public class UserService {
 
     public UserDetailDTO getByUserId(UUID userId) {
         User result = userRepository.getUserByUserId(userId);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         UserDetailDTO userDetailDTO = mapper.map(result, UserDetailDTO.class);
         Partners partner = partnerRepository.getPartnerById(result.getPartnerId());
         userDetailDTO.setPartnerName(partner != null ? partner.getPartnerName() : null);
@@ -102,16 +97,16 @@ public class UserService {
     public String deleteUser(UUID id, User user, Long version) {
         User deletedUser = userRepository.getUserByUserIdIncluideDeleted(id);
         if (deletedUser == null || !Objects.equals(deletedUser.getVersion(), version)) {
-            return  "error.DataChangedReload";
+            return  Constants.errorResponse.DATA_CHANGED;
         } else {
-            if (userGroupsRepository.existsByUserId(deletedUser.getId())) {
+            if (Boolean.TRUE.equals(userGroupsRepository.existsByUserId(deletedUser.getId()))) {
                 return "error.UserGroupUsed";
             }
             if (userRolesRepository.existsUserByUserId(deletedUser.getId())) {
                 return "error.UserRolesUsed";
             }
             userRepository.deleteUserByUserId(id);
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", deletedUser.getUsername()),
+            logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_USER.getFunction(), Constants.logResponse.OBJECT, deletedUser.getUsername()),
                     user.getId(), deletedUser.getId(), user.getPartnerId());
         }
             return "";
@@ -122,16 +117,16 @@ public class UserService {
         for (DeleteMultiDTO id : ids) {
             User user = userRepository.getUserByUserIdIncluideDeleted(id.getId());
             if (user == null || !Objects.equals(user.getVersion(), id.getVersion())) {
-                return  "error.DataChangedReload";
+                return  Constants.errorResponse.DATA_CHANGED;
             } else {
-                if (userGroupsRepository.existsByUserId(user.getId())) {
+                if (Boolean.TRUE.equals(userGroupsRepository.existsByUserId(user.getId()))) {
                     return "error.UserGroupUsed";
                 }
                 if (userRolesRepository.existsUserByUserId(user.getId())) {
                     return "error.UserRolesUsed";
                 }
                 userRepository.deleteUserByUserId(id.getId());
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", userDetails.getFullName(), "action", FunctionType.DELETE_USER.getFunction(), "object", user.getUsername()),
+                logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, userDetails.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_USER.getFunction(), Constants.logResponse.OBJECT, user.getUsername()),
                         userDetails.getId(), user.getId(), userDetails.getPartnerId());
             }
         }
@@ -142,7 +137,7 @@ public class UserService {
     public String updateUser(UserCreateDTO userCreateDTO, UUID partnerId, String profileImagePath, String signatureImagePath, User user, List<UUID> roleIds, Long version) {
         User existingUser = userRepository.findByUsernameIncluideDeleted(userCreateDTO.getUsername());
         if (existingUser == null || !Objects.equals(existingUser.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             if (userCreateDTO.getUserCode() != null && !userCreateDTO.getUserCode().equals(existingUser.getUserCode())) {
                return "error.UserCodeError";
@@ -152,7 +147,7 @@ public class UserService {
             updatedUser.setUpdateBy(user.getId());
             User savedUser = userRepository.save(updatedUser);
             userRolesService.saveUserRoles(savedUser.getId(), roleIds);
-            logService.createLog(ActionType.UPDATE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.EDIT_USER.getFunction(), "object", savedUser.getUsername()),
+            logService.createLog(ActionType.UPDATE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.EDIT_USER.getFunction(), Constants.logResponse.OBJECT, savedUser.getUsername()),
                     user.getId(), savedUser.getId(), user.getPartnerId());
 
         }
@@ -163,7 +158,7 @@ public class UserService {
     @Transactional
     public String createUser(UserCreateDTO userCreateDTO, UUID partnerId, String profileImagePath, String signatureImagePath, User userDetails, List<UUID> roleIds) {
         if (userRepository.existsByUsername(userCreateDTO.getUsername()) > 0) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         }
         if (userRepository.existsByUserCode(userCreateDTO.getUserCode(), partnerId) > 0) {
             return "error.UserCodeDoesExist";
@@ -180,7 +175,7 @@ public class UserService {
         user.setPassword(newPasswordEncode);
         User savedUser = userRepository.save(user);
         userRolesService.saveUserRoles(savedUser.getId(), roleIds);
-        logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", userDetails.getFullName(), "action", FunctionType.CREATE_USER.getFunction(), "object", savedUser.getUsername()),
+        logService.createLog(ActionType.CREATE.getAction(), Map.of(Constants.logResponse.ACTOR, userDetails.getFullName(), Constants.logResponse.ACTION, FunctionType.CREATE_USER.getFunction(), Constants.logResponse.OBJECT, savedUser.getUsername()),
                 userDetails.getId(), savedUser.getId(), userDetails.getPartnerId());
         return "";
     }
@@ -192,7 +187,7 @@ public class UserService {
         user.setEmail(userCreateDTO.getEmail() != null && !userCreateDTO.getEmail().isEmpty() ? userCreateDTO.getEmail() : null);
         user.setIdentifyCode(userCreateDTO.getIdentifyCode());
         user.setUsername(userCreateDTO.getUsername());
-        user.setIsAdmin(userCreateDTO.getIsAdmin() ? 1 : 0);
+        user.setIsAdmin(Boolean.TRUE.equals(userCreateDTO.getIsAdmin()) ? 1 : 0);
         user.setUserCode(userCreateDTO.getUserCode());
         user.setBirthday(userCreateDTO.getBirthDay());
         user.setGender(userCreateDTO.getGender() == null ? null : userCreateDTO.getGender() == 1);
@@ -212,7 +207,7 @@ public class UserService {
                 ? userCreateDTO.getEmail() : null);
         existingUser.setIdentifyCode(userCreateDTO.getIdentifyCode());
         existingUser.setUsername(userCreateDTO.getUsername());
-        existingUser.setIsAdmin(userCreateDTO.getIsAdmin() ? 1 : 0);
+        existingUser.setIsAdmin(Boolean.TRUE.equals(userCreateDTO.getIsAdmin()) ? 1 : 0);
         existingUser.setUserCode(userCreateDTO.getUserCode());
         existingUser.setBirthday(userCreateDTO.getBirthDay());
         existingUser.setGender(userCreateDTO.getGender() == null ? null : userCreateDTO.getGender() == 1);
@@ -268,14 +263,14 @@ public class UserService {
     public String lockUser(UUID id, User userDetails,Long version) {
         User user = userRepository.getUserByUserIdIncluideDeleted(id);
         if (user == null || !Objects.equals(user.getVersion(), version)) {
-            return  "error.DataChangedReload";
+            return  Constants.errorResponse.DATA_CHANGED;
         } else {
             user.setIsActive(!user.getIsActive());
             user.setUpdateAt(LocalDateTime.now());
             user.setUpdateBy(userDetails.getId());
             User savedUser = userRepository.save(user);
-            logService.createLog(savedUser.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-                    Map.of("actor", userDetails.getFullName(), "action", savedUser.getIsActive() ? FunctionType.UNLOCK_USER.getFunction() : FunctionType.LOCK_USER.getFunction(), "object", savedUser.getFullName()),
+            logService.createLog(Boolean.TRUE.equals(savedUser.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+                    Map.of(Constants.logResponse.ACTOR, userDetails.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(savedUser.getIsActive()) ? FunctionType.UNLOCK_USER.getFunction() : FunctionType.LOCK_USER.getFunction(), Constants.logResponse.OBJECT, savedUser.getFullName()),
                     userDetails.getId(), savedUser.getId(), userDetails.getPartnerId());
         }
         return "";
@@ -300,7 +295,7 @@ public class UserService {
 
     public void getLogDetailUser(UUID id, User user) {
         User userDetail = userRepository.getUserByUserId(id);
-        logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_USER.getFunction(), "object", userDetail.getFullName()),
+        logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_USER.getFunction(), Constants.logResponse.OBJECT, userDetail.getFullName()),
                 user.getId(), userDetail.getId(), user.getPartnerId());
     }
 
@@ -313,10 +308,10 @@ public class UserService {
             object.setId(id.getId());
             User user = userRepository.getUserByUserIdIncluideDeleted(id.getId());
             if(user == null) {
-                object.setErrorMessage("error.DataChangedReload");
+                object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
                 object.setCode(id.getCode());
                 object.setName(id.getName());
-            } else if (userGroupsRepository.existsByUserId(user.getId())) {
+            } else if (Boolean.TRUE.equals(userGroupsRepository.existsByUserId(user.getId()))) {
                 object.setErrorMessage("error.UserGroupUsed");
                 object.setCode(user.getUserCode());
                 object.setName(user.getFullName());
@@ -332,7 +327,7 @@ public class UserService {
                 .filter(item -> item.getErrorMessage()!=null)
                 .count();
         response.setHasError(countNum != 0);
-        if(!response.getHasError())
+        if(Boolean.FALSE.equals(response.getHasError()))
         {
             return null;
         }

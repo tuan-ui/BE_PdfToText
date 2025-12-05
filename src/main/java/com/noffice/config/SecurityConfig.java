@@ -33,28 +33,6 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-//	@Bean
-//	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//
-//		http.authorizeHttpRequests(configure -> configure
-//				.requestMatchers("/api/auth/login/**", "/api/auth/loginNoReturnToken/**", "/api/auth/sendOtp2FA/**",
-//						"/api/auth/validateOtp/**", "/api/auth/sendSms2FA/**", "/api/auth/validateSms2FA/**",
-//						"/api/auth/checkUsernameAndPassword/**", "/api/auth/changePassword/**",
-//						"/api/auth/validateSmsResetPassword/**", "/api/auth/generateQR/**", "/api/auth/refreshToken/**",
-//						"/api/auth/checkRefreshToken/**", "/api/auth/checkPattern/**", "/api/auth/signin/**")
-//				.permitAll().requestMatchers("/api/user/getByUsername/**", "/api/user/updateSelf/**")
-//				.hasAnyRole("ADMIN", "USER")
-//				.requestMatchers("/api/user/**", "/api/role/**", "/api/log/**")
-//				.hasRole("ADMIN").anyRequest().authenticated()).userDetailsService(userDetailsService)
-//				.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler)
-//						.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-//				.sessionManagement(
-//						sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-//				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//		http.csrf(AbstractHttpConfigurer::disable);
-//		return http.build();
-//	}
-
 	@Bean
 	@SuppressWarnings("java:S4502")
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -32,7 +32,7 @@ class JwtServiceTest {
     private UUID userId ;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         userId = UUID.randomUUID();
         org.springframework.test.util.ReflectionTestUtils.setField(jwtService, "secretKey",
                 "c29tZV9sb25nX3NlY3JldF9rZXlfd2l0aF9hdF9sZWFzdF8zMl9ieXRlc19mb3JfdGVzdGluZw=="); // 32+ bytes
@@ -46,14 +46,13 @@ class JwtServiceTest {
         user.setIsAdmin(0);
         user.setPartnerId(UUID.randomUUID());
 
-
     }
 
     @Test
     void generateToken_ShouldContainAllClaims() {
         when(rolePermissionsRepository.findPermissionsByRoleIds(userId))
                 .thenReturn(List.of("READ", "WRITE"));
-        token = jwtService.generateToken(user, "dept1", List.of("dept1", "dept2"));
+        token = jwtService.generateToken(user);
         Claims claims = jwtService.extractAllClaims(token);
 
         assertThat(claims.getSubject()).isEqualTo("testuser");
@@ -69,7 +68,7 @@ class JwtServiceTest {
         user.setIsAdmin(1);
         when(rolePermissionsRepository.findPermissionsByRoleIds(userId))
                 .thenReturn(List.of("READ", "WRITE"));
-        token = jwtService.generateToken(user, "dept1", List.of());
+        token = jwtService.generateToken(user);
 
         Claims claims = jwtService.extractAllClaims(token);
         assertThat(claims.get("role", String.class)).isEqualTo("admin");
@@ -80,7 +79,7 @@ class JwtServiceTest {
     void extractUsername_ShouldReturnCorrectUsername() {
         when(rolePermissionsRepository.findPermissionsByRoleIds(userId))
                 .thenReturn(List.of("READ", "WRITE"));
-        token = jwtService.generateToken(user, "dept1", List.of());
+        token = jwtService.generateToken(user);
         assertThat(jwtService.extractUsername(token)).isEqualTo("testuser");
     }
 
@@ -88,7 +87,7 @@ class JwtServiceTest {
     void isValidateToken_ShouldReturnTrue_WhenValid() {
         when(rolePermissionsRepository.findPermissionsByRoleIds(userId))
                 .thenReturn(List.of("READ", "WRITE"));
-        token = jwtService.generateToken(user, "dept1", List.of());
+        token = jwtService.generateToken(user);
         org.springframework.security.core.userdetails.UserDetails userDetails =
                 org.springframework.security.core.userdetails.User.withUsername("testuser").password("pass").roles("USER").build();
 
@@ -99,7 +98,7 @@ class JwtServiceTest {
     void validateWithTimeout_ShouldReturnTrue_Within12Hours() {
         when(rolePermissionsRepository.findPermissionsByRoleIds(userId))
                 .thenReturn(List.of("READ", "WRITE"));
-        token = jwtService.generateToken(user, "dept1", List.of());
+        token = jwtService.generateToken(user);
         assertThat(jwtService.validateWithTimeout(token)).isTrue();
     }
 
@@ -107,7 +106,7 @@ class JwtServiceTest {
     void updateClaim_ShouldReturnNewTokenWithUpdatedClaim() {
         when(rolePermissionsRepository.findPermissionsByRoleIds(userId))
                 .thenReturn(List.of("READ", "WRITE"));
-        token = jwtService.generateToken(user, "dept1", List.of());
+        token = jwtService.generateToken(user);
 
         Map<String, Object> result = jwtService.updateClaim(token, "lastActive", System.currentTimeMillis());
 

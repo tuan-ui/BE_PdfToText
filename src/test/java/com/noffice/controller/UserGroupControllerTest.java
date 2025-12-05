@@ -15,6 +15,7 @@ import com.noffice.service.UserGroupService;
 import com.noffice.service.JwtService;
 import com.noffice.service.UserDetailsServiceImpl;
 import com.noffice.service.UserService;
+import com.noffice.ultils.Constants;
 import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(TestSecurityConfig.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class UserGroupControllerTest {
+class UserGroupControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
@@ -137,10 +138,6 @@ public class UserGroupControllerTest {
     void search_Success_Fixed() throws Exception {
         User userDetails = new User();
         userDetails.setPartnerId(partnerId);
-
-        UserGroupResponse userGroupResponse = new UserGroupResponse();
-        userGroupResponse.setGroupCode("HC");
-        userGroupResponse.setGroupName("Hành chính");
 
         Page<UserGroupResponse> page = new PageImpl<>(
                 List.of(userGroupResponse),
@@ -293,7 +290,7 @@ public class UserGroupControllerTest {
                                 .content(objectMapper.writeValueAsString(userGroup))
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("success"))
+                .andExpect(jsonPath("$.message").value(Constants.messageResponse.SUCCESS))
                 .andExpect(jsonPath("$.status").value(200));
     }
 

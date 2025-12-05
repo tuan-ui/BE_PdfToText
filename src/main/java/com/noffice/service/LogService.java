@@ -36,7 +36,7 @@ public class LogService {
 
 	public Page<Logs> getLogs(UUID userId, String actionKey, String functionKey,
 							  String fromDateStr, String toDateStr,
-							  Pageable pageable, UUID partnerId) throws Exception {
+							  Pageable pageable, UUID partnerId) throws IllegalArgumentException {
 
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -50,7 +50,7 @@ public class LogService {
 				toDateTime = LocalDate.parse(toDateStr, formatter).atTime(LocalTime.MAX);
 			}
 		} catch (Exception e) {
-			throw new Exception("Định dạng ngày không hợp lệ, yêu cầu: dd/MM/yyyy");
+			throw new IllegalArgumentException("Định dạng ngày không hợp lệ, yêu cầu: dd/MM/yyyy");
 		}
 
 		if (functionKey != null && !functionKey.trim().isEmpty()) {

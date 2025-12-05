@@ -1,7 +1,6 @@
 package com.noffice.ultils;
 
 import com.noffice.dto.FormResponseDTO;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -44,8 +43,6 @@ class FormParserTest {
         assertEquals(expected, result.getAt());
         assertEquals("cq", result.getResponses().get("Tiêu đề: Input"));
 
-        System.out.println("Parsed at = " + result.getAt());
-        System.out.println("Response = " + result.getResponses());
     }
 
     @Test
@@ -61,8 +58,6 @@ class FormParserTest {
         assertEquals("0901234567", result.getResponses().get("Số điện thoại:"));
         assertEquals("Hà Nội", result.getResponses().get("Bạn đến từ tỉnh thành nào?:"));
 
-        System.out.println("Full Vietnamese form parsed successfully!");
-        System.out.println(result);
     }
 
 

@@ -7,7 +7,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class DocTemplateDocTypesTest {
+class DocTemplateDocTypesTest {
     private final UUID tempId = UUID.randomUUID();
     private final UUID tempDocumentTemplateId = UUID.randomUUID();
     private final UUID tempDocumentTypeId = UUID.randomUUID();

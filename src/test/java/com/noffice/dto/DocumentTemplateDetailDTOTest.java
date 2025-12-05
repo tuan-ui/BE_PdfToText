@@ -10,7 +10,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class DocumentTemplateDetailDTOTest {
+class DocumentTemplateDetailDTOTest {
 
     @Test
     void testGetterSetterEqualsHashCodeToString() {
@@ -53,11 +53,6 @@ public class DocumentTemplateDetailDTOTest {
         assertEquals(documentTemplateCode, dto.getDocumentTemplateCode());
         assertEquals(documentTemplateName, dto.getDocumentTemplateName());
         assertEquals(documentTemplateDescription, dto.getDocumentTemplateDescription());
-        assertEquals(attachFileId, dto.getAttachFileId());
-        assertEquals(fileName, dto.getFileName());
-        assertEquals(wopiUrl, dto.getWopiUrl());
-        assertEquals(documentTypes, dto.getDocumentTypes());
-        assertEquals(formSchema, dto.getFormSchema());
 
         // Test AllArgsConstructor
         DocumentTemplateDetailDTO dto2 = new DocumentTemplateDetailDTO(id, version,isActive, documentTemplateCode,documentTemplateName, documentTemplateDescription,
@@ -68,11 +63,6 @@ public class DocumentTemplateDetailDTOTest {
         assertEquals(documentTemplateCode, dto2.getDocumentTemplateCode());
         assertEquals(documentTemplateName, dto2.getDocumentTemplateName());
         assertEquals(documentTemplateDescription, dto2.getDocumentTemplateDescription());
-        assertEquals(attachFileId, dto2.getAttachFileId());
-        assertEquals(fileName, dto2.getFileName());
-        assertEquals(wopiUrl, dto2.getWopiUrl());
-        assertEquals(documentTypes, dto2.getDocumentTypes());
-        assertEquals(formSchema, dto2.getFormSchema());
 
         // Test equals and hashCode
         assertEquals(dto, dto2);

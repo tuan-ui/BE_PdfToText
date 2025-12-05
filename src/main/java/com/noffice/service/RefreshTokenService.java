@@ -42,7 +42,7 @@ public class RefreshTokenService {
 	public RefreshToken verifyExpiration(RefreshToken token) {
 		if (token.getExpireTime().compareTo(new Date()) < 0) {
 			refreshTokenRepository.delete(token);
-			throw new RuntimeException("Refresh token was expired. Please make a new signin request");
+			throw new IllegalArgumentException("Refresh token was expired. Please make a new signin request");
 		}
 		return token;
 	}

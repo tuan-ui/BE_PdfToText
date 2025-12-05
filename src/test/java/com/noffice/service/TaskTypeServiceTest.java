@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TaskTypeServiceTest {
+class TaskTypeServiceTest {
     @Mock
     private TaskTypeRepository taskTypeRepository;
 
@@ -92,7 +92,7 @@ public class TaskTypeServiceTest {
 
         String result = taskTypeService.deleteTaskType(taskTypeId, mockUser, 999L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -132,7 +132,7 @@ public class TaskTypeServiceTest {
 
         String result = taskTypeService.deleteMultiTaskType(ids, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
         verifyNoInteractions(logService);
     }
 
@@ -168,7 +168,7 @@ public class TaskTypeServiceTest {
 
         String result = taskTypeService.lockUnlockTaskType(taskTypeId, mockUser, 1L);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -178,12 +178,10 @@ public class TaskTypeServiceTest {
         taskTypeDTO.setTaskTypeCode("NEW001");
         taskTypeDTO.setIsActive(true);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(taskTypeRepository.findByCode(eq("NEW001"), eq(partnerId))).thenReturn(null);
         when(taskTypeRepository.save(any(TaskType.class))).thenAnswer(i -> i.getArgument(0));
 
-        String result = taskTypeService.saveTaskType(taskTypeDTO, auth);
+        String result = taskTypeService.saveTaskType(taskTypeDTO, mockUser);
 
         assertEquals("", result);
         verify(logService).createLog(eq(ActionType.CREATE.getAction()), anyMap(), any(), any(), any());
@@ -194,11 +192,9 @@ public class TaskTypeServiceTest {
         TaskType taskTypeDTO = new TaskType();
         taskTypeDTO.setTaskTypeCode("TEST001");
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(taskTypeRepository.findByCode(eq("TEST001"), eq(partnerId))).thenReturn(sampleTaskType);
 
-        String result = taskTypeService.saveTaskType(taskTypeDTO, auth);
+        String result = taskTypeService.saveTaskType(taskTypeDTO, mockUser);
 
         assertEquals("error.TaskTypeExists", result);
         verifyNoInteractions(logService);
@@ -213,12 +209,10 @@ public class TaskTypeServiceTest {
         taskTypeDTO.setVersion(1L);
         taskTypeDTO.setIsActive(false);
 
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
-
         when(taskTypeRepository.findByTaskTypeIdIncludeDeleted(eq(taskTypeId))).thenReturn(sampleTaskType);
         when(taskTypeRepository.save(any(TaskType.class))).thenReturn(sampleTaskType);
 
-        String result = taskTypeService.updateTaskType(taskTypeDTO, auth);
+        String result = taskTypeService.updateTaskType(taskTypeDTO, mockUser);
 
         assertEquals("", result);
         assertEquals("Updated Name", sampleTaskType.getTaskTypeName());
@@ -229,13 +223,12 @@ public class TaskTypeServiceTest {
     void updateTaskType_Error() {
         TaskType taskTypeDTO = new TaskType();
         taskTypeDTO.setId(taskTypeId);
-        Authentication auth = new TestingAuthenticationToken(mockUser, null);
 
         when(taskTypeRepository.findByTaskTypeIdIncludeDeleted(eq(taskTypeId))).thenReturn(null);
 
-        String result = taskTypeService.updateTaskType(taskTypeDTO, auth);
+        String result = taskTypeService.updateTaskType(taskTypeDTO, mockUser);
 
-        assertEquals("error.DataChangedReload", result);
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result);
     }
 
     @Test
@@ -280,7 +273,7 @@ public class TaskTypeServiceTest {
         ErrorListResponse result = taskTypeService.checkDeleteMulti(ids);
 
         assertTrue(result.getHasError());
-        assertEquals("error.DataChangedReload", result.getErrors().get(0).getErrorMessage());
+        assertEquals(Constants.errorResponse.DATA_CHANGED, result.getErrors().get(0).getErrorMessage());
     }
 
     @Test

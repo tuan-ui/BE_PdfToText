@@ -6,6 +6,7 @@ import com.noffice.reponse.ErrorListResponse;
 import com.noffice.reponse.ResponseAPI;
 import com.noffice.repository.UserRepository;
 import com.noffice.service.*;
+import com.noffice.ultils.Constants;
 import com.noffice.ultils.Constants.upload;
 import com.noffice.ultils.DateUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -82,13 +83,13 @@ public class UserController {
                         userCode, userDetails,
                         pageable
                 );
-                return new ResponseAPI(users, "success", 200);
+                return new ResponseAPI(users, Constants.messageResponse.SUCCESS, 200);
             }
 
             Pageable pageable = PageRequest.of(page, size);
             Page<User> users = userService.listUsers(searchString, userName, fullName, phone, birthdayStr,
                     userCode, userDetails, pageable);
-            return new ResponseAPI(users, "success", 200);
+            return new ResponseAPI(users, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
             return new ResponseAPI(null, e.getMessage(), 500);
         }
@@ -107,11 +108,11 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ResponseAPI(null, message, 400));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+                    .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
         }
     }
 
@@ -124,9 +125,9 @@ public class UserController {
             if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
-            return new ResponseAPI(null, "success", 200);
+            return new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 
@@ -142,11 +143,11 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ResponseAPI(null, message, 400));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, "success", 200));
+            return ResponseEntity.status(HttpStatus.OK).body(new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200));
         } catch (Exception e) {
-            System.out.println("Error : " + e.getMessage());
+            
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống", 500));
+                    .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
         }
     }
 	
@@ -263,7 +264,7 @@ public class UserController {
             if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
-            return new ResponseAPI(null, "success", 200);
+            return new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200);
         } catch (IOException e) {
             return new ResponseAPI(null, "error.ErrorProcessingFile", 400);
         } catch (RuntimeException e) {
@@ -360,7 +361,7 @@ public class UserController {
             if(StringUtils.isNotBlank(message)) {
                 return new ResponseAPI(null, message, 400);
             }
-            return new ResponseAPI(null, "success", 200);
+            return new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200);
         } catch (IOException e) {
             return new ResponseAPI(null, "error.ErrorProcessingFile", 400);
         } catch (RuntimeException e) {
@@ -381,15 +382,14 @@ public class UserController {
                 return new ResponseAPI(null, "Không có token hoặc phiên đăng nhập hợp lệ", 401);
             }
 
-            if (!(authentication.getPrincipal() instanceof User)) {
+            if (!(authentication.getPrincipal() instanceof User user)) {
                 return new ResponseAPI(null, "Thông tin người dùng không hợp lệ", 401);
             }
 
-            User user = (User) authentication.getPrincipal();
             UUID userId = user.getId();
 
             UserDetailDTO userDetail = userService.getByUserId(userId);
-            return new ResponseAPI(userDetail, "success", 200);
+            return new ResponseAPI(userDetail, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
             return new ResponseAPI(null, "fail: " + e.getMessage(), 500);
         }
@@ -445,7 +445,7 @@ public class UserController {
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
+                    .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
         }
     }
 	
@@ -594,9 +594,9 @@ public class UserController {
 //			User userDetails = (User) authentication.getPrincipal();
 //			Long partnerId = userDetails.getPartnerId();
 //			List<RoleUserDepResponse> list = userService.findOptionRoleUserDepByPartnerId(partnerId);
-//			return new ResponseAPI(list, "success", 200);
+//			return new ResponseAPI(list, Constants.messageResponse.SUCCESS, 200);
 //		} catch (Exception e) {
-//			return new ResponseAPI(null, "fail", 400);
+//			return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 400);
 //		}
 //	}
 
@@ -607,9 +607,9 @@ public class UserController {
 //            User userDetails = (User) authentication.getPrincipal();
 //            Long userId = userDetails.getUserId();
 //            List<RoleUserDepResponse> list = userService.findOptionRoleUserDepByUserId(userId);
-//            return new ResponseAPI(list, "success", 200);
+//            return new ResponseAPI(list, Constants.messageResponse.SUCCESS, 200);
 //        } catch (Exception e) {
-//            return new ResponseAPI(null, "fail", 400);
+//            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 400);
 //        }
 //    }
 
@@ -630,7 +630,7 @@ public class UserController {
 //                    .body(new ResponseAPI(null, e.getMessage(), 400));
 //        } catch (Exception e) {
 //            return ResponseEntity.status(HttpStatus.OK)
-//                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
+//                    .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
 //        }
 //    }
     
@@ -661,7 +661,7 @@ public class UserController {
                     .body(new ResponseAPI(null, e.getMessage(), 400));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.OK)
-                    .body(new ResponseAPI(null, "Lỗi hệ thống: " + e.getMessage(), 500));
+                    .body(new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500));
         }
     }
 
@@ -691,9 +691,9 @@ public class UserController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             List<User> listAllUser = userService.getAllUser(userDetails.getPartnerId());
-            return new ResponseAPI(listAllUser, "Thành công", 200);
+            return new ResponseAPI(listAllUser, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "Lỗi hệ thống", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
     @GetMapping("/LogDetailUser")
@@ -703,18 +703,18 @@ public class UserController {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             User userDetails = (User) authentication.getPrincipal();
             userService.getLogDetailUser(id, userDetails);
-            return new ResponseAPI(null, "success", 200);
+            return new ResponseAPI(null, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
     @PostMapping("/checkDeleteMulti")
     public ResponseAPI checkDeleteMulti(@RequestBody List<DeleteMultiDTO> ids) {
         try {
             ErrorListResponse message = userService.checkDeleteMulti(ids);
-            return new ResponseAPI(message, "success", 200);
+            return new ResponseAPI(message, Constants.messageResponse.SUCCESS, 200);
         } catch (Exception e) {
-            return new ResponseAPI(null, "fail", 500);
+            return new ResponseAPI(null, Constants.messageResponse.ERROR + e.getMessage(), 500);
         }
     }
 

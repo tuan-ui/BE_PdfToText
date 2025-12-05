@@ -14,7 +14,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -31,13 +30,13 @@ public class DocTypeService {
     public String deleteDocType(UUID id, User user, Long version) {
         DocType docType = docTypeRepository.findByDocTypeIdIncludeDeleted(id);
         if (docType == null || !Objects.equals(docType.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
 			if (documentTemplateDocumentTypesRepository.existsDocumentTemplateByDocumentTypeId(id)) {
 				return "error.UnableToDeleteExistingDocTemplate";
 			}
             docTypeRepository.deleteDocTypeByDocTypeId(id);
-            logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOCTYPE.getFunction(), "object", docType.getDocTypeName()),
+            logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, docType.getDocTypeName()),
                     user.getId(), docType.getId(), user.getPartnerId());
         }
         return "";
@@ -49,13 +48,13 @@ public class DocTypeService {
         for (DeleteMultiDTO id : ids) {
             DocType docType = docTypeRepository.findByDocTypeIdIncludeDeleted(id.getId());
             if (docType == null || !Objects.equals(docType.getVersion(), id.getVersion())) {
-                return "error.DataChangedReload";
+                return Constants.errorResponse.DATA_CHANGED;
             }  else {
                 if (documentTemplateDocumentTypesRepository.existsDocumentTemplateByDocumentTypeId(id.getId())) {
                     return "error.UnableToDeleteExistingDocTemplate";
                 }
                 docTypeRepository.deleteDocTypeByDocTypeId(id.getId());
-                logService.createLog(ActionType.DELETE.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.DELETE_DOCTYPE.getFunction(), "object", docType.getDocTypeName()),
+                logService.createLog(ActionType.DELETE.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.DELETE_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, docType.getDocTypeName()),
                         user.getId(), docType.getId(), user.getPartnerId());
             }
         }
@@ -66,35 +65,34 @@ public class DocTypeService {
     public String lockUnlockDocType(UUID id, User user, Long version) {
         DocType docType = docTypeRepository.findByDocTypeIdIncludeDeleted(id);
         if (docType == null || !Objects.equals(docType.getVersion(), version)) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             Boolean newStatus = !docType.getIsActive();
             docType.setIsActive(newStatus);
             docType.setUpdateBy(user.getId());
             docType.setUpdateAt(LocalDateTime.now());
             DocType savedDocType = docTypeRepository.save(docType);
-            logService.createLog(savedDocType.getIsActive() ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
-                    Map.of("actor", user.getFullName(), "action", savedDocType.getIsActive() ? FunctionType.UNLOCK_DOCTYPE.getFunction() : FunctionType.LOCK_DOCTYPE.getFunction(), "object", savedDocType.getDocTypeName()),
+            logService.createLog(Boolean.TRUE.equals(savedDocType.getIsActive()) ? ActionType.UNLOCK.getAction() : ActionType.LOCK.getAction(),
+                    Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, Boolean.TRUE.equals(savedDocType.getIsActive()) ? FunctionType.UNLOCK_DOCTYPE.getFunction() : FunctionType.LOCK_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, savedDocType.getDocTypeName()),
                     user.getId(), savedDocType.getId(), user.getPartnerId());
         }
         return "";
     }
 
     @Transactional
-    public String saveDocType(DocType docTypeDTO, Authentication authentication) {
-        User token = (User) authentication.getPrincipal();
+    public String saveDocType(DocType docTypeDTO, User token) {
         if (docTypeRepository.findByCode(docTypeDTO.getDocTypeCode(), token.getPartnerId()) == null) {
-            DocType DocType = new DocType();
-            DocType.setDocTypeName(docTypeDTO.getDocTypeName());
-            DocType.setDocTypeCode(docTypeDTO.getDocTypeCode());
-            DocType.setDocTypeDescription(docTypeDTO.getDocTypeDescription());
-            DocType.setCreateAt(LocalDateTime.now());
-            DocType.setCreateBy(token.getId());
-            DocType.setIsActive(docTypeDTO.getIsActive());
-            DocType.setIsDeleted(Constants.isDeleted.ACTIVE);
-            DocType.setPartnerId(token.getPartnerId());
-            DocType savedDocType = docTypeRepository.save(DocType);
-            logService.createLog(ActionType.CREATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.CREATE_DOCTYPE.getFunction(), "object", savedDocType.getDocTypeName()),
+            DocType docType = new DocType();
+            docType.setDocTypeName(docTypeDTO.getDocTypeName());
+            docType.setDocTypeCode(docTypeDTO.getDocTypeCode());
+            docType.setDocTypeDescription(docTypeDTO.getDocTypeDescription());
+            docType.setCreateAt(LocalDateTime.now());
+            docType.setCreateBy(token.getId());
+            docType.setIsActive(docTypeDTO.getIsActive());
+            docType.setIsDeleted(Constants.isDeleted.ACTIVE);
+            docType.setPartnerId(token.getPartnerId());
+            DocType savedDocType = docTypeRepository.save(docType);
+            logService.createLog(ActionType.CREATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.CREATE_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, savedDocType.getDocTypeName()),
                     token.getId(), savedDocType.getId(), token.getPartnerId());
 
             return "";
@@ -104,11 +102,10 @@ public class DocTypeService {
     }
 
     @Transactional
-    public String updateDocType(DocType docTypeDTO, Authentication authentication) {
-        User token = (User) authentication.getPrincipal();
+    public String updateDocType(DocType docTypeDTO, User token) {
         DocType docType = docTypeRepository.findByDocTypeIdIncludeDeleted(docTypeDTO.getId());
         if (docType == null || !Objects.equals(docType.getVersion(), docTypeDTO.getVersion())) {
-            return "error.DataChangedReload";
+            return Constants.errorResponse.DATA_CHANGED;
         } else {
             docType.setDocTypeName(docTypeDTO.getDocTypeName());
             docType.setDocTypeCode(docTypeDTO.getDocTypeCode());
@@ -118,7 +115,7 @@ public class DocTypeService {
             docType.setUpdateAt(LocalDateTime.now());
             docType.setUpdateBy(token.getId());
             DocType savedDocType = docTypeRepository.save(docType);
-            logService.createLog(ActionType.UPDATE.getAction(), Map.of("actor", token.getFullName(), "action", FunctionType.EDIT_DOCTYPE.getFunction(), "object", savedDocType.getDocTypeName()),
+            logService.createLog(ActionType.UPDATE.getAction(), Map.of(Constants.logResponse.ACTOR, token.getFullName(), Constants.logResponse.ACTION, FunctionType.EDIT_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, savedDocType.getDocTypeName()),
                     token.getId(), savedDocType.getId(), token.getPartnerId());
         }
         return "";
@@ -135,7 +132,7 @@ public class DocTypeService {
 
     public void getLogDetailDocType(String id, User user) {
         DocType docType = docTypeRepository.findByDocTypeCode(id);
-        logService.createLog(ActionType.VIEW.getAction(), Map.of("actor", user.getFullName(), "action", FunctionType.VIEW_DETAIL_DOCTYPE.getFunction(), "object", docType.getDocTypeName()),
+        logService.createLog(ActionType.VIEW.getAction(), Map.of(Constants.logResponse.ACTOR, user.getFullName(), Constants.logResponse.ACTION, FunctionType.VIEW_DETAIL_DOCTYPE.getFunction(), Constants.logResponse.OBJECT, docType.getDocTypeName()),
                 user.getId(), docType.getId(), user.getPartnerId());
     }
 
@@ -149,12 +146,12 @@ public class DocTypeService {
             object.setId(id.getId());
             DocType docType = docTypeRepository.findByDocTypeIdIncludeDeleted(id.getId());
             if(docType == null) {
-                object.setErrorMessage("error.DataChangedReload");
+                object.setErrorMessage(Constants.errorResponse.DATA_CHANGED);
                 object.setCode(id.getCode());
                 object.setName(id.getName());
             }   else {
                 object.setCode(docType.getDocTypeCode());
-                object.setName(docType.getDocTypeName());;
+                object.setName(docType.getDocTypeName());
             }
             lstObject.add(object);
         }
@@ -164,7 +161,7 @@ public class DocTypeService {
                 .filter(item -> item.getErrorMessage() != null)
                 .count();
         response.setHasError(countNum != 0);
-        if (!response.getHasError()) {
+        if (Boolean.FALSE.equals(response.getHasError())) {
             return null;
         }
         return response;
